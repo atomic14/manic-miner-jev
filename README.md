@@ -30,19 +30,43 @@ This gives two modes:
 
 ## Result
 
-Free mode with the present configuration. 10 live runs for each cavern. A run
-is complete when Willy has all keys and goes into the portal.
+Free mode with the present default configuration. 10 live runs for each
+cavern. A run is complete when Willy has all keys and goes into the portal.
 
-| Cavern | Complete runs | Note |
-| --- | --- | --- |
-| 1 Central Cavern | 10 of 10 | 71 decisions |
-| 3 The Menagerie | 10 of 10 | 66 decisions |
-| 2 The Cold Room | 4 to 6 of 10 | the key order is the problem |
-| 4 Abandoned Uranium Workings | 0 of 10 | 4.0 of 5 keys, then a trap in a corner |
-| 16 The Sixteenth Cavern | 0 of 10 | 1.7 of 4 keys |
+| Cavern | Complete runs | Mean keys | The older table |
+| --- | --- | --- | --- |
+| 1 Central Cavern | **10 of 10** | 5 of 5 | 1 of 10, 2.5 keys |
+| 2 The Cold Room | 4 to 6 of 10 | 3.0 to 4.1 of 5 | 6 of 10, 4.1 keys |
+| 3 The Menagerie | **10 of 10** | 5 of 5 | 2 of 10, 2.3 keys |
+| 4 Abandoned Uranium Workings | 0 of 10 | 4.0 of 5 | 0 of 10, 1.8 keys |
+| 5 Eugene's Lair | 0 of 10 | 0.5 of 5 | 0 of 10, 1.9 keys |
+| 6 Processing Plant | 0 of 10 | 0.0 of 5 | 0 of 10, 3.6 keys |
+| 7 The Vat | 1 of 10 | 0.5 of 5 | 4 of 10, 2.9 keys |
+| 8 Miner Willy meets the Kong Beast | 0 of 10 | 0.7 of 4 | 0 of 10, 1.8 keys |
+| 9 Wacky Amoebatrons | **10 of 10** | 1 of 1 | 10 of 10 |
+| 10 The Endorian Forest | 0 of 10 | 2.2 of 5 | 0 of 10, 1.8 keys |
+| 11 Attack of the Mutant Telephones | **5 of 10** | 3.8 of 5 | 0 of 10, 2.3 keys |
+| 12 Return of the Alien Kong Beast | 0 of 10 | 0.0 of 5 | 0 of 10, 0.8 keys |
+| 13 Ore Refinery | 0 of 10 | 1.0 of 5 | 0 of 10, 1.0 keys |
+| 14 Skylab Landing Bay | 0 of 10 | 0.4 of 4 | 0 of 10, 0.9 keys |
+| 15 The Bank | 0 of 10 | 1.8 of 3 | 0 of 10, 2.0 keys |
+| 16 The Sixteenth Cavern | 0 of 10 | 1.7 of 4 | 0 of 10, 1.6 keys |
+| 17 The Warehouse | 0 of 10 | 0.7 of 5 | 0 of 10, 0.0 keys |
+| 18 Amoebatrons' Revenge | **8 of 10** | 0.8 of 1 | 3 of 10 |
+| 19 Solar Power Generator | 0 of 10 | 1.0 of 3 | 0 of 10, 0.9 keys |
+| 20 The Final Barrier | 0 of 10 | 4.2 of 5 | 0 of 10, 2.5 keys |
 
-One complete run costs approximately $0.004. We measured only these caverns
-with the present configuration. They have horizontal guardians only.
+Jev completes 4 caverns in 8 or more of 10 runs (1, 3, 9, 18), and 2 caverns
+in approximately half of the runs (2, 11). It completed caverns 4 and 7 one
+time each. 12 caverns have no complete run.
+
+"The older table" is the first measurement of all caverns (200 runs), before
+the corrections of the prompt text and of the valid moves. The changes after
+that table helped caverns 1, 3, 4, 11, 18, and 20. They made caverns 5, 6, 7,
+and 8 worse (fewer keys). We do not know yet which change did that.
+
+One complete run costs approximately $0.004 to $0.010. The summaries of all
+measurements are in `experiments/results/`.
 
 **The base for comparison: a random player.** It gets the same valid moves as
 jev (the same look-ahead and dead end check) and selects one at random. 30
@@ -55,38 +79,6 @@ runs for each cavern, with no jev call:
 | 3 The Menagerie | 0 of 30, 0.6 keys | 9 to 10 of 10, 5 keys |
 
 Thus the look-ahead alone does not complete a cavern. The decisions of jev do.
-
-An older measurement of all 20 caverns (200 runs, before the corrections of
-the prompt text) is a lower limit for the other caverns. Jev completed 6 of
-the 20 caverns at least one time. Only cavern 9, which has 1 key, was
-reliable.
-
-<details><summary>The 200-run table</summary>
-
-| Cavern | Complete runs | Mean keys |
-| --- | --- | --- |
-| 1 Central Cavern | 1 of 10 | 2.5 |
-| 2 The Cold Room | 6 of 10 | 4.1 |
-| 3 The Menagerie | 2 of 10 | 2.3 |
-| 4 Abandoned Uranium Workings | 0 of 10 | 1.8 |
-| 5 Eugene's Lair | 0 of 10 | 1.9 |
-| 6 Processing Plant | 0 of 10 | 3.6 |
-| 7 The Vat | 4 of 10 | 2.9 |
-| 8 Miner Willy meets the Kong Beast | 0 of 10 | 1.8 |
-| 9 Wacky Amoebatrons | 10 of 10 | 1 |
-| 10 The Endorian Forest | 0 of 10 | 1.8 |
-| 11 Attack of the Mutant Telephones | 0 of 10 | 2.3 |
-| 12 Return of the Alien Kong Beast | 0 of 10 | 0.8 |
-| 13 Ore Refinery | 0 of 10 | 1 |
-| 14 Skylab Landing Bay | 0 of 10 | 0.9 |
-| 15 The Bank | 0 of 10 | 2 |
-| 16 The Sixteenth Cavern | 0 of 10 | 1.6 |
-| 17 The Warehouse | 0 of 10 | 0 |
-| 18 Amoebatrons' Revenge | 3 of 10 | 0.3 |
-| 19 Solar Power Generator | 0 of 10 | 0.9 |
-| 20 The Final Barrier | 0 of 10 | 2.5 |
-
-</details>
 
 ### Rules mode compared with free mode
 
@@ -603,6 +595,11 @@ result came from the search, not from jev.
 
   The map has a letter for each key, `<` or `>` for a conveyor, and a legend
   that says what each symbol means for Willy.
+- **A switch as a target made no difference.** In the two Kong Beast caverns
+  (8 and 12), a switch is a target that jev can select. With the switch
+  targets and with no switch targets, the two caverns are 0 of 10, with the
+  same number of keys (0.7 and 0.8 in cavern 8, 0.0 in cavern 12). The runs
+  fail before the switches are important.
 - **Facts about vertical guardians made the results worse.** The code reads
   the vertical guardians, and the state can give their column, their
   direction, and if their column crosses the level of Willy. Caverns 9 and

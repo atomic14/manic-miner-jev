@@ -176,6 +176,8 @@ class Settings:
     # A test only: the code sets the key order (letters of the map, for example
     # "EACDB"). Jev gets no key request. The movement is not changed.
     forced_key_order: str = ""
+    # False = a switch is not a target (a test of what the switch targets give).
+    switch_targets: bool = True
     # True = the state and the fall check get the vertical guardians. It is
     # off, because a measurement showed that these facts make the results
     # worse (see the README). The look-ahead runs the real game, thus it
@@ -283,6 +285,8 @@ async def play_live(
             snap = game.snapshot()
             if not settings.vertical_guardian_facts:
                 snap = replace(snap, guardians=[g for g in snap.guardians if g.axis == "horizontal"])
+            if not settings.switch_targets:
+                snap = replace(snap, switches=[])
 
             # 1. Target. Jev selects the key.
             goals = snap.keys + snap.switches

@@ -18,6 +18,7 @@ Options (all are optional):
     no-memory        do not give `place` and `tried_from_here`
     two-ways-up      give the way up on the left and on the right (measured: worse)
     vertical-facts   the state gets facts about the vertical guardians (measured: worse)
+    no-switch-targets  a switch is not a target that jev can select
     random-moves     a base: a random choice from the valid moves, no jev call
     key-order=EACDB  a test: the code sets the key order, jev gets no key request
     hybrid-keys      the key decision uses the map; jev gets it at the start and
@@ -68,6 +69,7 @@ def parse(argv):
         target_map="target-map" in flags,
         hybrid_keys="hybrid-keys" in flags,
         random_moves="random-moves" in flags,
+        switch_targets="no-switch-targets" not in flags,
         vertical_guardian_facts="vertical-facts" in flags,
         map_key_text="normal-key-text" not in flags,
         two_ways_up="two-ways-up" in flags,
