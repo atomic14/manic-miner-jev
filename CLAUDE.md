@@ -8,6 +8,13 @@
 - The viewer must show all data that goes to jev (state and questions).
 - Each live run must write a log file in `runs/`, so that a replay needs no
   jev calls.
+- The decisions must come from jev. The code gives facts and knowledge of the
+  game. Do not write instructions of the form "select X when Y", and do not
+  mark the best option in the state. But do not offer a decision that we know
+  is not valid (it kills Willy, it is a dead end, or it has no effect).
+- Measure each change with `experiments/measure.py`. Jev does not always give
+  the same answer, thus one run tells us little, and 3 runs for each cavern
+  show only large effects.
 - Read the live jev documentation before you change the questions:
   https://docs.typesafe.ai/llms.txt
 - `README.md` describes the present design, not the history. When the state

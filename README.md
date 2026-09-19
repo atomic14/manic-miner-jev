@@ -11,24 +11,75 @@ decision of jev, and all data that goes to jev.
 The project is standalone. It contains the emulator sources and the game
 snapshot.
 
+## The rule of the project
+
+**The decisions must come from jev.** The code gives facts and knowledge of
+the game. The code does not tell jev what to select. But the code does not
+offer a decision that we know is not valid.
+
+This gives two modes:
+
+- **Free mode** (the normal configuration). The instructions have three
+  parts: the goal, the meaning of each fact, and knowledge of the game (for
+  example "a crumbling floor breaks a little each time Willy stands on it").
+  They do not say "select X when Y".
+- **Rules mode** (for comparison only). The instructions are a numbered list
+  of rules of the form "select X when Y", and the state marks the option with
+  the smallest number of visits. Jev executes a procedure that we wrote. Most
+  of the success of this mode comes from that procedure, not from jev.
+
 ## Result
 
-Jev completes the first three caverns with one set of rules. One complete run
-costs approximately $0.005.
+Free mode, 10 live runs for each cavern. A run is complete when Willy has all
+keys and goes into the portal.
 
-| Cavern | Complete runs | Decisions in the best run |
+| Cavern | Complete runs | Mean keys |
 | --- | --- | --- |
-| 1 Central Cavern | 3 of 3 | 70 |
-| 2 The Cold Room | 2 of 2 | 65 |
-| 3 The Menagerie | 1 of 2 | 74 |
+| 1 Central Cavern | 1 of 10 | 2.5 |
+| 2 The Cold Room | 6 of 10 | 4.1 |
+| 3 The Menagerie | 2 of 10 | 2.3 |
+| 4 Abandoned Uranium Workings | 0 of 10 | 1.8 |
+| 5 Eugene's Lair | 0 of 10 | 1.9 |
+| 6 Processing Plant | 0 of 10 | 3.6 |
+| 7 The Vat | 4 of 10 | 2.9 |
+| 8 Miner Willy meets the Kong Beast | 0 of 10 | 1.8 |
+| 9 Wacky Amoebatrons | 10 of 10 | 1 |
+| 10 The Endorian Forest | 0 of 10 | 1.8 |
+| 11 Attack of the Mutant Telephones | 0 of 10 | 2.3 |
+| 12 Return of the Alien Kong Beast | 0 of 10 | 0.8 |
+| 13 Ore Refinery | 0 of 10 | 1 |
+| 14 Skylab Landing Bay | 0 of 10 | 0.9 |
+| 15 The Bank | 0 of 10 | 2 |
+| 16 The Sixteenth Cavern | 0 of 10 | 1.6 |
+| 17 The Warehouse | 0 of 10 | 0 |
+| 18 Amoebatrons' Revenge | 3 of 10 | 0.3 |
+| 19 Solar Power Generator | 0 of 10 | 0.9 |
+| 20 The Final Barrier | 0 of 10 | 2.5 |
 
-The number of runs is small, thus the rates are not exact. We wrote the rules
-with cavern 1 and cavern 2. Cavern 3 is a test: we did not look at it before
-the runs.
+Total: 26 of 200 runs. Jev completed 6 of the 20 caverns at least one
+time. Only cavern 9, which has 1 key, is reliable. The 200 runs cost $1.33.
 
-Jev does not always give the same answer for the same state. When two options
-are near (for example 0.47 and 0.44), two runs can go different ways. Thus
-some live runs fail and some succeed.
+We measured this table before two corrections (see "Valid moves"). With the
+corrections, 10 runs each: cavern 1 is 3 of 10 and cavern 2 is 6 of 10. The
+numbers are near the table, thus the table is still a good reference.
+
+Rules mode, 3 live runs for each cavern: cavern 1 is 3 of 3, cavern 2 is 3 of
+3, cavern 3 is 0 of 3, and cavern 4 is 2 of 3. We did not measure rules mode
+with 10 runs.
+
+What the measurements show:
+
+- **The safety part works.** A run ends because Willy makes no progress, or
+  because the air ends. It does not end because of a move that the look-ahead
+  said was safe.
+- **Jev makes sensible single decisions, but it does not plan a route.** It
+  selects a move that goes nearer to the target in 85 % of the decisions
+  where such a move exists. It fails when the direct way is closed and Willy
+  must go away from the target first, and it uses up crumbling floors that it
+  needs later.
+- **Jev does not always give the same answer for the same state.** When two
+  options are near (0.47 and 0.44), two runs go different ways. Use 10 runs
+  for each cavern to compare two designs. 3 runs show only large effects.
 
 ## Setup
 
@@ -53,11 +104,12 @@ Open http://127.0.0.1:8000.
 
 - **Replay** plays a recorded run. A replay makes no jev calls and costs
   nothing. The emulator is deterministic, thus a replay is always the same
-  game. The first runs in the list are complete runs from the `demo/` folder,
-  one for each of the three caverns.
+  game. The first runs in the list are complete runs from the `demo/` folder.
+  The file name tells if the run is free mode or rules mode.
 - **Start live run** plays a new game with jev. Select the cavern and the
   state encoder first. Keep the **look-ahead** box set and use the `words`
-  encoder: this is the configuration that completes the caverns.
+  encoder. The **rules mode** box gives jev the procedure that we wrote. Use
+  it for comparison only.
 - **Pause**, **Step**, and **Speed** control the playback. One step is one
   decision. The game stops while jev makes a decision, thus real time is not
   necessary.
@@ -65,7 +117,8 @@ Open http://127.0.0.1:8000.
 
 The page shows, for each decision:
 
-- the key that jev selected as the target, with a yellow box in the game
+- the key or switch that jev selected as the target, with a yellow box in
+  the game
 - the probability of each macro, the selected macro, and the confidence
 - each macro that jev did not get, with the cause
 - **the exact state JSON and the exact questions of the request**
@@ -76,18 +129,36 @@ The page shows, for each decision:
 ```sh
 uv run python -m jevmanic.cli words lookahead cavern=2
 uv run python -m jevmanic.cli words lookahead cavern=2 until-complete
+uv run python -m jevmanic.cli words lookahead cavern=2 rules     # comparison only
 ```
 
 The cavern number starts at 1. With `until-complete`, the script plays again
 until a run is complete (10 runs at most). Each live run writes a log file in
 `runs/`. The viewer can replay it.
 
+### Measurement
+
+```sh
+uv run python -m experiments.measure caverns=1,2 runs=10 label=my-test
+uv run python -m experiments.measure caverns=1,2 runs=10 label=rules rules-move rules-target
+uv run python -m experiments.diagnose runs/my-test/<file>.jsonl
+```
+
+`experiments/measure.py` plays many live games at the same time and prints a
+table: complete runs, keys, decisions, tokens, and the rate of decisions with
+a confidence below 0.5. The switches `no-extras`, `no-memory`, `depth=N`,
+`rules-move`, and `rules-target` change one part of the design, to measure
+what it gives. The log files go to `runs/<label>/`.
+`experiments/diagnose.py` prints the map, the last positions, and the last
+state of one run.
+
 ## How it works
 
 Each decision has these steps:
 
 1. The code reads the game data from the emulator memory: Willy, the
-   guardians, the keys, the portal, the tiles, and the air.
+   guardians (horizontal and vertical), the keys, the switches, the portal,
+   the tiles, and the air.
 2. **Look-ahead.** The code tries each of the 6 macros in the emulator and
    then puts the game back. This gives the true result of each macro.
 3. The code makes the state: a JSON object with words and small numbers.
@@ -99,42 +170,57 @@ The 6 macros are `walk_left`, `walk_right` (1 cell), `jump_left`,
 `jump_right`, `jump_up`, and `wait`. A macro ends when Willy is on the ground
 and in line with the cell grid.
 
-There is a second, less frequent request: jev selects the **target key**. The
-code sends it at the start, after each collected key, and after 12 decisions
-with no new place (that key is then left out).
+There is a second, less frequent request: jev selects the **target** (a key,
+or a switch in the two caverns that have switches). The code sends it at the
+start, after each collected key, and after 12 decisions with no new place
+(that target is then left out).
+
+### Valid moves
+
+Jev gets only the moves that are valid. A move is not valid in three cases:
+
+1. The move kills Willy.
+2. The move is a dead end: Willy is alive after it, but then he cannot avoid
+   a death. To find this, the code looks for one sequence of 12 macros that
+   keeps Willy alive. If there is none, the move is a dead end. Example: a
+   guardian follows Willy 1 cell behind him toward a wall. Each step is safe,
+   but after 5 steps no move is safe. This check asks only "can Willy stay
+   alive?". It does not look at keys or at the portal, and it does not select
+   a move. It is the part of the design that is nearest to a search.
+3. The move has no effect: Willy stays in the same place. `wait` is valid
+   only when something can change (a guardian is near, or Willy is on a
+   crumbling floor).
+
+If no valid move is left, jev gets the best moves that remain, in this
+sequence: moves with no effect, then dead end moves (with a warning), and
+only then all moves. The first version of this filter had an error: it gave
+jev all 6 moves too early. That version made the 200-run table.
 
 ### What the code does and what jev does
 
-The code does the geometry and the safety. Jev makes the decisions.
-
 | The code | Jev |
 | --- | --- |
-| Reads positions and changes them into facts | Selects the target key |
-| Tries each macro and gives its result | Selects each move |
-| Removes a macro that kills Willy | |
+| Reads positions and changes them into facts | Selects the target |
+| Tries each macro and gives its true result | Selects each move |
+| Does not offer a move that is not valid | |
 | Remembers the places and the moves that Willy tried | |
-
-The code removes a macro in two cases. The macro kills Willy directly. Or the
-macro is a dead end: Willy is alive after it, but no sequence of 12 macros
-keeps him alive. This check asks only "can Willy stay alive?". It does not
-look for the target, thus it is not a search for a route. It is the part of
-the design that is nearest to a search.
 
 ## The data that we give to jev
 
 Jev reads text only. It cannot read a screenshot. Jev is weak with
 coordinates, with counts, and with large states. Thus the state gives
-positions relative to Willy, in words and small numbers, and it contains only
-the facts that the questions need.
+positions relative to Willy, in words and small numbers.
 
-All examples below are from the recorded run `demo/cavern-02-the-cold-room.jsonl`.
-The exact text of all questions is in `jevmanic/brain.py`. The state encoders
-are in `jevmanic/describe.py`.
+All examples below are from the recorded run
+`demo/cavern-02-the-cold-room-free-mode.jsonl`. The exact text of all
+questions is in `jevmanic/brain.py`. The state encoders are in
+`jevmanic/describe.py`. The viewer shows the exact state and questions of
+each request.
 
-### Request 1: the target key
+### Request 1: the target
 
-The state has one entry for each key that is left. This example shows 2 of
-the 5 keys:
+The state has one entry for each key that is left, and for each switch that
+is not flipped. This example shows 2 of the 5 keys:
 
 ```json
 {
@@ -143,6 +229,7 @@ the 5 keys:
   },
   "keys": {
     "key_3": {
+      "what": "key",
       "side": "right",
       "horizontal_cells": 23,
       "horizontal_distance": "far",
@@ -154,6 +241,7 @@ the 5 keys:
       "one_way_trip": "yes: Willy falls through the crumbling floor and cannot go back up"
     },
     "key_5": {
+      "what": "key",
       "side": "right",
       "horizontal_cells": 16,
       "horizontal_distance": "far",
@@ -168,22 +256,24 @@ the 5 keys:
 
 | Field | Meaning |
 | --- | --- |
-| `side`, `horizontal_cells`, `horizontal_distance` | where the key is, left or right of Willy |
-| `height`, `floor_rows_apart` | the floor level of the key, compared with the floor of Willy. A key that hangs above the floor of Willy is on the same level. |
-| `rows_above_its_floor` | how high the key is above its floor |
+| `what` | key, or switch (with the fact that a switch changes the cavern) |
+| `side`, `horizontal_cells`, `horizontal_distance` | where it is, left or right of Willy |
+| `height`, `floor_rows_apart` | its floor level, compared with the floor of Willy. A key that hangs above the floor of Willy is on the same level. |
+| `rows_above_its_floor` | how high it is above its floor |
 | `floor_below_key` | floor, crumbling floor, or conveyor |
 | `between_walls`, `one_way_trip` | the key is in a shaft above a crumbling floor. Willy falls through and cannot go back up. |
 
-The question is a Choice with one option for each key. The instructions:
+The question is a Choice with one option for each entry. The instructions:
 
-> Willy is a miner in a platform game. He must collect all keys. Select the key that Willy goes to next. `keys` gives facts about each key relative to Willy. Willy can climb only 2 rows with one jump, thus a key on a much higher floor needs a long route. Apply these rules in order. Rule 1: do not select a key that has `one_way_trip`, if a different key is left. Willy cannot come back from it, thus it must be the last key. Rule 2: prefer the key with the smallest `floor_rows_apart`. Rule 3: if two keys are equal, prefer the key with the smallest `horizontal_cells`.
+> Willy is a miner in a platform game. He must collect all keys. Willy can climb only 2 rows with one jump. `keys` gives facts about each key or switch relative to Willy. Select the key or switch that is the best for Willy to get next.
 
-The answer in the example: `key_5`, probability 1.00. This request used
-962 input tokens.
+The answer in the example: `key_4`, confidence
+0.28. This request used 927 input
+tokens.
 
 ### Request 2: the move
 
-The state of decision 7 of the same run:
+The state of decision 3 of the same run:
 
 ```json
 {
@@ -193,46 +283,50 @@ The state of decision 7 of the same run:
   },
   "target": {
     "what": "selected key",
-    "side": "right",
-    "horizontal_cells": 9,
+    "side": "left",
+    "horizontal_cells": 11,
     "horizontal_distance": "far",
-    "height": "same level",
-    "floor_rows_apart": 0,
-    "rows_above_its_floor": 2
+    "height": "higher",
+    "floor_rows_apart": 1,
+    "rows_above_its_floor": 1,
+    "way_up": {
+      "side": "right",
+      "horizontal_cells": 4,
+      "rows_higher": 2
+    }
   },
   "keys_left": 5,
   "to_the_left": {
-    "first_thing": "nothing, the floor is clear",
-    "distance_cells": 6
+    "first_thing": "edge of the floor, then a drop",
+    "distance_cells": 1
   },
   "to_the_right": {
-    "first_thing": "nothing, the floor is clear",
-    "distance_cells": 6
+    "first_thing": "edge of the floor, then a drop",
+    "distance_cells": 3
   },
   "guardians": [
     {
       "side": "left",
-      "horizontal_cells": 5,
-      "horizontal_distance": "medium",
+      "horizontal_cells": 9,
+      "horizontal_distance": "far",
       "height": "higher",
       "moves": "away from Willy"
     },
     {
-      "side": "right",
-      "horizontal_cells": 4,
-      "horizontal_distance": "medium",
-      "height": "same level",
-      "moves": "toward Willy",
-      "willy_is_in_its_patrol_area": "no"
+      "side": "same column",
+      "horizontal_cells": 0,
+      "horizontal_distance": "adjacent",
+      "height": "lower",
+      "moves": "at Willy"
     }
   ],
   "air": "plenty",
-  "progress_measures": "distance to the target",
+  "progress_measures": "distance to the way up",
   "moves": {
     "walk_left": {
       "movement": "Willy moves 1 cells to the left",
       "progress": "farther",
-      "place": "visited before",
+      "place": "new place",
       "tried_from_here": "no"
     },
     "walk_right": {
@@ -242,26 +336,17 @@ The state of decision 7 of the same run:
       "tried_from_here": "no"
     },
     "jump_left": {
-      "movement": "Willy moves 5 cells to the left",
+      "movement": "Willy moves 5 cells to the left and 1 rows lower",
       "progress": "farther",
       "place": "new place",
-      "tried_from_here": "no"
-    },
-    "jump_up": {
-      "movement": "Willy stays in the same place",
-      "progress": "same",
-      "place": "visited before",
-      "tried_from_here": "yes"
-    },
-    "wait": {
-      "movement": "Willy stays in the same place",
-      "progress": "same",
-      "place": "visited before",
-      "tried_from_here": "no"
+      "tried_from_here": "no",
+      "ends_on": "crumbling floor"
     }
   },
-  "moves_that_kill_willy": {
-    "jump_right": "kills Willy: guardian"
+  "moves_not_offered": {
+    "jump_right": "kills Willy: fall or other cause",
+    "jump_up": "no effect: Willy stays in the same place",
+    "wait": "no effect: Willy stays in the same place"
   }
 }
 ```
@@ -269,24 +354,24 @@ The state of decision 7 of the same run:
 | Field | Meaning |
 | --- | --- |
 | `willy` | the direction that Willy looks in, and the tile below him |
-| `target` | the key that jev selected, or the portal. When the target is on a higher floor, it has a `way_up`: the nearest place where a jump gets to a higher platform. When the target is on a lower floor, it has a `way_down`: the nearest safe edge or crumbling floor. |
+| `target` | the key or switch that jev selected, or the portal. When the target is on a higher floor, it has a `way_up`: the nearest place where a jump gets to a higher platform. When the target is on a lower floor, it has a `way_down`: the nearest safe edge or crumbling floor. |
 | `to_the_left`, `to_the_right` | the first thing in the path of Willy on his level: wall, nasty, edge, or nothing, with the distance in cells |
-| `guardians` | the position of each guardian relative to Willy, and its direction. For a guardian on the level of Willy: is Willy in its patrol area, and where the patrol area ends. |
+| `guardians` | the position of each guardian relative to Willy, and its direction. For a horizontal guardian on the level of Willy: is Willy in its patrol area, and where the patrol area ends. For a vertical guardian: does its column cross the level of Willy, and is it above, below, or on that level now. |
 | `air` | plenty, low, or critical |
 | `progress_measures` | the place that `progress` measures the distance to: the target (same level), the way up (higher floor), or the way down (lower floor) |
-| `moves` | the true result of each safe macro, from the look-ahead |
+| `moves` | the true result of each valid macro, from the look-ahead |
 | `moves.*.movement` | where Willy is after the macro |
 | `moves.*.progress` | nearer, farther, or same |
-| `moves.*.place` | new place or visited before (memory) |
+| `moves.*.place` | new place, visited before, or visited many times (memory) |
 | `moves.*.tried_from_here` | did Willy select this macro at this place before (memory) |
-| `moves.*.ends_on`, `collects_key`, `completes_cavern` | only when they apply |
-| `moves_that_kill_willy` | each macro that jev does not get, with the cause: guardian, nasty, fall, or dead end |
+| `moves.*.ends_on`, `collects_key`, `completes_cavern`, `warning` | only when they apply |
+| `moves_not_offered` | each macro that jev does not get, with the cause: it kills Willy (guardian, nasty, fall, or dead end), or it has no effect |
 
 The request has 4 questions. Only the first one controls Willy.
 
-**`move` (Choice).** The options are the safe macros. The instructions:
+**`move` (Choice).** The options are the valid macros. The instructions:
 
-> Willy is a miner in a platform game. Select the best next move for Willy. Willy must go to the target. `moves` gives the true result of each move. All moves in `moves` are safe. `progress` tells if a move gets Willy nearer to the place that `progress_measures` names. Apply the first rule that matches. When two moves match the same rule, select the move whose `tried_from_here` is no, because a move that Willy tried here before did not help. A crumbling floor breaks a little each time Willy stands on it, and it can be the only way up. Thus when `target.height` is not lower, do not select wait on a crumbling floor, and prefer a jump to a walk when the move has `ends_on` crumbling floor. Rule 1: select a move that has `completes_cavern` or `collects_key`. Rule 2: when a guardian in `guardians` has `height` same level, moves toward Willy, and its `horizontal_cells` is 4 or less, select the jump toward that guardian if that jump is in `moves`, because the jump goes over the guardian. Do not walk away from it toward a wall. Rule 3: when `target.way_down.side` is Willy stands on it, select wait, because the crumbling floor breaks and Willy falls. Rule 4: select a move whose `progress` is nearer and whose `place` is new place. When `target.height` is higher, prefer a move that goes higher. When `target.height` is lower, prefer a move that goes lower. Rule 5: select a move whose `progress` is nearer. Rule 6: when a move toward the target is in `moves_that_kill_willy` with the cause guardian, select wait, because a guardian moves away. Rule 7: when a jump toward the target is in `moves_that_kill_willy` with the cause nasty, select the walk move that goes away from the target, because a nasty does not move and a jump from 1 cell farther back can go over it. Rule 8: select a move whose `place` is new place.
+> Willy is a miner in a platform game. He must get to the target, and he must stay alive. Select the move that is the best for Willy now. `moves` gives the true result of each possible move. All moves in `moves` are safe and have an effect. `moves_not_offered` gives the moves that Willy cannot make now, with the cause. The meaning of the facts: `progress` tells if a move gets Willy nearer to the place that `progress_measures` names. `place` tells how frequently Willy was at the place where the move ends. `tried_from_here` tells if Willy made this move from this place before. Knowledge of the game: Willy can climb only 2 rows with one jump. If Willy comes back to the same places again and again, the direct way is closed, and he must go a different way, also if that way goes away from the target first. A crumbling floor breaks a little each time Willy stands on it. It can be the only way up, and it is also a way down. A nasty does not move: if it stops a jump, a jump from a different cell can go over it. A guardian moves along its patrol area: Willy can wait for it to go away, jump over it, or go out of its patrol area.
 
 The criteria of the options:
 
@@ -303,18 +388,12 @@ time. The viewer shows their answers.
 - `danger_right` (Noul): If Willy walks 2 cells to the right now, does he touch a nasty or a guardian, or fall from an edge?
 - `danger_left` (Noul): If Willy walks 2 cells to the left now, does he touch a nasty or a guardian, or fall from an edge?
 - `threat` (Score): How large is the threat to Willy at this moment?
-  The levels of `threat`:
-  1. No nasty and no guardian is near Willy.
-  2. A nasty or a guardian is near, but it is not in the path of Willy.
-  3. A nasty or a guardian is in the path of Willy and 3 or more cells away.
-  4. A nasty or a guardian is 1 or 2 cells from Willy on his level.
 
-The answer in the example: `walk_right`, probability 0.91, confidence 0.88.
-The look-ahead removed `jump_right`, because the guardian kills Willy in that
-jump. This request used 1630 input tokens and took
-344 ms.
+The answer in the example: `walk_right`, confidence
+0.83. The probabilities: `walk_right` 0.88, `jump_left` 0.09, `walk_left` 0.03. This request used
+1362 input tokens and took 1187 ms.
 
-If only one macro is safe, the code runs it and makes no jev call.
+If only one macro is valid, the code runs it and makes no jev call.
 
 ### Other state encoders
 
@@ -327,49 +406,58 @@ The viewer has 4 encoders. `words` is the one above.
 | `ascii_full` | the full ASCII map of the cavern + the direction of the target |
 | `hybrid` | `words` + `ascii_local` |
 
-You can also run with no look-ahead ("rules" mode). Then the criteria of the
-`move` question give exact rules about the state, and the code does not check
-a macro before it runs. Willy dies quickly in this mode. It is there for
-comparison.
+You can also run with no look-ahead. Then the criteria of the `move` question
+give exact rules about the state, and the code does not check a macro before
+it runs. Willy dies quickly. It is there for comparison.
 
-## What we learned about the data for jev
+## What we learned about jev
 
+- **Jev is good at "apply this exact rule", and much weaker at "decide what
+  is good".** With our procedure, caverns 1 and 2 were 3 of 3. With the same
+  state and no procedure, they are 3 of 10 and 6 of 10.
 - **Jev cannot count the cells on an ASCII map.** `experiments/probe_gap.py`
   shows a map row with Willy, N empty cells, and a nasty. It asks "are there
   exactly 2 empty cells?". From the map, jev says yes with 0.61, 0.75, and
   0.60 for N = 1, 2, and 3. From a number, jev says yes with 0.03, 0.91, and
   0.03. A jump over a nasty is safe only at exactly 2 cells. Thus the code
   must give distances as numbers.
-- **Give exact rules in the criteria.** A criterion that gives only the
-  purpose of an option does not work well. The public Doom projects for jev
-  found the same.
 - **Field names are important.** Jev read `"rows_higher": 0` as "same level"
   when the thing was lower. One clear field is better than two fields.
 - **Two facts must not disagree.** When "nearer to the portal" said right and
-  "way down" said left, Willy went left and right with no end. One `progress`
-  measure for one purpose stopped that.
+  "way down" said left, Willy went left and right with no end.
+- **A true fact can mislead.** We gave the fact "after this move, these moves
+  are safe". It made a loop: `jump_left` made `jump_right` safe, and
+  `jump_right` took Willy back to the same place. We removed it.
 - **Give the cause, not only the result.** "This move kills Willy" made jev
-  wait at a nasty for 30 decisions. With the cause, the rules can tell jev to
-  wait for a guardian, or to go back 1 cell and jump over a nasty.
-- **Memory helps.** One step of look-ahead cannot see a loop. The facts
-  `place` and `tried_from_here` were sufficient for jev to get out of one.
-- **Low confidence comes before a failure.** When no rule matches the state,
-  the confidence goes below 0.5 and jev almost guesses.
-- One move request uses approximately 1700 input tokens and takes
+  wait at a nasty for 30 decisions. The cause (guardian or nasty) lets jev
+  know if a wait can help.
+- One move request uses approximately 1400 input tokens and takes
   approximately 300 ms from our computer.
 
+Designs that we measured and removed, because they were not better than free
+mode on caverns 1 to 4: one Noul question for each move (1 of 12 complete),
+and a question in which jev selects the next platform from the map (1 of 18).
+We also removed a "route mode": the code searched sequences of up to 32
+macros to find the platforms that Willy can get to, jev selected one, and the
+code walked the path. It completed caverns 2 and 3 in 9 and 10 of 10 runs,
+but the code walked 3459 macros and jev selected 175 single moves. That
+result came from the search, not from jev.
+
 `experiments/probe_encodings.py` measures how well jev reads each encoder.
-`experiments/probe_target.py` compares the target rules with a free choice.
+`experiments/probe_target.py` compares target rules with a free choice.
 
 ## Limits
 
-- The code reads horizontal guardians only. Cavern 5 (Eugene's Lair) has a
-  vertical guardian. The look-ahead still finds each death, because it runs
-  the real game, but the state does not describe that guardian.
-- The rules contain general knowledge of the game (jump over a guardian, keep
-  a crumbling floor, a one-way key is the last key). We tested them in three
-  caverns only.
-- The success rates come from a small number of runs.
+- The code now reads vertical guardians, Eugene, and the switches, and the
+  state gives facts about them. We did not measure the effect of these facts
+  yet. The 200-run table was made before them. The column and the rows of
+  Eugene are an assumption.
+- The Kong Beast, the Skylabs, and the light beam of cavern 19 have no facts
+  in the state. The look-ahead still removes a move that they make deadly,
+  because it runs the real game.
+- The cause of a death (guardian or nasty) is an estimate from the positions
+  at the death.
+- The success rates come from 10 runs for each cavern. They are not exact.
 
 ## Files
 
@@ -377,13 +465,13 @@ comparison.
 | --- | --- |
 | `emulator/` | ZX Spectrum emulator (C++) and the pybind11 binding `env.cpp` |
 | `roms/ManicMiner.z80` | game snapshot |
-| `jevmanic/game.py` | start of a cavern, memory reads, macros, look-ahead |
+| `jevmanic/game.py` | start of a cavern, memory reads, macros, look-ahead, dead end check |
 | `jevmanic/describe.py` | state encoders |
 | `jevmanic/brain.py` | questions and the jev calls |
 | `jevmanic/runner.py` | live run, log file, replay |
 | `jevmanic/server.py`, `jevmanic/web/` | viewer |
 | `jevmanic/cli.py` | live run in the terminal |
-| `experiments/` | tests of how well jev reads a state |
+| `experiments/` | measurement, diagnosis, and tests of how well jev reads a state |
 | `demo/` | recorded complete runs, in git |
 | `runs/` | log files of your runs (JSON Lines), not in git |
 
