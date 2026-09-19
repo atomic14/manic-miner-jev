@@ -1,0 +1,166 @@
+{
+  "label": "depth-8-cavern-3",
+  "options": {
+    "caverns": "3",
+    "runs": "10",
+    "label": "depth-8-cavern-3",
+    "parallel": "4",
+    "encoder": "words",
+    "depth": "8"
+  },
+  "settings": {
+    "extra_questions": true,
+    "memory": true,
+    "survival_depth": 8,
+    "free_target": true,
+    "free_move": true,
+    "two_ways_up": false,
+    "target_map": false,
+    "hybrid_keys": false,
+    "map_key_text": true,
+    "forced_key_order": "",
+    "random_moves": false,
+    "key_decision_every": 0,
+    "brief_text": false,
+    "flexible_target": true,
+    "recent_moves": false
+  },
+  "caverns": [
+    {
+      "cavern": 3,
+      "name": "The Menagerie",
+      "runs": 10,
+      "complete": 9,
+      "mean_keys": 4.9,
+      "mean_decisions_complete": 64,
+      "tokens_per_call": 1725,
+      "low_confidence_rate": 0.38,
+      "mean_cost_usd": 0.0048,
+      "other_outcomes": {
+        "stuck: no progress": 1
+      }
+    }
+  ],
+  "runs": [
+    {
+      "cavern": 2,
+      "file": "depth-8-cavern-3/20260919-205407-cavern-03-the-menagerie-words-lookahead.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 66,
+      "tokens": 101058,
+      "cost_usd": 0.004244,
+      "mean_latency_ms": 320,
+      "low_confidence": 13,
+      "jev_calls": 58
+    },
+    {
+      "cavern": 2,
+      "file": "depth-8-cavern-3/20260919-205407-cavern-03-the-menagerie-words-lookahead-2.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 65,
+      "tokens": 93616,
+      "cost_usd": 0.003932,
+      "mean_latency_ms": 322,
+      "low_confidence": 15,
+      "jev_calls": 53
+    },
+    {
+      "cavern": 2,
+      "file": "depth-8-cavern-3/20260919-205407-cavern-03-the-menagerie-words-lookahead-3.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 63,
+      "tokens": 102362,
+      "cost_usd": 0.004299,
+      "mean_latency_ms": 314,
+      "low_confidence": 20,
+      "jev_calls": 59
+    },
+    {
+      "cavern": 2,
+      "file": "depth-8-cavern-3/20260919-205407-cavern-03-the-menagerie-words-lookahead-4.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 65,
+      "tokens": 93616,
+      "cost_usd": 0.003932,
+      "mean_latency_ms": 287,
+      "low_confidence": 16,
+      "jev_calls": 53
+    },
+    {
+      "cavern": 2,
+      "file": "depth-8-cavern-3/20260919-205428-cavern-03-the-menagerie-words-lookahead.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 4,
+      "decisions": 183,
+      "tokens": 257276,
+      "cost_usd": 0.010806,
+      "mean_latency_ms": 302,
+      "low_confidence": 101,
+      "jev_calls": 155
+    },
+    {
+      "cavern": 2,
+      "file": "depth-8-cavern-3/20260919-205430-cavern-03-the-menagerie-words-lookahead.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 65,
+      "tokens": 93616,
+      "cost_usd": 0.003932,
+      "mean_latency_ms": 306,
+      "low_confidence": 16,
+      "jev_calls": 53
+    },
+    {
+      "cavern": 2,
+      "file": "depth-8-cavern-3/20260919-205431-cavern-03-the-menagerie-words-lookahead.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 63,
+      "tokens": 102262,
+      "cost_usd": 0.004295,
+      "mean_latency_ms": 475,
+      "low_confidence": 18,
+      "jev_calls": 59
+    },
+    {
+      "cavern": 2,
+      "file": "depth-8-cavern-3/20260919-205431-cavern-03-the-menagerie-words-lookahead-2.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 63,
+      "tokens": 102362,
+      "cost_usd": 0.004299,
+      "mean_latency_ms": 308,
+      "low_confidence": 17,
+      "jev_calls": 59
+    },
+    {
+      "cavern": 2,
+      "file": "depth-8-cavern-3/20260919-205452-cavern-03-the-menagerie-words-lookahead.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 63,
+      "tokens": 102354,
+      "cost_usd": 0.004299,
+      "mean_latency_ms": 314,
+      "low_confidence": 18,
+      "jev_calls": 59
+    },
+    {
+      "cavern": 2,
+      "file": "depth-8-cavern-3/20260919-205455-cavern-03-the-menagerie-words-lookahead.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 63,
+      "tokens": 102262,
+      "cost_usd": 0.004295,
+      "mean_latency_ms": 310,
+      "low_confidence": 17,
+      "jev_calls": 59
+    }
+  ]
+}

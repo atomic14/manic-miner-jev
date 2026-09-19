@@ -490,11 +490,18 @@ it runs. Willy dies quickly. It is there for comparison.
 - **The dead end check gives much help.** Complete runs of 10, with the
   present configuration:
 
-  | Depth of the check | Central Cavern | The Cold Room | The Menagerie |
+  | Moves of the dead end check | Central Cavern | The Cold Room | The Menagerie |
   | --- | --- | --- | --- |
   | 0 (off) | 6 | 0 | 0 |
+  | 1 | 7 | 1 | 0 |
   | 2 | 10 | 4 | 1 |
+  | 4 | - | - | 6 |
+  | 6 | - | - | 9 |
+  | 8 | - | - | 9 |
   | 12 (the present value) | 10 | 4 | 10 |
+
+  A check of 1 move gives almost no gain. 2 moves are sufficient for Central
+  Cavern and The Cold Room. The Menagerie needs 6 moves.
 
   In The Menagerie at depth 2, all 9 deaths are at the same place, after 4 to
   6 decisions with no real choice: one trap that is 6 moves deep. The deep

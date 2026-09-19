@@ -1,0 +1,166 @@
+{
+  "label": "depth-4-cavern-3",
+  "options": {
+    "caverns": "3",
+    "runs": "10",
+    "label": "depth-4-cavern-3",
+    "parallel": "4",
+    "encoder": "words",
+    "depth": "4"
+  },
+  "settings": {
+    "extra_questions": true,
+    "memory": true,
+    "survival_depth": 4,
+    "free_target": true,
+    "free_move": true,
+    "two_ways_up": false,
+    "target_map": false,
+    "hybrid_keys": false,
+    "map_key_text": true,
+    "forced_key_order": "",
+    "random_moves": false,
+    "key_decision_every": 0,
+    "brief_text": false,
+    "flexible_target": true,
+    "recent_moves": false
+  },
+  "caverns": [
+    {
+      "cavern": 3,
+      "name": "The Menagerie",
+      "runs": 10,
+      "complete": 6,
+      "mean_keys": 4.6,
+      "mean_decisions_complete": 65,
+      "tokens_per_call": 1780,
+      "low_confidence_rate": 0.34,
+      "mean_cost_usd": 0.0037,
+      "other_outcomes": {
+        "Willy died": 4
+      }
+    }
+  ],
+  "runs": [
+    {
+      "cavern": 2,
+      "file": "depth-4-cavern-3/20260919-205407-cavern-03-the-menagerie-words-lookahead.jsonl",
+      "outcome": "Willy died",
+      "keys": 4,
+      "decisions": 52,
+      "tokens": 78055,
+      "cost_usd": 0.003278,
+      "mean_latency_ms": 281,
+      "low_confidence": 17,
+      "jev_calls": 43
+    },
+    {
+      "cavern": 2,
+      "file": "depth-4-cavern-3/20260919-205407-cavern-03-the-menagerie-words-lookahead-2.jsonl",
+      "outcome": "Willy died",
+      "keys": 4,
+      "decisions": 52,
+      "tokens": 78055,
+      "cost_usd": 0.003278,
+      "mean_latency_ms": 306,
+      "low_confidence": 17,
+      "jev_calls": 43
+    },
+    {
+      "cavern": 2,
+      "file": "depth-4-cavern-3/20260919-205407-cavern-03-the-menagerie-words-lookahead-3.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 65,
+      "tokens": 95106,
+      "cost_usd": 0.003994,
+      "mean_latency_ms": 300,
+      "low_confidence": 17,
+      "jev_calls": 54
+    },
+    {
+      "cavern": 2,
+      "file": "depth-4-cavern-3/20260919-205407-cavern-03-the-menagerie-words-lookahead-4.jsonl",
+      "outcome": "Willy died",
+      "keys": 4,
+      "decisions": 52,
+      "tokens": 78055,
+      "cost_usd": 0.003278,
+      "mean_latency_ms": 301,
+      "low_confidence": 17,
+      "jev_calls": 43
+    },
+    {
+      "cavern": 2,
+      "file": "depth-4-cavern-3/20260919-205423-cavern-03-the-menagerie-words-lookahead.jsonl",
+      "outcome": "Willy died",
+      "keys": 4,
+      "decisions": 52,
+      "tokens": 78055,
+      "cost_usd": 0.003278,
+      "mean_latency_ms": 301,
+      "low_confidence": 17,
+      "jev_calls": 43
+    },
+    {
+      "cavern": 2,
+      "file": "depth-4-cavern-3/20260919-205424-cavern-03-the-menagerie-words-lookahead.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 65,
+      "tokens": 95106,
+      "cost_usd": 0.003994,
+      "mean_latency_ms": 289,
+      "low_confidence": 17,
+      "jev_calls": 54
+    },
+    {
+      "cavern": 2,
+      "file": "depth-4-cavern-3/20260919-205424-cavern-03-the-menagerie-words-lookahead-2.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 65,
+      "tokens": 95106,
+      "cost_usd": 0.003994,
+      "mean_latency_ms": 505,
+      "low_confidence": 16,
+      "jev_calls": 54
+    },
+    {
+      "cavern": 2,
+      "file": "depth-4-cavern-3/20260919-205428-cavern-03-the-menagerie-words-lookahead.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 65,
+      "tokens": 95106,
+      "cost_usd": 0.003994,
+      "mean_latency_ms": 286,
+      "low_confidence": 18,
+      "jev_calls": 54
+    },
+    {
+      "cavern": 2,
+      "file": "depth-4-cavern-3/20260919-205440-cavern-03-the-menagerie-words-lookahead.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 65,
+      "tokens": 95106,
+      "cost_usd": 0.003994,
+      "mean_latency_ms": 295,
+      "low_confidence": 18,
+      "jev_calls": 54
+    },
+    {
+      "cavern": 2,
+      "file": "depth-4-cavern-3/20260919-205444-cavern-03-the-menagerie-words-lookahead.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 65,
+      "tokens": 95106,
+      "cost_usd": 0.003994,
+      "mean_latency_ms": 306,
+      "low_confidence": 17,
+      "jev_calls": 54
+    }
+  ]
+}
