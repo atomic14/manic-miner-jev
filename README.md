@@ -460,6 +460,13 @@ it runs. Willy dies quickly. It is there for comparison.
 - **The dead end check gives much help.** With the check off, Willy died in a
   trap in 19 of 20 runs, and The Cold Room was 0 of 10. A depth of 2 gives
   most of the gain (5 of 10). A depth of 12 is the present value (6 of 10).
+- **More memory made the results worse.** We gave jev the last 4 moves with
+  their results (`recent_moves`, `came_from`). The movement from left to
+  right and back did not change (32 % of the decisions with it and without
+  it). But jev selected a move that collects a key in 67 % of the cases, and
+  in 89 % without the memory. The Menagerie went from 9 of 10 to 5 of 10.
+  More text in the state takes weight away from the important facts. The
+  switch `recent-moves` of the measurement tool turns it on.
 - **The memory facts are not decisive.** Central Cavern is 9 of 10 with no
   memory facts, and 10 of 10 with them.
 - **Jev cannot count the cells on an ASCII map.** `experiments/probe_gap.py`

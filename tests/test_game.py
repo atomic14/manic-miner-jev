@@ -129,3 +129,17 @@ def test_dead_end_moves_stay_when_no_move_is_safe():
     state = describe.moves_state(snap, outcomes, snap.keys[0], set())
     assert set(state["moves"]) == {"walk_left"}
     assert "dead end" in state["moves"]["walk_left"]["warning"]
+
+
+def test_short_term_memory_in_words():
+    history = [
+        {"move": "jump_left", "dx": -1, "dy": 2, "collected_key": False},
+        {"move": "jump_up", "dx": 0, "dy": 0, "collected_key": True},
+    ]
+    state = describe.recent_state(history)
+    assert state["recent_moves"][0] == {
+        "move": "jump_left", "result": "Willy moved 1 cells to the left and 2 rows higher"}
+    assert state["recent_moves"][1]["result"] == "Willy stayed in the same place and collected a key"
+    # Willy went left and up, thus he came from the right and from a lower place.
+    assert state["came_from"] == {"side": "right", "height": "lower"}
+    assert describe.recent_state([])["recent_moves"].startswith("none")

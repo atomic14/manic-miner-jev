@@ -217,6 +217,12 @@ FREE_MOVE_INSTRUCTIONS = (
     "for it to go away, jump over it, or go out of its patrol area."
 )
 
+RECENT_MOVES_MEANING = (
+    " `recent_moves` gives the last moves of Willy with their results. The last "
+    "entry is the newest. `came_from` tells where Willy was before his last "
+    "change of place."
+)
+
 LOOK_AHEAD_CRITERIA = {
     "jump_right": "Jump to the right. The result is in `moves.jump_right`.",
     "jump_left": "Jump to the left. The result is in `moves.jump_left`.",
@@ -253,7 +259,7 @@ EXTRA_QUESTIONS = {
 }
 
 
-def move_questions(encoder: str, look_ahead: bool, offered=None, extras: bool = True, free: bool = False) -> dict:
+def move_questions(encoder: str, look_ahead: bool, offered=None, extras: bool = True, free: bool = False, recent: bool = False) -> dict:
     """The questions of one move request.
 
     `offered` is the list of macros that jev can select. In look-ahead mode
@@ -261,6 +267,9 @@ def move_questions(encoder: str, look_ahead: bool, offered=None, extras: bool = 
     """
     if look_ahead:
         instructions = FREE_MOVE_INSTRUCTIONS if free else LOOK_AHEAD_INSTRUCTIONS
+        if recent:
+            # The text explains these facts only when they are in the state.
+            instructions += RECENT_MOVES_MEANING
         criteria = LOOK_AHEAD_CRITERIA
     elif encoder in MAP_ONLY_ENCODERS:
         instructions, criteria = MAP_MOVE_INSTRUCTIONS, MAP_MOVE_CRITERIA

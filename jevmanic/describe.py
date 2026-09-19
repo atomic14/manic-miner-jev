@@ -425,15 +425,7 @@ def moves_state(snap: Snapshot, outcomes: dict, target, visited: set, tried: set
             # We know that this move is not valid, thus jev does not get it.
             removed[name] = "no effect: Willy stays in the same place"
             continue
-        if o.dx == 0 and o.dy == 0:
-            movement = "Willy stays in the same place"
-        else:
-            parts = []
-            if o.dx:
-                parts.append(f"{abs(o.dx)} cells to the {'right' if o.dx > 0 else 'left'}")
-            if o.dy:
-                parts.append(f"{abs(o.dy)} rows {'higher' if o.dy > 0 else 'lower'}")
-            movement = "Willy moves " + " and ".join(parts)
+        movement = movement_words(o.dx, o.dy)
         after = distance(o.x, o.y)
         progress = "nearer" if after < now else "farther" if after > now else "same"
         # A move that uses the way up or the way down is progress, also when
@@ -547,6 +539,43 @@ def words(snap: Snapshot, target=None) -> dict:
         "guardians": _guardians(snap),
         "air": _air_word(snap.air),
     }
+
+
+def movement_words(dx: int, dy: int, past: bool = False) -> str:
+    """The change of place in words. `dx` is cells to the right, `dy` is rows higher."""
+    verb = "moved" if past else "moves"
+    if dx == 0 and dy == 0:
+        return "Willy stayed in the same place" if past else "Willy stays in the same place"
+    parts = []
+    if dx:
+        parts.append(f"{abs(dx)} cells to the {'right' if dx > 0 else 'left'}")
+    if dy:
+        parts.append(f"{abs(dy)} rows {'higher' if dy > 0 else 'lower'}")
+    return f"Willy {verb} " + " and ".join(parts)
+
+
+def recent_state(history: list[dict]) -> dict:
+    """Short-term memory: the last moves of Willy with their results.
+
+    `history` has one entry for each move, the newest is the last:
+    {"move", "dx", "dy", "collected_key"}.
+    """
+    recent = []
+    for h in history:
+        result = movement_words(h["dx"], h["dy"], past=True)
+        if h.get("collected_key"):
+            result += " and collected a key"
+        recent.append({"move": h["move"], "result": result})
+    out = {"recent_moves": recent or "none: this is the first move"}
+    last = next((h for h in reversed(history) if h["dx"] or h["dy"]), None)
+    if last:
+        came = {}
+        if last["dx"]:
+            came["side"] = "left" if last["dx"] > 0 else "right"
+        if last["dy"]:
+            came["height"] = "lower" if last["dy"] > 0 else "higher"
+        out["came_from"] = came
+    return out
 
 
 def _public(way):

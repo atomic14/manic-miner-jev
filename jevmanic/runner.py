@@ -158,9 +158,13 @@ class Settings:
     survival_depth: int = SURVIVAL_DEPTH  # 0 = no dead end check
     free_target: bool = True  # False = the target question with our preference rules
     free_move: bool = True  # False = the move question with our decision procedure
+    # Short-term memory: the last moves and their results. It is off, because a
+    # measurement showed that it makes the results worse (see the README).
+    recent_moves: bool = False
 
 
 
+RECENT_MOVES = 4  # the number of moves in the short-term memory
 RETARGET_DECISIONS = 12  # select a different key after this number of decisions with no new place
 
 
@@ -229,6 +233,7 @@ async def play_live(
         # The number of visits of each place. This is the memory of Willy.
         visited = Counter({(first.willy_x, first.willy_y): 1})
         tried = set()  # (position, macro) that Willy selected before
+        history = []  # the last moves, for the short-term memory
         idle = 0
         while (outcome := _outcome(game, n, idle)) is None:
             snap = game.snapshot()
@@ -265,6 +270,8 @@ async def play_live(
 
             # 2. Move. Jev selects the macro.
             state = encode(snap, target)
+            if settings.recent_moves:
+                state = {**state, **describe.recent_state(history)}
             offered, removed = list(MACROS), {}
             if look_ahead:
                 outcomes = game.look_ahead(settings.survival_depth)
@@ -304,7 +311,8 @@ async def play_live(
                               else "only one move is valid")
             else:
                 questions = move_questions(
-                    encoder, look_ahead, offered, settings.extra_questions, settings.free_move
+                    encoder, look_ahead, offered, settings.extra_questions, settings.free_move,
+                    settings.recent_moves,
                 )
                 answer = await brain.ask(state, questions, "move")
                 tokens += answer.input_tokens
@@ -317,6 +325,15 @@ async def play_live(
                 yield "frame", game
             result = _result(game, n, game.tick_count - start, keys_at_start)
             yield "event", result
+            history.append(
+                {
+                    "move": record["macro"],
+                    "dx": result["willy"][0] - snap.willy_x,
+                    "dy": snap.willy_y - result["willy"][1],
+                    "collected_key": result["keys_collected"] > keys_at_start - len(snap.keys),
+                }
+            )
+            del history[:-RECENT_MOVES]
             place = tuple(result["willy"])
             since_new_place = 0 if place not in visited else since_new_place + 1
             visited[place] += 1
