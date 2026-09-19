@@ -186,3 +186,18 @@ def test_two_ways_up_are_facts_and_the_code_selects_none():
     # The old behaviour: the code selects one way up and measures the distance to it.
     old = describe.moves_state(snap, game.look_ahead(), target, Counter())
     assert old["progress_measures"] == "distance to the way up"
+
+
+def test_map_has_key_letters_conveyor_direction_and_a_legend():
+    game = Game()  # Central Cavern: 5 keys, and a conveyor that moves Willy to the left
+    snap = game.snapshot()
+    full = describe.ascii_full(snap, spaced=False)
+    text = "".join(full["map"])
+    assert all(letter in text for letter in "ABCDE") and "K" not in text
+    assert "<" in text and ">" not in text and "c" not in text
+    assert set(full["map_legend"]) == set(text)  # one legend entry for each symbol on the map
+    # A key keeps its letter after Willy collects a different key.
+    letters = dict(snap.key_letters)
+    assert game.snapshot().key_letters == letters
+    game.select_cavern(1)  # The Cold Room: the conveyor moves Willy to the right
+    assert ">" in "".join(describe.ascii_full(game.snapshot(), spaced=False)["map"])

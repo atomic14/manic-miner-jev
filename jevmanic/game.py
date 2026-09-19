@@ -133,6 +133,9 @@ class Snapshot:
     portal: tuple[int, int]  # top-left cell of the portal (2 x 2 cells)
     guardians: list[Guardian] = field(default_factory=list)
     switches: list[tuple[int, int]] = field(default_factory=list)  # switches that are not flipped
+    conveyor_direction: str = "left"  # the direction in which a conveyor moves Willy
+    # One letter for each key (A, B, C, ...). A key keeps its letter for the full run.
+    key_letters: dict = field(default_factory=dict)
     air: float = 1.0  # 1.0 = full, 0.0 = empty
     score: int = 0
     lives: int = 0
@@ -231,6 +234,8 @@ class Game:
         self.cavern = cavern
         self.restart()
         self.__dict__.pop("_switch_cells", None)
+        self._key_letters = {}
+        self._key_letters = {cell: "ABCDEFGH"[i] for i, cell in enumerate(self.snapshot().keys)}
         self.start_lives = self.emu.peek(ADDR_LIVES)
         self.start_cavern = self.emu.peek(ADDR_CAVERN)
 
@@ -368,6 +373,8 @@ class Game:
             portal=self._cell(self._word(ADDR_PORTAL_POS)),
             guardians=guardians,
             switches=self._switches(),
+            conveyor_direction="right" if emu.peek(ADDR_CONVEYOR_DIR) else "left",
+            key_letters=dict(getattr(self, "_key_letters", {})),
             air=(emu.peek(ADDR_AIR) - AIR_EMPTY) / (AIR_FULL - AIR_EMPTY),
             score=int(digits) if digits.isdigit() else 0,
             lives=emu.peek(ADDR_LIVES),

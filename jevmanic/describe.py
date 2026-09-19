@@ -25,18 +25,38 @@ from .game import (
     Snapshot,
 )
 
-LEGEND = {
-    "W": "Willy (2 cells wide, 2 cells high)",
-    "G": "guardian, kills Willy on contact",
-    "X": "nasty, kills Willy on contact",
-    "K": "key to collect",
-    "P": "exit portal",
-    "=": "floor",
-    "~": "crumbling floor",
-    "c": "conveyor",
-    "#": "wall",
-    ".": "empty space",
+# What each map cell means for Willy. The map legend has only the symbols
+# that are on the map.
+SYMBOL_MEANING = {
+    "W": "Willy. He is 2 cells wide and 2 cells high.",
+    "key": "Willy collects it when he touches it.",
+    "S": "a switch. Willy flips it when he touches it. A switch changes the cavern.",
+    "P": "the exit portal, 2 cells wide and 2 cells high. Willy can enter it when he has all keys.",
+    "G": "a guardian, 2 cells wide and 2 cells high. It moves. It kills Willy on contact.",
+    "X": "a nasty. It does not move. It kills Willy on contact.",
+    "=": "floor. Willy can stand on it. It does not stop a jump from below.",
+    "~": "crumbling floor. Willy can stand on it. It breaks a little each time Willy stands on it, and then it is gone.",
+    "<": "conveyor. Willy can stand on it. It moves Willy to the left.",
+    ">": "conveyor. Willy can stand on it. It moves Willy to the right.",
+    "#": "wall. It stops Willy. Willy can stand on top of it.",
+    ".": "empty space.",
 }
+
+
+def map_legend(rows: list[str], snap: Snapshot) -> dict:
+    """The meaning of each symbol that is on the map."""
+    present = set("".join(rows)) - {" "}
+    legend = {}
+    for symbol, meaning in SYMBOL_MEANING.items():
+        if symbol == "key":
+            for cell in snap.keys:
+                letter = snap.key_letters.get(cell, "K")
+                if letter in present:
+                    legend[letter] = f"key {letter}. " + meaning
+        elif symbol in present:
+            legend[symbol] = meaning
+    return legend
+
 
 LOOK_AHEAD_CELLS = 6  # how far the words encoder looks to the left and right
 MAX_JUMP_ROWS = 2  # a jump can reach a platform that is 2 rows higher
@@ -49,8 +69,9 @@ LOCAL_ROWS_DOWN = 3  # below the top row of Willy
 
 
 def _grid(snap: Snapshot) -> list[list[str]]:
-    """The tile map with the portal, keys, guardians, and Willy on it."""
-    grid = [list(row) for row in snap.tiles]
+    """The tile map with the keys, switches, guardians, portal, and Willy on it."""
+    conveyor = ">" if snap.conveyor_direction == "right" else "<"
+    grid = [[conveyor if ch == TILE_CONVEYOR else ch for ch in row] for row in snap.tiles]
 
     def put(x, y, ch, size=1):
         for dy in range(size):
@@ -58,11 +79,14 @@ def _grid(snap: Snapshot) -> list[list[str]]:
                 if 0 <= x + dx < COLS and 0 <= y + dy < ROWS:
                     grid[y + dy][x + dx] = ch
 
-    put(*snap.portal, "P", 2)
-    for kx, ky in snap.keys:
-        put(kx, ky, "K")
+    for cell in snap.keys:
+        put(*cell, snap.key_letters.get(cell, "K"))
+    for cell in snap.switches:
+        put(*cell, "S")
     for g in snap.guardians:
         put(g.x, g.y, "G", 2)
+    # The portal comes after the guardians, thus a guardian does not hide the exit.
+    put(*snap.portal, "P", 2)
     put(snap.willy_x, snap.willy_y, "W", 2)
     return grid
 
@@ -81,10 +105,11 @@ def _rows(grid, x0, x1, y0, y1, spaced):
 
 
 def ascii_full(snap: Snapshot, spaced=True) -> dict:
+    rows = _rows(_grid(snap), 0, COLS - 1, 0, ROWS - 1, spaced)
     return {
-        "map_legend": LEGEND,
+        "map_legend": map_legend(rows, snap),
         "map_note": "Each string is one row. The first row is the top of the cavern.",
-        "map": _rows(_grid(snap), 0, COLS - 1, 0, ROWS - 1, spaced),
+        "map": rows,
     }
 
 
@@ -93,13 +118,14 @@ def ascii_local(snap: Snapshot, spaced=True) -> dict:
     x1 = snap.willy_x + 1 + LOCAL_HALF_WIDTH
     y0 = snap.willy_y - LOCAL_ROWS_UP
     y1 = snap.willy_y + LOCAL_ROWS_DOWN
+    rows = _rows(_grid(snap), x0, x1, y0, y1, spaced)
     return {
-        "map_legend": LEGEND,
+        "map_legend": map_legend(rows, snap),
         "map_note": (
             "The map shows only the area near Willy. Each string is one row. "
             "The first row is the highest row. Willy is in the center."
         ),
-        "map": _rows(_grid(snap), x0, x1, y0, y1, spaced),
+        "map": rows,
     }
 
 
