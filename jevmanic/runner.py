@@ -162,6 +162,8 @@ class Settings:
     # none of them, and `progress` measures the distance to the target. It is
     # off, because a measurement showed that it is much worse (see the README).
     two_ways_up: bool = False
+    # The target request also has the full map of the cavern with its legend.
+    target_map: bool = False
     brief_text: bool = False  # the free mode text in short sentences (measured: worse)
     # The flexible target: jev gets the target question again when the situation
     # changes, it can keep or change the target, and each key has a short memory.
@@ -205,7 +207,8 @@ async def play_live(
     first = game.snapshot()
     keys_at_start = len(first.keys)
     # Each key keeps one name for the full run.
-    key_names = {cell: f"key_{i + 1}" for i, cell in enumerate(first.keys)}
+    # The name has the letter that the key has on the map.
+    key_names = {cell: f"key_{first.key_letters[cell]}" for cell in first.keys}
     # A switch is also a target that jev can select.
     key_names.update({cell: f"switch_{i + 1}" for i, cell in enumerate(first.switches)})
     header = {
@@ -225,7 +228,8 @@ async def play_live(
         ),
         "target_questions": questions_as_json(
             target_question(
-                list(key_names.values()), settings.free_target, settings.flexible_target, settings.brief_text
+                list(key_names.values()), settings.free_target, settings.flexible_target,
+                settings.brief_text, settings.target_map,
             )
         ),
         "started": time.time(),
@@ -296,8 +300,11 @@ async def play_live(
                         key_names,
                         memory,
                     )
+                    if settings.target_map:
+                        state = {**describe.ascii_full(snap, spaced=False), **state}
                     question = target_question(
-                        names, settings.free_target, settings.flexible_target, settings.brief_text
+                        names, settings.free_target, settings.flexible_target, settings.brief_text,
+                        settings.target_map,
                     )
                     answer = await brain.ask(state, question, "target")
                     tokens += answer.input_tokens

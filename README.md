@@ -547,6 +547,24 @@ result came from the search, not from jev.
 
 ## Open work
 
+- **The map of the cavern gives jev a better key decision.** A test that
+  plays no game (`experiments/probe_key_order.py`) asks "which key next?" in
+  13 situations of caverns 1 to 4. The reference is the key order of the
+  complete recorded runs. Correct next key: facts only 5 of 13, map only 8,
+  map and facts 12. In Central Cavern, jev selects key E first with the map.
+  That is the known good order (E, A, C, D, B). With the facts only, it
+  selects D first and gets E last.
+
+  In play (switch `target-map`), Willy has all 5 keys of Central Cavern at
+  decision 35 to 39. With the facts only, he has them at decision 62 to 66.
+  But the complete runs went from 10 of 10 to 7 of 10. The runs now fail
+  after the keys: on the way from the top right down to the portal, and on
+  the way from key E to the top floor. With the old order, key E was the
+  last key, and it is on the way to the portal. The move facts cannot yet
+  do the better plan. The switch is off until the moves can do it.
+
+  The map has a letter for each key, `<` or `>` for a conveyor, and a legend
+  that says what each symbol means for Willy.
 - **The target order is the open problem.** In The Cold Room, the full
   difference between rules mode (9 of 10) and free mode (4 to 6 of 10) is
   the order of the keys. We measured two prompt changes for it, 10 runs each:

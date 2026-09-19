@@ -74,11 +74,28 @@ BRIEF_TARGET_MEMORY_MEANING = (
 )
 
 
-def target_question(key_names: list[str], free: bool = False, memory: bool = False, brief: bool = False) -> dict:
+# The target text for a state that has the map of the cavern and the facts. A
+# test with no game play showed that jev selects a good next key in 12 of 13
+# situations with the map and the facts, and in 5 of 13 with the facts only.
+MAP_TARGET_INSTRUCTIONS = (
+    "Willy is a miner in a platform game. The map shows the cavern, and "
+    "`map_legend` tells what each symbol means. `keys` gives facts about each "
+    "key or switch relative to Willy. Willy must collect all keys and then go "
+    "into the exit portal. Willy can climb only 2 rows with one jump. He can "
+    "fall to a lower floor, but after a long fall he cannot climb back. A "
+    "crumbling floor breaks when Willy uses it, thus a way that goes across a "
+    "crumbling floor can be open only one time. Select the key or switch that "
+    "Willy gets next, in an order that lets him get all keys."
+)
+
+
+def target_question(key_names: list[str], free: bool = False, memory: bool = False, brief: bool = False, with_map: bool = False) -> dict:
     criteria = {name: f"The key or switch that `keys.{name}` describes." for name in key_names}
     instructions = FREE_TARGET_INSTRUCTIONS if free else TARGET_INSTRUCTIONS
     if free and brief:
         instructions = BRIEF_FREE_TARGET_INSTRUCTIONS
+    if free and with_map:
+        instructions = MAP_TARGET_INSTRUCTIONS
     if memory:
         # The text explains these facts only when they are in the state.
         instructions += BRIEF_TARGET_MEMORY_MEANING if brief else TARGET_MEMORY_MEANING
