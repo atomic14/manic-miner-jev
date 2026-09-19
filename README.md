@@ -59,9 +59,19 @@ keys and goes into the portal.
 Total: 26 of 200 runs. Jev completed 6 of the 20 caverns at least one
 time. Only cavern 9, which has 1 key, is reliable. The 200 runs cost $1.33.
 
-We measured this table before two corrections (see "Valid moves"). With the
-corrections, 10 runs each: cavern 1 is 3 of 10 and cavern 2 is 6 of 10. The
-numbers are near the table, thus the table is still a good reference.
+We measured this table before three corrections. Two are in "Valid moves".
+The third is the most important: the free mode instructions did not give the
+full goal ("collect all keys") and did not give the meaning of the facts
+`collects_key`, `completes_cavern`, `ends_on`, and `warning`. With the
+corrections, 10 runs each:
+
+| Cavern | Before | After |
+| --- | --- | --- |
+| 1 Central Cavern | 1 of 10 | **10 of 10**, 74 decisions |
+| 2 The Cold Room | 6 of 10 | 6 of 10 |
+
+We did not measure the other caverns again. The table above is thus a lower
+limit for them.
 
 Rules mode, 3 live runs for each cavern: cavern 1 is 3 of 3, cavern 2 is 3 of
 3, cavern 3 is 0 of 3, and cavern 4 is 2 of 3. We did not measure rules mode
@@ -423,9 +433,18 @@ it runs. Willy dies quickly. It is there for comparison.
 
 ## What we learned about jev
 
-- **Jev is good at "apply this exact rule", and much weaker at "decide what
-  is good".** With our procedure, caverns 1 and 2 were 3 of 3. With the same
-  state and no procedure, they are 3 of 10 and 6 of 10.
+- **Give jev the goal and the meaning of each fact.** In Central Cavern, the
+  state said that `jump_left` had `collects_key: true`, and jev selected
+  `walk_left` (0.51 against 0.44). The instructions did not say that Willy
+  must collect keys, and did not say what `collects_key` means. With the goal
+  and the meaning in the text, and with no rule about what to select, the
+  cavern went from 3 of 10 to 10 of 10 complete runs. The decisions per run
+  (74) are near the result of our procedure in rules mode (70).
+- **The dead end check gives much help.** With the check off, Willy died in a
+  trap in 19 of 20 runs, and The Cold Room was 0 of 10. A depth of 2 gives
+  most of the gain (5 of 10). A depth of 12 is the present value (6 of 10).
+- **The memory facts are not decisive.** Central Cavern is 9 of 10 with no
+  memory facts, and 10 of 10 with them.
 - **Jev cannot count the cells on an ASCII map.** `experiments/probe_gap.py`
   shows a map row with Willy, N empty cells, and a nasty. It asks "are there
   exactly 2 empty cells?". From the map, jev says yes with 0.61, 0.75, and

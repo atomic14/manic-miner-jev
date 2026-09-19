@@ -1,0 +1,153 @@
+{
+  "label": "goal-text",
+  "options": {
+    "caverns": "1",
+    "runs": "10",
+    "label": "goal-text",
+    "parallel": "5",
+    "encoder": "words"
+  },
+  "settings": {
+    "extra_questions": true,
+    "memory": true,
+    "survival_depth": 12,
+    "free_target": true,
+    "free_move": true
+  },
+  "caverns": [
+    {
+      "cavern": 1,
+      "name": "Central Cavern",
+      "runs": 10,
+      "complete": 10,
+      "mean_keys": 5,
+      "mean_decisions_complete": 74,
+      "tokens_per_call": 1452,
+      "low_confidence_rate": 0.44,
+      "mean_cost_usd": 0.0045,
+      "other_outcomes": {}
+    }
+  ],
+  "runs": [
+    {
+      "cavern": 0,
+      "file": "goal-text/20260919-172328-cavern-01-central-cavern-words-lookahead.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 74,
+      "tokens": 107435,
+      "cost_usd": 0.004512,
+      "mean_latency_ms": 300,
+      "low_confidence": 32,
+      "jev_calls": 74
+    },
+    {
+      "cavern": 0,
+      "file": "goal-text/20260919-172328-cavern-01-central-cavern-words-lookahead-2.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 74,
+      "tokens": 107435,
+      "cost_usd": 0.004512,
+      "mean_latency_ms": 293,
+      "low_confidence": 31,
+      "jev_calls": 74
+    },
+    {
+      "cavern": 0,
+      "file": "goal-text/20260919-172328-cavern-01-central-cavern-words-lookahead-3.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 74,
+      "tokens": 107435,
+      "cost_usd": 0.004512,
+      "mean_latency_ms": 299,
+      "low_confidence": 34,
+      "jev_calls": 74
+    },
+    {
+      "cavern": 0,
+      "file": "goal-text/20260919-172328-cavern-01-central-cavern-words-lookahead-4.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 74,
+      "tokens": 107739,
+      "cost_usd": 0.004525,
+      "mean_latency_ms": 297,
+      "low_confidence": 32,
+      "jev_calls": 74
+    },
+    {
+      "cavern": 0,
+      "file": "goal-text/20260919-172328-cavern-01-central-cavern-words-lookahead-5.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 74,
+      "tokens": 107435,
+      "cost_usd": 0.004512,
+      "mean_latency_ms": 307,
+      "low_confidence": 31,
+      "jev_calls": 74
+    },
+    {
+      "cavern": 0,
+      "file": "goal-text/20260919-172353-cavern-01-central-cavern-words-lookahead.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 74,
+      "tokens": 107435,
+      "cost_usd": 0.004512,
+      "mean_latency_ms": 299,
+      "low_confidence": 29,
+      "jev_calls": 74
+    },
+    {
+      "cavern": 0,
+      "file": "goal-text/20260919-172353-cavern-01-central-cavern-words-lookahead-2.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 74,
+      "tokens": 107435,
+      "cost_usd": 0.004512,
+      "mean_latency_ms": 310,
+      "low_confidence": 31,
+      "jev_calls": 74
+    },
+    {
+      "cavern": 0,
+      "file": "goal-text/20260919-172354-cavern-01-central-cavern-words-lookahead.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 74,
+      "tokens": 107435,
+      "cost_usd": 0.004512,
+      "mean_latency_ms": 303,
+      "low_confidence": 35,
+      "jev_calls": 74
+    },
+    {
+      "cavern": 0,
+      "file": "goal-text/20260919-172354-cavern-01-central-cavern-words-lookahead-2.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 74,
+      "tokens": 107435,
+      "cost_usd": 0.004512,
+      "mean_latency_ms": 307,
+      "low_confidence": 32,
+      "jev_calls": 74
+    },
+    {
+      "cavern": 0,
+      "file": "goal-text/20260919-172354-cavern-01-central-cavern-words-lookahead-3.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 74,
+      "tokens": 107495,
+      "cost_usd": 0.004515,
+      "mean_latency_ms": 318,
+      "low_confidence": 35,
+      "jev_calls": 74
+    }
+  ]
+}
