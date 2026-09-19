@@ -16,6 +16,7 @@ Options (all are optional):
     depth=12         depth of the dead end check, 0 = off
     no-extras        do not ask danger_left, danger_right, threat
     no-memory        do not give `place` and `tried_from_here`
+    brief-text       the free mode text in short sentences (measured: worse)
     rigid-target     ask for the target only when Willy collects it or gives up
     recent-moves     give the short-term memory `recent_moves` and `came_from`
     rules-move       move question with our decision procedure (comparison only)
@@ -54,6 +55,7 @@ def parse(argv):
         free_move="rules-move" not in flags,
         recent_moves="recent-moves" in flags,
         flexible_target="rigid-target" not in flags,
+        brief_text="brief-text" in flags,
     )
     if "depth" in options:
         settings.survival_depth = int(options["depth"])

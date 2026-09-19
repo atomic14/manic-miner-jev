@@ -460,6 +460,17 @@ it runs. Willy dies quickly. It is there for comparison.
 - **The dead end check gives much help.** With the check off, Willy died in a
   trap in 19 of 20 runs, and The Cold Room was 0 of 10. A depth of 2 gives
   most of the gain (5 of 10). A depth of 12 is the present value (6 of 10).
+- **A shorter prompt was worse.** We wrote the move text again with the same
+  content in short sentences and a "field: meaning" form (190 words, not
+  293). Central Cavern needed 89 decisions, not 71. The Menagerie went from
+  10 of 10 to 4 of 10. Jev reads full sentences better than a terse list.
+  The switch `brief-text` of the measurement tool turns it on.
+- **A less rigid target helped.** Jev now gets the target question again when
+  Willy collects a key, lands on a different floor level, or makes no
+  progress. It can keep or change the target, and each key has a short memory
+  (`decisions_used_for_it`, `gave_up_on_it`). The Menagerie went from 9 of 10
+  to 10 of 10, and cavern 4 from 3.5 to 4.0 keys. Jev kept the target in 363
+  of 421 requests.
 - **More memory made the results worse.** We gave jev the last 4 moves with
   their results (`recent_moves`, `came_from`). The movement from left to
   right and back did not change (32 % of the decisions with it and without

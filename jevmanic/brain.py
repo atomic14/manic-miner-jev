@@ -61,12 +61,27 @@ TARGET_MEMORY_MEANING = (
 )
 
 
-def target_question(key_names: list[str], free: bool = False, memory: bool = False) -> dict:
+BRIEF_FREE_TARGET_INSTRUCTIONS = (
+    "Willy is a miner in a platform game. He must collect all keys. One jump "
+    "climbs 2 rows at most. `keys` gives facts about each key or switch. Select "
+    "the best one for Willy to get next."
+)
+
+BRIEF_TARGET_MEMORY_MEANING = (
+    " `current_target`: Willy goes to this one now. `decisions_used_for_it`: "
+    "decisions that Willy used for it before. `gave_up_on_it`: times that Willy "
+    "made no progress toward it."
+)
+
+
+def target_question(key_names: list[str], free: bool = False, memory: bool = False, brief: bool = False) -> dict:
     criteria = {name: f"The key or switch that `keys.{name}` describes." for name in key_names}
-    instructions = FREE_TARGET_INSTRUCTIONS if free else TARGET_INSTRUCTIONS
+    instructions = BRIEF_FREE_TARGET_INSTRUCTIONS if free else TARGET_INSTRUCTIONS
+    if free and brief:
+        instructions = BRIEF_FREE_TARGET_INSTRUCTIONS
     if memory:
         # The text explains these facts only when they are in the state.
-        instructions += TARGET_MEMORY_MEANING
+        instructions += BRIEF_TARGET_MEMORY_MEANING if brief else TARGET_MEMORY_MEANING
     return {"target": Choice(instructions=instructions, criteria=criteria)}
 
 
@@ -228,6 +243,28 @@ FREE_MOVE_INSTRUCTIONS = (
     "for it to go away, jump over it, or go out of its patrol area."
 )
 
+# The same content in short sentences (190 words, not 293). A measurement
+# showed that it is worse: The Menagerie went from 10 of 10 to 4 of 10. It
+# stays for comparison (measurement switch "brief-text").
+BRIEF_FREE_MOVE_INSTRUCTIONS = (
+    "Willy is a miner in a platform game. Goal: collect all keys, then enter "
+    "the portal. Willy must stay alive. `target` is the key that Willy goes to "
+    "now, or the portal. Select the best move for Willy now. "
+    "`moves` gives the true result of each move that Willy can make. "
+    "`moves_not_offered` gives the moves that Willy cannot make, with the cause. "
+    "Fields of a move. `progress`: nearer to or farther from the place in "
+    "`progress_measures`. `place`: how frequently Willy was there before. "
+    "`tried_from_here`: Willy made this move here before. `collects_key`: Willy "
+    "gets a key. `completes_cavern`: Willy enters the portal. `ends_on`: the "
+    "floor after the move. `warning`: no move is safe after this move. "
+    "Game knowledge. One jump climbs 2 rows at most. If Willy comes back to the "
+    "same places, the direct way is closed. A different way can go away from "
+    "the target first. A crumbling floor breaks a little each time Willy stands "
+    "on it. A nasty does not move. A jump from a different cell can go over it. "
+    "A guardian moves along its patrol area. Willy can wait, jump over it, or "
+    "leave its area."
+)
+
 RECENT_MOVES_MEANING = (
     " `recent_moves` gives the last moves of Willy with their results. The last "
     "entry is the newest. `came_from` tells where Willy was before his last "
@@ -270,14 +307,16 @@ EXTRA_QUESTIONS = {
 }
 
 
-def move_questions(encoder: str, look_ahead: bool, offered=None, extras: bool = True, free: bool = False, recent: bool = False) -> dict:
+def move_questions(encoder: str, look_ahead: bool, offered=None, extras: bool = True, free: bool = False, recent: bool = False, brief: bool = False) -> dict:
     """The questions of one move request.
 
     `offered` is the list of macros that jev can select. In look-ahead mode
     it does not contain the macros that kill Willy.
     """
     if look_ahead:
-        instructions = FREE_MOVE_INSTRUCTIONS if free else LOOK_AHEAD_INSTRUCTIONS
+        instructions = BRIEF_FREE_MOVE_INSTRUCTIONS if free else LOOK_AHEAD_INSTRUCTIONS
+        if free and brief:
+            instructions = BRIEF_FREE_MOVE_INSTRUCTIONS
         if recent:
             # The text explains these facts only when they are in the state.
             instructions += RECENT_MOVES_MEANING

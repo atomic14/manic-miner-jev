@@ -158,6 +158,7 @@ class Settings:
     survival_depth: int = SURVIVAL_DEPTH  # 0 = no dead end check
     free_target: bool = True  # False = the target question with our preference rules
     free_move: bool = True  # False = the move question with our decision procedure
+    brief_text: bool = False  # the free mode text in short sentences (measured: worse)
     # The flexible target: jev gets the target question again when the situation
     # changes, it can keep or change the target, and each key has a short memory.
     flexible_target: bool = True
@@ -213,10 +214,15 @@ async def play_live(
         "encoder": encoder,
         "look_ahead": look_ahead,
         "questions": questions_as_json(
-            move_questions(encoder, look_ahead, extras=settings.extra_questions, free=settings.free_move)
+            move_questions(
+                encoder, look_ahead, extras=settings.extra_questions, free=settings.free_move,
+                recent=settings.recent_moves, brief=settings.brief_text,
+            )
         ),
         "target_questions": questions_as_json(
-            target_question(list(key_names.values()), settings.free_target, settings.flexible_target)
+            target_question(
+                list(key_names.values()), settings.free_target, settings.flexible_target, settings.brief_text
+            )
         ),
         "started": time.time(),
     }
@@ -286,7 +292,9 @@ async def play_live(
                         key_names,
                         memory,
                     )
-                    question = target_question(names, settings.free_target, settings.flexible_target)
+                    question = target_question(
+                        names, settings.free_target, settings.flexible_target, settings.brief_text
+                    )
                     answer = await brain.ask(state, question, "target")
                     tokens += answer.input_tokens
                     previous = target
@@ -345,7 +353,7 @@ async def play_live(
             else:
                 questions = move_questions(
                     encoder, look_ahead, offered, settings.extra_questions, settings.free_move,
-                    settings.recent_moves,
+                    settings.recent_moves, settings.brief_text,
                 )
                 answer = await brain.ask(state, questions, "move")
                 tokens += answer.input_tokens
