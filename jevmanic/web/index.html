@@ -306,7 +306,7 @@ function showTarget(t) {
 
 function showDecision(d) {
   showTarget(d.target);
-  $("d-n").textContent = "#" + d.n + (d.forced ? " (only one safe macro: no jev call)" : "");
+  $("d-n").textContent = "#" + d.n + (d.forced ? ` (no jev call: ${d.forced_reason || "only one move is valid"})` : "");
   $("d-conf").textContent = d.confidence.toFixed(2);
   $("bars").innerHTML = (d.no_safe_move ? `<div class="outcome-bad">No safe move: all 6 macros kill Willy. Jev got all of them.</div>` : "") +
     MACROS.map(m => (d.removed && d.removed[m] && !d.no_safe_move)

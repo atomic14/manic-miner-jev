@@ -290,11 +290,18 @@ async def play_live(
                 "no_safe_move": look_ahead and offered == list(MACROS) and len(removed) == len(MACROS),
                 "target_cell": list(describe.target_cell(snap, target)),
             }
-            if len(offered) == 1:
-                # Only one macro is safe. A jev call is not necessary.
-                record.update(forced=True, macro=offered[0], probabilities={offered[0]: 1.0},
+            same_result = look_ahead and len(offered) > 1 and len(
+                {(o.x, o.y, o.keys_collected, o.complete) for m, o in outcomes.items() if m in offered}
+            ) == 1
+            if len(offered) == 1 or same_result:
+                # There is no decision to make: only one macro is valid, or all
+                # valid macros have the same result (Willy is in the air).
+                macro = "wait" if same_result and "wait" in offered else offered[0]
+                record.update(forced=True, macro=macro, probabilities={macro: 1.0},
                               confidence=1.0, latency_ms=0, input_tokens=0, model="none",
-                              nouls={}, scores={}, state=state)
+                              nouls={}, scores={}, state=state,
+                              forced_reason="all valid moves have the same result" if same_result
+                              else "only one move is valid")
             else:
                 questions = move_questions(
                     encoder, look_ahead, offered, settings.extra_questions, settings.free_move
