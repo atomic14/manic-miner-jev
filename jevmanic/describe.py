@@ -237,8 +237,8 @@ def _floor_row_under(snap: Snapshot, x: int, y: int, width: int = 1) -> int:
     return ROWS
 
 
-def _way_up(snap: Snapshot, preferred_side: str):
-    """The nearest place on the level of Willy where a jump gets to a higher platform.
+def _find_ways_up(snap: Snapshot) -> dict:
+    """The nearest place on each side where a jump gets Willy to a higher platform.
 
     The code looks along the level of Willy to the left and to the right. It
     stops at a wall, and at a gap that is too wide for a jump.
@@ -266,11 +266,45 @@ def _way_up(snap: Snapshot, preferred_side: str):
                     break
             if side in found:
                 break
+    return found
+
+
+def _way_up(snap: Snapshot, preferred_side: str):
+    """One way up, which the code selects: the one on the side of the target."""
+    found = _find_ways_up(snap)
     if not found:
         return "none on this level"
     # Give the way up on the side of the target, if there is one.
     other = "left" if preferred_side == "right" else "right"
     return found.get(preferred_side) or found.get(other) or min(found.values(), key=lambda w: w["horizontal_cells"])
+
+
+def _ways_up(snap: Snapshot, visited) -> dict:
+    """The way up on the left and the way up on the right, as facts for jev.
+
+    The code does not select one of them. In cavern 4, the code selected a
+    single tile in a corner as "the way up", and jev went into that trap in 9
+    of 10 runs. `willy_was_there` is a memory: a way up that Willy used before
+    and came back from did not help him.
+    """
+    found = _find_ways_up(snap)
+    out = {}
+    for side in ("left", "right"):
+        way = found.get(side)
+        if way is None:
+            out[side] = "none"
+            continue
+        x, _ = way["cell"]
+        top_row = snap.willy_y - way["rows_higher"]  # the row of Willy when he stands up there
+        visits = sum(
+            _visit_count(visited, px, top_row) for px in range(x - 2, x + 2)
+        ) if visited is not None else 0
+        out[side] = {
+            "horizontal_cells": way["horizontal_cells"],
+            "rows_higher": way["rows_higher"],
+            "willy_was_there": "never" if visits == 0 else "before" if visits < LOOP_VISITS else "many times",
+        }
+    return out
 
 
 def _relative(snap: Snapshot, x: int, y: int, width: int = 1) -> dict:
@@ -369,7 +403,7 @@ def keys_state(snap: Snapshot, key_names: dict, memory: dict | None = None) -> d
     return {"willy": {"standing_on": _standing_on(snap)}, "keys": facts}
 
 
-def _progress_reference(snap: Snapshot, target):
+def _progress_reference(snap: Snapshot, target, two_ways_up: bool = False):
     """The place that a move must get nearer to, and the name of that measure.
 
     Same level: the target. Higher floor: the way up. Lower floor: the way
@@ -383,7 +417,7 @@ def _progress_reference(snap: Snapshot, target):
         way = _way_down(snap, "left" if tx < snap.willy_x else "right")
         if isinstance(way, dict) and "cell" in way:
             return way["cell"], "distance to the way down"
-    if height == "higher":
+    if height == "higher" and not two_ways_up:
         side = "left" if tx < snap.willy_x else "right"
         way = _way_up(snap, side)
         if isinstance(way, dict):
@@ -407,9 +441,9 @@ def _visits_word(visited, x, y) -> str:
     return "visited many times"
 
 
-def moves_state(snap: Snapshot, outcomes: dict, target, visited: set, tried: set = frozenset(), memory: bool = True, mark_least_visited: bool = True) -> dict:
+def moves_state(snap: Snapshot, outcomes: dict, target, visited: set, tried: set = frozenset(), memory: bool = True, mark_least_visited: bool = True, two_ways_up: bool = False) -> dict:
     """The result of each macro, from the look-ahead. Deadly macros are separate."""
-    (tx, ty), measure = _progress_reference(snap, target)
+    (tx, ty), measure = _progress_reference(snap, target, two_ways_up)
     goal = target_cell(snap, target)
     same_level = _relative(snap, *goal, 1 if snap.keys else 2)["height"] == "same level"
 
@@ -543,13 +577,16 @@ def _air_word(air: float) -> str:
     return "critical"
 
 
-def words(snap: Snapshot, target=None) -> dict:
+def words(snap: Snapshot, target=None, visited=None, two_ways_up: bool = False) -> dict:
     target_words = _target(snap, target)
     if target_words.get("height") == "lower":
         target_words["way_down"] = _public(_way_down(snap, target_words["side"]))
     elif target_words.get("height") == "higher":
         side = target_words["side"] if target_words["side"] in ("left", "right") else "right"
-        target_words["way_up"] = _public(_way_up(snap, side))
+        if two_ways_up:
+            target_words["ways_up"] = _ways_up(snap, visited)
+        else:
+            target_words["way_up"] = _public(_way_up(snap, side))
     return {
         "willy": {"facing": snap.willy_facing, "standing_on": _standing_on(snap)},
         "target": target_words,
@@ -603,8 +640,8 @@ def _public(way):
     return {k: v for k, v in way.items() if k != "cell"} if isinstance(way, dict) else way
 
 
-def hybrid(snap: Snapshot, target=None) -> dict:
-    return {**words(snap, target), **ascii_local(snap)}
+def hybrid(snap: Snapshot, target=None, visited=None, two_ways_up: bool = False) -> dict:
+    return {**words(snap, target, visited, two_ways_up), **ascii_local(snap)}
 
 
 def _with_target(snap: Snapshot, state: dict, target) -> dict:
@@ -621,11 +658,11 @@ def _with_target(snap: Snapshot, state: dict, target) -> dict:
     }
 
 
-def ascii_local_with_target(snap: Snapshot, target=None) -> dict:
+def ascii_local_with_target(snap: Snapshot, target=None, visited=None, two_ways_up: bool = False) -> dict:
     return _with_target(snap, ascii_local(snap), target)
 
 
-def ascii_full_with_target(snap: Snapshot, target=None) -> dict:
+def ascii_full_with_target(snap: Snapshot, target=None, visited=None, two_ways_up: bool = False) -> dict:
     return _with_target(snap, ascii_full(snap), target)
 
 

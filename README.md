@@ -465,6 +465,14 @@ it runs. Willy dies quickly. It is there for comparison.
   293). Central Cavern needed 89 decisions, not 71. The Menagerie went from
   10 of 10 to 4 of 10. Jev reads full sentences better than a terse list.
   The switch `brief-text` of the measurement tool turns it on.
+- **A code guess can be better than two honest facts.** In cavern 4, the
+  code selects a single tile in a corner as "the way up", `progress` points
+  to it, and Willy goes into that trap in each run. We gave jev the way up on
+  the left and on the right as facts, and measured `progress` to the target.
+  Cavern 4 got its first complete run, but Central Cavern went from 10 of 10
+  to 5 of 10, and The Menagerie from 10 of 10 to 1 of 10. The one reference
+  that the code selects does important work. The switch `two-ways-up` of the
+  measurement tool turns the two facts on.
 - **A less rigid target helped.** Jev now gets the target question again when
   Willy collects a key, lands on a different floor level, or makes no
   progress. It can keep or change the target, and each key has a short memory

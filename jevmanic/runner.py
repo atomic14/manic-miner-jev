@@ -158,6 +158,10 @@ class Settings:
     survival_depth: int = SURVIVAL_DEPTH  # 0 = no dead end check
     free_target: bool = True  # False = the target question with our preference rules
     free_move: bool = True  # False = the move question with our decision procedure
+    # Give the way up on the left and on the right as facts. The code selects
+    # none of them, and `progress` measures the distance to the target. It is
+    # off, because a measurement showed that it is much worse (see the README).
+    two_ways_up: bool = False
     brief_text: bool = False  # the free mode text in short sentences (measured: worse)
     # The flexible target: jev gets the target question again when the situation
     # changes, it can keep or change the target, and each key has a short memory.
@@ -310,14 +314,15 @@ async def play_live(
                 used_for[target] += 1
 
             # 2. Move. Jev selects the macro.
-            state = encode(snap, target)
+            state = encode(snap, target, visited, settings.two_ways_up)
             if settings.recent_moves:
                 state = {**state, **describe.recent_state(history)}
             offered, removed = list(MACROS), {}
             if look_ahead:
                 outcomes = game.look_ahead(settings.survival_depth)
                 extra = describe.moves_state(
-                    snap, outcomes, target, visited, tried, settings.memory, not settings.free_move
+                    snap, outcomes, target, visited, tried, settings.memory, not settings.free_move,
+                    settings.two_ways_up,
                 )
                 safe = list(extra["moves"])
                 removed = extra["moves_not_offered"]

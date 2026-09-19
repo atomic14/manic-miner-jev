@@ -168,3 +168,21 @@ def test_the_normal_questions_use_the_long_free_mode_text():
     assert target == brain.FREE_TARGET_INSTRUCTIONS + brain.TARGET_MEMORY_MEANING
     rules = brain.move_questions("words", True, free=False)["move"].instructions
     assert rules == brain.LOOK_AHEAD_INSTRUCTIONS
+
+
+def test_two_ways_up_are_facts_and_the_code_selects_none():
+    from collections import Counter
+
+    game = Game()  # Central Cavern: a platform is above on the right of the start
+    snap = game.snapshot()
+    target = snap.keys[-1]
+    state = describe.words(snap, target, Counter(), two_ways_up=True)
+    assert "way_up" not in state["target"]
+    ways = state["target"]["ways_up"]
+    assert ways["left"] == "none"
+    assert ways["right"]["rows_higher"] == 2 and ways["right"]["willy_was_there"] == "never"
+    moves = describe.moves_state(snap, game.look_ahead(), target, Counter(), two_ways_up=True)
+    assert moves["progress_measures"] == "distance to the target"
+    # The old behaviour: the code selects one way up and measures the distance to it.
+    old = describe.moves_state(snap, game.look_ahead(), target, Counter())
+    assert old["progress_measures"] == "distance to the way up"
