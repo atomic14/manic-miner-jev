@@ -561,9 +561,24 @@ result came from the search, not from jev.
   is not the cause. A test in which the code sets the key order (switch
   `key-order=EACDB`, no key request, the movement not changed) gives 10 of
   10 with the order E A C D B, and 9 of 10 with the old order A C D B E.
-  The switch `target-map` changes more than the key order: the state of the
-  key request, its text, and the map in each repeated key request. One of
-  these changes does the harm. We do not know yet which one.
+  We then changed one thing each time, in Central Cavern, 10 runs each:
+
+  | Configuration | Complete | Decisions |
+  | --- | --- | --- |
+  | The code sets the order E A C D B (the known good order) | 10 | 80 |
+  | The code sets the order A C D B E (the order of the facts-only runs) | 9 | 74 |
+  | Test A: jev selects the key with the map, at the start and at each collected key, with the normal text | 7 | 94 |
+  | The code sets the targets that jev selected in test A: E, then D, then B | 8 | 109 |
+
+  The movement does the good order with no problem. The text of the key
+  request is not the cause. The cause is the second key decision. With the
+  map, jev selects E first, which is correct. After E, it selects D with a
+  confidence of 0.86: D is only 5 cells away, and A is 20 cells away. But
+  Willy can get to the top floor only at its left end, thus A is the correct
+  next key. To see that, jev must follow the route on the map across four
+  floors. That is a task of more than one step, and the jev documentation
+  says that jev is weak at such tasks. With D as the target, the route along
+  the top floor is different, and 2 or 3 of 10 runs then fail after the keys.
 
   The map has a letter for each key, `<` or `>` for a conveyor, and a legend
   that says what each symbol means for Willy.

@@ -20,6 +20,7 @@ Options (all are optional):
     key-order=EACDB  a test: the code sets the key order, jev gets no key request
     hybrid-keys      the key decision uses the map; jev gets it at the start and
                      when Willy collects a key; then the run is in movement mode
+    normal-key-text  with the map: use the normal text of the key request
     key-every=25     with hybrid-keys: repeat the key decision after 25 decisions
     target-map       the target request also has the full map of the cavern
     brief-text       the free mode text in short sentences (measured: worse)
@@ -64,6 +65,7 @@ def parse(argv):
         brief_text="brief-text" in flags,
         target_map="target-map" in flags,
         hybrid_keys="hybrid-keys" in flags,
+        map_key_text="normal-key-text" not in flags,
         two_ways_up="two-ways-up" in flags,
     )
     if "key-order" in options:

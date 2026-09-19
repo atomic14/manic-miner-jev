@@ -169,6 +169,9 @@ class Settings:
     # in movement mode. `key_decision_every` repeats the key decision after
     # this number of decisions (0 = no repeat).
     hybrid_keys: bool = False
+    # The key request with the map uses its own text (MAP_TARGET_INSTRUCTIONS).
+    # False = the normal text of the key request, with no change.
+    map_key_text: bool = True
     # A test only: the code sets the key order (letters of the map, for example
     # "EACDB"). Jev gets no key request. The movement is not changed.
     forced_key_order: str = ""
@@ -238,7 +241,7 @@ async def play_live(
         "target_questions": questions_as_json(
             target_question(
                 list(key_names.values()), settings.free_target, settings.flexible_target,
-                settings.brief_text, settings.target_map or settings.hybrid_keys,
+                settings.brief_text, (settings.target_map or settings.hybrid_keys) and settings.map_key_text,
             )
         ),
         "started": time.time(),
@@ -334,7 +337,7 @@ async def play_live(
                         state = {**describe.ascii_full(snap, spaced=False), **state}
                     question = target_question(
                         names, settings.free_target, settings.flexible_target, settings.brief_text,
-                        settings.target_map or settings.hybrid_keys,
+                        (settings.target_map or settings.hybrid_keys) and settings.map_key_text,
                     )
                     answer = await brain.ask(state, question, "target")
                     tokens += answer.input_tokens
