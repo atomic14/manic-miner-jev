@@ -14,6 +14,7 @@ end record.
 """
 
 import json
+import random
 import re
 from collections import Counter
 import time
@@ -175,6 +176,8 @@ class Settings:
     # A test only: the code sets the key order (letters of the map, for example
     # "EACDB"). Jev gets no key request. The movement is not changed.
     forced_key_order: str = ""
+    # A base for comparison: a random choice from the valid moves, with no jev call.
+    random_moves: bool = False
     key_decision_every: int = 0
     brief_text: bool = False  # the free mode text in short sentences (measured: worse)
     # The flexible target: jev gets the target question again when the situation
@@ -395,6 +398,11 @@ async def play_live(
                               nouls={}, scores={}, state=state,
                               forced_reason="all valid moves have the same result" if same_result
                               else "only one move is valid")
+            elif settings.random_moves:
+                macro = random.choice(offered)
+                record.update(macro=macro, probabilities={m: 1 / len(offered) for m in offered},
+                              confidence=0.0, latency_ms=0, input_tokens=0, model="random",
+                              nouls={}, scores={}, state=state)
             else:
                 questions = move_questions(
                     encoder, look_ahead, offered, settings.extra_questions, settings.free_move,

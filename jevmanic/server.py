@@ -114,7 +114,8 @@ class Session:
             look_ahead = bool(msg.get("look_ahead", False))
             cavern = max(0, min(19, int(msg.get("cavern", 0))))
             rules = bool(msg.get("rules_mode", False))
-            settings = Settings(free_move=not rules, free_target=not rules)
+            depth = max(0, min(20, int(msg.get("dead_end_depth", 12))))
+            settings = Settings(free_move=not rules, free_target=not rules, survival_depth=depth)
             self.task = asyncio.create_task(
                 self.run(play_live(self.game, self.brain, encoder, look_ahead, cavern, settings))
             )

@@ -79,6 +79,12 @@
     <label for="encoder">State encoder</label>
     <select id="encoder"></select>
     <label title="The code tries each macro first. Jev gets the result of each macro. A macro that kills Willy is not an option."><input type="checkbox" id="lookahead" checked> look-ahead</label>
+    <label for="depth" title="The look-ahead first finds the true result of each single move. The dead end check then looks this number of moves further ahead: a move is not offered to jev if no sequence of that length keeps Willy alive. 0 = only the result of each single move.">dead end check</label>
+    <select id="depth" title="Number of moves that the dead end check looks ahead">
+      <option value="0">off</option><option value="1">1 move</option><option value="2">2 moves</option>
+      <option value="4">4 moves</option><option value="6">6 moves</option><option value="8">8 moves</option>
+      <option value="12" selected>12 moves</option><option value="16">16 moves</option>
+    </select>
     <label title="Off (normal): the decisions come from jev. On: jev gets the decision procedure that we wrote. Use it for comparison only."><input type="checkbox" id="rulesmode"> rules mode</label>
     <button class="primary" id="start">Start live run</button>
   </div>
@@ -210,7 +216,7 @@ function handle(msg) {
     $("mode").textContent = msg.mode === "live" ? "LIVE" : "REPLAY";
     $("mode").className = "badge " + msg.mode;
     $("questions").textContent = JSON.stringify(msg.questions, null, 2);
-    $("outcome").textContent = `${msg.cavern_name || "Central Cavern"} · ${msg.file} · encoder: ${msg.encoder} · ${msg.look_ahead ? "look-ahead" : "no look-ahead"} · ${msg.settings && !msg.settings.free_move ? "rules mode" : "free mode"}`;
+    $("outcome").textContent = `${msg.cavern_name || "Central Cavern"} · ${msg.file} · encoder: ${msg.encoder} · ${msg.look_ahead ? "look-ahead, dead end check " + (msg.settings ? msg.settings.survival_depth : 12) + " moves" : "no look-ahead"} · ${msg.settings && !msg.settings.free_move ? "rules mode" : "free mode"}`;
     $("outcome").className = "";
     updateStats();
   } else if (msg.type === "target") {
@@ -345,13 +351,14 @@ function updateStats() {
   } else if (!last) { $("s-keys").textContent = 0; $("s-air").textContent = "100%"; }
 }
 
-$("start").onclick = () => { setPaused(false); send({cmd: "start", encoder: $("encoder").value, look_ahead: $("lookahead").checked, rules_mode: $("rulesmode").checked, cavern: Number($("cavern").value)}); };
+$("start").onclick = () => { setPaused(false); send({cmd: "start", encoder: $("encoder").value, look_ahead: $("lookahead").checked, dead_end_depth: Number($("depth").value), rules_mode: $("rulesmode").checked, cavern: Number($("cavern").value)}); };
 $("replay").onclick = () => { if ($("runs").value) { setPaused(false); send({cmd: "replay", file: $("runs").value}); } };
 $("stop").onclick = () => send({cmd: "stop"});
 $("step").onclick = () => { setPaused(true, false); send({cmd: "step"}); };
 $("pause").onclick = () => setPaused(!paused);
 $("rungroup").onchange = showRunList;
 $("completeonly").onchange = showRunList;
+$("lookahead").onchange = () => { $("depth").disabled = !$("lookahead").checked; };
 $("speed").onchange = () => send({cmd: "speed", value: $("speed").value});
 function setPaused(value, tell = true) {
   paused = value; $("pause").textContent = paused ? "Resume" : "Pause";

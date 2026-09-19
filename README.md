@@ -44,6 +44,18 @@ is complete when Willy has all keys and goes into the portal.
 One complete run costs approximately $0.004. We measured only these caverns
 with the present configuration. They have horizontal guardians only.
 
+**The base for comparison: a random player.** It gets the same valid moves as
+jev (the same look-ahead and dead end check) and selects one at random. 30
+runs for each cavern, with no jev call:
+
+| Cavern | Random player | Jev |
+| --- | --- | --- |
+| 1 Central Cavern | 0 of 30, 0.3 keys | 8 to 10 of 10, 5 keys |
+| 2 The Cold Room | 1 of 30, 1.3 keys | 4 to 6 of 10, 3.5 keys |
+| 3 The Menagerie | 0 of 30, 0.6 keys | 9 to 10 of 10, 5 keys |
+
+Thus the look-ahead alone does not complete a cavern. The decisions of jev do.
+
 An older measurement of all 20 caverns (200 runs, before the corrections of
 the prompt text) is a lower limit for the other caverns. Jev completed 6 of
 the 20 caverns at least one time. Only cavern 9, which has 1 key, was
@@ -149,6 +161,8 @@ Open http://127.0.0.1:8000.
   state encoder first. Keep the **look-ahead** box set and use the `words`
   encoder. The **rules mode** box gives jev the procedure that we wrote. Use
   it for comparison only.
+- **dead end check** selects how many moves the dead end check looks ahead
+  (off, 1, 2, 4, 6, 8, 12, or 16 moves). The default is 12.
 - **Pause**, **Step**, and **Speed** control the playback. One step is one
   decision. The game stops while jev makes a decision, thus real time is not
   necessary.
@@ -592,7 +606,9 @@ result came from the search, not from jev.
   made each move decision. Complete runs of 10, caverns 1 to 4: 7, 6, 9, 0.
   The default gives 8 to 10, 4 to 6, 10, 0. The runs need fewer decisions
   (The Cold Room 76, not 95 to 122; The Menagerie 54, not 66), but no more
-  runs are complete. The orders are in `experiments/results/`.
+  runs are complete. The full record (the input, the answer with the
+  reasons and the route plans, and the measurement) is in
+  [docs/planner-subagent.md](docs/planner-subagent.md).
 - **10 runs are not sufficient to compare two configurations that are near.**
   The same configuration (the code sets the order E A C D B in Central
   Cavern) gave 10 of 10 in one measurement and 7 of 10 in the next one.
@@ -666,6 +682,7 @@ result came from the search, not from jev.
 | `jevmanic/cli.py` | live run in the terminal |
 | `experiments/` | measurement, diagnosis, and tests of how well jev reads a state |
 | `experiments/results/` | the summaries of the measurements in this document |
+| `docs/planner-subagent.md` | the test with a reasoning model as the planner |
 | `demo/` | recorded complete runs, in git |
 | `runs/` | log files of your runs (JSON Lines), not in git |
 
