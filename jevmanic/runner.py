@@ -164,6 +164,12 @@ class Settings:
     two_ways_up: bool = False
     # The target request also has the full map of the cavern with its legend.
     target_map: bool = False
+    # Hybrid: two separate types of decision. The key decision uses the map. Jev
+    # gets it at the start and when Willy collects a key, and then the run is
+    # in movement mode. `key_decision_every` repeats the key decision after
+    # this number of decisions (0 = no repeat).
+    hybrid_keys: bool = False
+    key_decision_every: int = 0
     brief_text: bool = False  # the free mode text in short sentences (measured: worse)
     # The flexible target: jev gets the target question again when the situation
     # changes, it can keep or change the target, and each key has a short memory.
@@ -229,7 +235,7 @@ async def play_live(
         "target_questions": questions_as_json(
             target_question(
                 list(key_names.values()), settings.free_target, settings.flexible_target,
-                settings.brief_text, settings.target_map,
+                settings.brief_text, settings.target_map or settings.hybrid_keys,
             )
         ),
         "started": time.time(),
@@ -265,7 +271,15 @@ async def play_live(
             goals = snap.keys + snap.switches
             floor_row = snap.willy_y + 2
             gave_up = target is not None and since_new_place >= RETARGET_DECISIONS
-            if settings.flexible_target:
+            if settings.hybrid_keys:
+                repeat = settings.key_decision_every
+                ask = bool(snap.keys) and (
+                    target not in goals
+                    or len(goals) != goals_at_request  # Willy collected a key or flipped a switch
+                    or (repeat > 0 and n - n_at_request >= repeat)
+                )
+                candidates = list(goals)
+            elif settings.flexible_target:
                 if gave_up and target in goals:
                     gave_up_count[target] += 1
                 changed = (
@@ -300,11 +314,11 @@ async def play_live(
                         key_names,
                         memory,
                     )
-                    if settings.target_map:
+                    if settings.target_map or settings.hybrid_keys:
                         state = {**describe.ascii_full(snap, spaced=False), **state}
                     question = target_question(
                         names, settings.free_target, settings.flexible_target, settings.brief_text,
-                        settings.target_map,
+                        settings.target_map or settings.hybrid_keys,
                     )
                     answer = await brain.ask(state, question, "target")
                     tokens += answer.input_tokens

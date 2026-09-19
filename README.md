@@ -565,6 +565,21 @@ result came from the search, not from jev.
 
   The map has a letter for each key, `<` or `>` for a conveyor, and a legend
   that says what each symbol means for Willy.
+- **A separate key decision with the map (hybrid) gave no gain in play.**
+  Switch `hybrid-keys`: jev gets the key decision, with the map, at the start
+  and when Willy collects a key, and the run is then in movement mode.
+  `key-every=25` repeats the key decision after 25 decisions. Caverns 1 to 4,
+  complete runs of 10: 7, 0, 7, 0 with no repeat, and 9, 2, 6, 0 with the
+  repeat (the normal configuration: 10, 4 to 6, 10, 0). The key decisions
+  are good, but the runs fail in movement mode, where the better key order
+  shows weak move facts.
+- **One correction for one place harmed a different cavern.** After the last
+  key of Central Cavern, Willy stands on the crumbling floor that is his way
+  down, and `progress` says that a walk toward the portal is nearer. Jev
+  walks away and the run fails. We changed the measure for this case ("to
+  stay is nearer"). The Menagerie, which has many crumbling floors, went from
+  10 of 10 to 1 of 10. We removed the change. The error in Central Cavern is
+  still there.
 - **The target order is the open problem.** In The Cold Room, the full
   difference between rules mode (9 of 10) and free mode (4 to 6 of 10) is
   the order of the keys. We measured two prompt changes for it, 10 runs each:

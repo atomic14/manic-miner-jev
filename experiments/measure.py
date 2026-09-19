@@ -17,6 +17,9 @@ Options (all are optional):
     no-extras        do not ask danger_left, danger_right, threat
     no-memory        do not give `place` and `tried_from_here`
     two-ways-up      give the way up on the left and on the right (measured: worse)
+    hybrid-keys      the key decision uses the map; jev gets it at the start and
+                     when Willy collects a key; then the run is in movement mode
+    key-every=25     with hybrid-keys: repeat the key decision after 25 decisions
     target-map       the target request also has the full map of the cavern
     brief-text       the free mode text in short sentences (measured: worse)
     rigid-target     ask for the target only when Willy collects it or gives up
@@ -59,8 +62,11 @@ def parse(argv):
         flexible_target="rigid-target" not in flags,
         brief_text="brief-text" in flags,
         target_map="target-map" in flags,
+        hybrid_keys="hybrid-keys" in flags,
         two_ways_up="two-ways-up" in flags,
     )
+    if "key-every" in options:
+        settings.key_decision_every = int(options["key-every"])
     if "depth" in options:
         settings.survival_depth = int(options["depth"])
     return options, settings
