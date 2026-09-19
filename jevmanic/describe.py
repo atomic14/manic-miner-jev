@@ -1,0 +1,502 @@
+"""State encoders. Each encoder changes a game Snapshot into the `state`
+that we send to jev.
+
+Jev reads text only. Jev is weak with coordinates and with large states.
+Thus each encoder gives positions relative to Willy, and uses words together
+with small cell counts.
+
+Encoders:
+    words        a description in words, no map
+    ascii_local  a small ASCII map around Willy + the direction of the target
+    ascii_full   the full ASCII map of the cavern + the direction of the target
+    hybrid       words + ascii_local
+"""
+
+from .game import (
+    COLS,
+    ROWS,
+    TILE_CONVEYOR,
+    TILE_CRUMBLING,
+    TILE_EMPTY,
+    TILE_FLOOR,
+    TILE_NASTY,
+    TILE_WALL,
+    Snapshot,
+)
+
+LEGEND = {
+    "W": "Willy (2 cells wide, 2 cells high)",
+    "G": "guardian, kills Willy on contact",
+    "X": "nasty, kills Willy on contact",
+    "K": "key to collect",
+    "P": "exit portal",
+    "=": "floor",
+    "~": "crumbling floor",
+    "c": "conveyor",
+    "#": "wall",
+    ".": "empty space",
+}
+
+LOOK_AHEAD_CELLS = 6  # how far the words encoder looks to the left and right
+MAX_JUMP_ROWS = 2  # a jump can reach a platform that is 2 rows higher
+LOCAL_HALF_WIDTH = 8
+LOCAL_ROWS_UP = 4
+LOCAL_ROWS_DOWN = 3  # below the top row of Willy
+
+
+# -- ASCII maps ---------------------------------------------------------------
+
+
+def _grid(snap: Snapshot) -> list[list[str]]:
+    """The tile map with the portal, keys, guardians, and Willy on it."""
+    grid = [list(row) for row in snap.tiles]
+
+    def put(x, y, ch, size=1):
+        for dy in range(size):
+            for dx in range(size):
+                if 0 <= x + dx < COLS and 0 <= y + dy < ROWS:
+                    grid[y + dy][x + dx] = ch
+
+    put(*snap.portal, "P", 2)
+    for kx, ky in snap.keys:
+        put(kx, ky, "K")
+    for g in snap.guardians:
+        put(g.x, g.y, "G", 2)
+    put(snap.willy_x, snap.willy_y, "W", 2)
+    return grid
+
+
+def _rows(grid, x0, x1, y0, y1, spaced):
+    sep = " " if spaced else ""
+    out = []
+    for y in range(y0, y1 + 1):
+        # Cells outside the cavern show as wall.
+        cells = [
+            grid[y][x] if 0 <= x < COLS and 0 <= y < ROWS else TILE_WALL
+            for x in range(x0, x1 + 1)
+        ]
+        out.append(sep.join(cells))
+    return out
+
+
+def ascii_full(snap: Snapshot, spaced=True) -> dict:
+    return {
+        "map_legend": LEGEND,
+        "map_note": "Each string is one row. The first row is the top of the cavern.",
+        "map": _rows(_grid(snap), 0, COLS - 1, 0, ROWS - 1, spaced),
+    }
+
+
+def ascii_local(snap: Snapshot, spaced=True) -> dict:
+    x0 = snap.willy_x - LOCAL_HALF_WIDTH
+    x1 = snap.willy_x + 1 + LOCAL_HALF_WIDTH
+    y0 = snap.willy_y - LOCAL_ROWS_UP
+    y1 = snap.willy_y + LOCAL_ROWS_DOWN
+    return {
+        "map_legend": LEGEND,
+        "map_note": (
+            "The map shows only the area near Willy. Each string is one row. "
+            "The first row is the highest row. Willy is in the center."
+        ),
+        "map": _rows(_grid(snap), x0, x1, y0, y1, spaced),
+    }
+
+
+# -- Words ----------------------------------------------------------------------
+
+
+def _distance_word(cells: int) -> str:
+    if cells <= 1:
+        return "adjacent"
+    if cells <= 3:
+        return "near"
+    if cells <= 8:
+        return "medium"
+    return "far"
+
+
+def _tile(snap, x, y) -> str:
+    if y >= ROWS:
+        return TILE_FLOOR
+    if not (0 <= x < COLS and 0 <= y < ROWS):
+        return TILE_WALL
+    return snap.tiles[y][x]
+
+
+def _standing_on(snap: Snapshot) -> str:
+    if snap.airborne:
+        return "nothing, Willy is in the air"
+    below = {_tile(snap, snap.willy_x + dx, snap.willy_y + 2) for dx in (0, 1)}
+    if TILE_CONVEYOR in below:
+        return "conveyor"
+    if TILE_CRUMBLING in below:
+        return "crumbling floor"
+    return "floor"
+
+
+def _look(snap: Snapshot, direction: int) -> dict:
+    """What Willy meets first if he walks in one direction on his level."""
+    front = snap.willy_x + 1 if direction > 0 else snap.willy_x
+    for i in range(1, LOOK_AHEAD_CELLS + 1):
+        x = front + direction * i
+        body = [_tile(snap, x, snap.willy_y), _tile(snap, x, snap.willy_y + 1)]
+        if TILE_WALL in body:
+            return {"first_thing": "wall", "distance_cells": i}
+        if TILE_NASTY in body:
+            return {"first_thing": "nasty", "distance_cells": i}
+        under = _tile(snap, x, snap.willy_y + 2)
+        if under == TILE_NASTY:
+            return {"first_thing": "nasty in the floor", "distance_cells": i}
+        if under == TILE_EMPTY:
+            return {"first_thing": "edge of the floor, then a drop", "distance_cells": i}
+    return {"first_thing": "nothing, the floor is clear", "distance_cells": LOOK_AHEAD_CELLS}
+
+
+def _fall_is_safe(snap: Snapshot, x: int, floor_row: int) -> bool:
+    """Is the fall safe if Willy stands at column x and the floor goes away?
+
+    Willy is 2 cells wide. The fall is not safe if a nasty or the patrol of
+    a guardian is below one of his 2 columns, before the first solid tile.
+    """
+    for column in (x, x + 1):
+        for y in range(floor_row + 1, ROWS):
+            tile = _tile(snap, column, y)
+            if tile == TILE_NASTY:
+                return False
+            if tile != TILE_EMPTY:
+                break
+            # The patrol of a guardian. A guardian is 2 cells wide and 2 cells high.
+            for g in snap.guardians:
+                if g.min_x <= column <= g.max_x + 1 and g.y <= y <= g.y + 1:
+                    return False
+    return True
+
+
+def _way_down(snap: Snapshot, preferred_side: str = ""):
+    """The nearest safe place on the floor of Willy where he can go down.
+
+    That place is an edge of the floor or a crumbling floor. A crumbling
+    floor breaks when Willy stands on it, and then Willy falls. A place is
+    safe only if no nasty is in the fall path. The code prefers a place on
+    the side of the target.
+    """
+    floor_row = snap.willy_y + 2
+
+    def opening(x):
+        return _tile(snap, x, floor_row) in (TILE_EMPTY, TILE_CRUMBLING)
+
+    on_crumbling = TILE_CRUMBLING in (_tile(snap, snap.willy_x + dx, floor_row) for dx in (0, 1))
+    if on_crumbling and _fall_is_safe(snap, snap.willy_x, floor_row):
+        return {"what": "crumbling floor", "side": "Willy stands on it"}
+    best = None
+    for direction, side in ((-1, "left"), (+1, "right")):
+        # `x` is the column of Willy if he stands at the place.
+        for i in range(1, COLS):
+            x = snap.willy_x + direction * i
+            body = [_tile(snap, c, r) for c in (x, x + 1) for r in (snap.willy_y, snap.willy_y + 1)]
+            if TILE_WALL in body:
+                break
+            if TILE_NASTY in body:
+                continue  # Willy cannot stand here
+            # Willy falls only when the floor is gone below his 2 columns.
+            if opening(x) and opening(x + 1) and _fall_is_safe(snap, x, floor_row):
+                under = {_tile(snap, x, floor_row), _tile(snap, x + 1, floor_row)}
+                what = "crumbling floor" if TILE_CRUMBLING in under else "edge of the floor"
+                found = {"what": what, "side": side, "horizontal_cells": i, "cell": (x, snap.willy_y)}
+                # Prefer the way down on the side of the target. If not, Willy
+                # goes down on the wrong side and then comes back up: a loop.
+                if best is None or side == preferred_side or (
+                    best["side"] != preferred_side and i < best["horizontal_cells"]
+                ):
+                    best = found
+                break
+    if best is None:
+        return "none on this level"
+    if on_crumbling:
+        best["warning"] = "a nasty or a guardian is below Willy: do not wait here"
+    return best
+
+
+SOLID = (TILE_FLOOR, TILE_CRUMBLING, TILE_CONVEYOR, TILE_WALL)
+MAX_GAP_CELLS = 3  # a jump can go across a gap of this width
+
+
+def _floor_row_under(snap: Snapshot, x: int, y: int, width: int = 1) -> int:
+    """The row of the first solid tile below a thing. This is its floor level."""
+    for row in range(y + 1, ROWS):
+        if any(_tile(snap, x + dx, row) in SOLID for dx in range(width)):
+            return row
+    return ROWS
+
+
+def _way_up(snap: Snapshot, preferred_side: str):
+    """The nearest place on the level of Willy where a jump gets to a higher platform.
+
+    The code looks along the level of Willy to the left and to the right. It
+    stops at a wall, and at a gap that is too wide for a jump.
+    """
+    floor_row = snap.willy_y + 2
+    found = {}
+    for direction, side in ((-1, "left"), (+1, "right")):
+        front = snap.willy_x + 1 if direction > 0 else snap.willy_x
+        gap = 0
+        for i in range(1, COLS):
+            x = front + direction * i
+            if TILE_WALL in (_tile(snap, x, snap.willy_y), _tile(snap, x, snap.willy_y + 1)):
+                # A low wall is also a platform: Willy can jump onto its top.
+                top = snap.willy_y + 1 if _tile(snap, x, snap.willy_y) != TILE_WALL else snap.willy_y
+                if _tile(snap, x, top - 1) == TILE_EMPTY and _tile(snap, x, top - 2) == TILE_EMPTY:
+                    found[side] = {"side": side, "horizontal_cells": i, "rows_higher": floor_row - top, "cell": (x, snap.willy_y)}
+                break
+            gap = gap + 1 if _tile(snap, x, floor_row) == TILE_EMPTY else 0
+            if gap > MAX_GAP_CELLS:
+                break
+            for rows_up in range(1, MAX_JUMP_ROWS + 1):
+                y = floor_row - rows_up
+                if _tile(snap, x, y) in SOLID and all(_tile(snap, x, y - k) == TILE_EMPTY for k in (1, 2)):
+                    found[side] = {"side": side, "horizontal_cells": i, "rows_higher": rows_up, "cell": (x, snap.willy_y)}
+                    break
+            if side in found:
+                break
+    if not found:
+        return "none on this level"
+    # Give the way up on the side of the target, if there is one.
+    other = "left" if preferred_side == "right" else "right"
+    return found.get(preferred_side) or found.get(other) or min(found.values(), key=lambda w: w["horizontal_cells"])
+
+
+def _relative(snap: Snapshot, x: int, y: int, width: int = 1) -> dict:
+    """The position of a thing relative to Willy, in words and in cells.
+
+    `height` compares floor levels, not rows. A key that hangs above the floor
+    of Willy is on the same level: Willy gets it with a jump.
+    """
+    if x + width - 1 < snap.willy_x:
+        side, dx = "left", snap.willy_x - (x + width - 1)
+    elif x > snap.willy_x + 1:
+        side, dx = "right", x - (snap.willy_x + 1)
+    else:
+        side, dx = "same column", 0
+    willy_floor = snap.willy_y + 2
+    thing_floor = _floor_row_under(snap, x, y, width)
+    levels = willy_floor - thing_floor  # a positive value is a higher floor
+    if snap.airborne:
+        levels = 0 if abs(levels) <= 2 else levels
+    height = "higher" if levels > 0 else "lower" if levels < 0 else "same level"
+    return {
+        "side": side,
+        "horizontal_cells": dx,
+        "horizontal_distance": _distance_word(dx),
+        "height": height,
+        # Do not use a signed number here. A test showed that jev reads
+        # "rows_higher: 0" as "same level" when the thing is lower.
+        "floor_rows_apart": abs(levels),
+        "rows_above_its_floor": thing_floor - y - 1,
+    }
+
+
+def _target(snap: Snapshot, target) -> dict:
+    """The target: the key that jev selected, or the portal when no key is left."""
+    if not snap.keys or target is None or tuple(target) not in snap.keys:
+        if snap.keys:
+            return {"what": "no target selected"}
+        px, py = snap.portal
+        return {"what": "exit portal (all keys collected)", **_relative(snap, px, py, 2)}
+    return {"what": "selected key", **_relative(snap, *target)}
+
+
+def target_cell(snap: Snapshot, target):
+    """The cell that Willy must go to: the selected key, or the portal."""
+    if snap.keys and target is not None and tuple(target) in snap.keys:
+        return tuple(target)
+    return snap.portal
+
+
+def _key_facts(snap: Snapshot, x: int, y: int) -> dict:
+    """Facts about one key for the target question."""
+    floor = _floor_row_under(snap, x, y)
+    # Walls on the two sides of the key, in its row, not more than 2 cells away.
+    wall_left = any(_tile(snap, x - i, y) == TILE_WALL for i in (1, 2))
+    wall_right = any(_tile(snap, x + i, y) == TILE_WALL for i in (1, 2))
+    floor_type = {TILE_CRUMBLING: "crumbling floor", TILE_CONVEYOR: "conveyor"}.get(_tile(snap, x, floor), "floor")
+    facts = {**_relative(snap, x, y), "floor_below_key": floor_type}
+    if wall_left and wall_right:
+        facts["between_walls"] = "yes"
+        if floor_type == "crumbling floor":
+            facts["one_way_trip"] = "yes: Willy falls through the crumbling floor and cannot go back up"
+    return facts
+
+
+def keys_state(snap: Snapshot, key_names: dict) -> dict:
+    """The state for the question that selects the target key."""
+    return {
+        "willy": {"standing_on": _standing_on(snap)},
+        "keys": {key_names[k]: _key_facts(snap, *k) for k in snap.keys},
+    }
+
+
+def _progress_reference(snap: Snapshot, target):
+    """The place that a move must get nearer to, and the name of that measure.
+
+    Same level: the target. Higher floor: the way up. Lower floor: the way
+    down. One measure for one purpose: two measures that do not agree make
+    jev go left and right.
+    """
+    tx, ty = target_cell(snap, target)
+    width = 1 if snap.keys else 2
+    height = _relative(snap, tx, ty, width)["height"]
+    if height == "lower":
+        way = _way_down(snap, "left" if tx < snap.willy_x else "right")
+        if isinstance(way, dict) and "cell" in way:
+            return way["cell"], "distance to the way down"
+    if height == "higher":
+        side = "left" if tx < snap.willy_x else "right"
+        way = _way_up(snap, side)
+        if isinstance(way, dict):
+            return way["cell"], "distance to the way up"
+    return (tx, snap.willy_y if height == "same level" else ty), "distance to the target"
+
+
+def moves_state(snap: Snapshot, outcomes: dict, target, visited: set, tried: set = frozenset()) -> dict:
+    """The result of each macro, from the look-ahead. Deadly macros are separate."""
+    (tx, ty), measure = _progress_reference(snap, target)
+    goal = target_cell(snap, target)
+    same_level = _relative(snap, *goal, 1 if snap.keys else 2)["height"] == "same level"
+
+    def distance(x, y):
+        return abs(tx - x) + abs(ty - y)
+
+    now = distance(snap.willy_x, snap.willy_y)
+    moves, removed = {}, {}
+    for name, o in outcomes.items():
+        if o.dead:
+            removed[name] = f"kills Willy: {o.cause}"
+            continue
+        if o.dx == 0 and o.dy == 0:
+            movement = "Willy stays in the same place"
+        else:
+            parts = []
+            if o.dx:
+                parts.append(f"{abs(o.dx)} cells to the {'right' if o.dx > 0 else 'left'}")
+            if o.dy:
+                parts.append(f"{abs(o.dy)} rows {'higher' if o.dy > 0 else 'lower'}")
+            movement = "Willy moves " + " and ".join(parts)
+        after = distance(o.x, o.y)
+        progress = "nearer" if after < now else "farther" if after > now else "same"
+        # A move that uses the way up or the way down is progress, also when
+        # it goes past the reference cell.
+        if (measure.endswith("way up") and o.dy > 0) or (measure.endswith("way down") and o.dy < 0):
+            progress = "nearer"
+        # The target is on the level of Willy. A move that leaves this level
+        # is not progress, also when it goes in the direction of the target.
+        if same_level and o.dy != 0 and not (o.keys_collected or o.complete):
+            progress = "farther"
+        floor_after = {_tile(snap, o.x + dx, o.y + 2) for dx in (0, 1)}
+        result = {
+            "movement": movement,
+            "progress": progress,
+            "place": "visited before" if (o.x, o.y) in visited else "new place",
+            # Memory: did Willy select this move at this place before?
+            "tried_from_here": "yes" if (snap.willy_x, snap.willy_y, name) in tried else "no",
+        }
+        if TILE_CRUMBLING in floor_after:
+            result["ends_on"] = "crumbling floor"
+        if o.keys_collected:
+            result["collects_key"] = True
+        if o.complete:
+            result["completes_cavern"] = True
+        moves[name] = result
+    return {
+        "progress_measures": measure,
+        "moves": moves,
+        "moves_that_kill_willy": removed or "none",
+    }
+
+
+def _guardians(snap: Snapshot) -> list[dict]:
+    out = []
+    for g in snap.guardians:
+        rel = _relative(snap, g.x, g.y, 2)
+        if rel["side"] == "same column":
+            approach = "at Willy"
+        elif rel["side"] == g.moving:
+            approach = "away from Willy"
+        else:
+            approach = "toward Willy"
+        facts = {k: rel[k] for k in ("side", "horizontal_cells", "horizontal_distance", "height")}
+        facts["moves"] = approach
+        if rel["height"] == "same level":
+            # The patrol area: the columns that the guardian goes through.
+            left, right = g.min_x, g.max_x + 1
+            inside = snap.willy_x + 1 >= left and snap.willy_x <= right
+            facts["willy_is_in_its_patrol_area"] = "yes" if inside else "no"
+            if inside:
+                to_left, to_right = snap.willy_x + 1 - left + 1, right - snap.willy_x + 1
+                facts["patrol_area_ends"] = {"cells_to_the_left": to_left, "cells_to_the_right": to_right}
+        out.append(facts)
+    return out
+
+
+def _air_word(air: float) -> str:
+    if air > 0.5:
+        return "plenty"
+    if air > 0.2:
+        return "low"
+    return "critical"
+
+
+def words(snap: Snapshot, target=None) -> dict:
+    target_words = _target(snap, target)
+    if target_words.get("height") == "lower":
+        target_words["way_down"] = _public(_way_down(snap, target_words["side"]))
+    elif target_words.get("height") == "higher":
+        side = target_words["side"] if target_words["side"] in ("left", "right") else "right"
+        target_words["way_up"] = _public(_way_up(snap, side))
+    return {
+        "willy": {"facing": snap.willy_facing, "standing_on": _standing_on(snap)},
+        "target": target_words,
+        "keys_left": len(snap.keys),
+        "to_the_left": _look(snap, -1),
+        "to_the_right": _look(snap, +1),
+        "guardians": _guardians(snap),
+        "air": _air_word(snap.air),
+    }
+
+
+def _public(way):
+    """Remove the fields that are only for the code."""
+    return {k: v for k, v in way.items() if k != "cell"} if isinstance(way, dict) else way
+
+
+def hybrid(snap: Snapshot, target=None) -> dict:
+    return {**words(snap, target), **ascii_local(snap)}
+
+
+def _with_target(snap: Snapshot, state: dict, target) -> dict:
+    """Add the direction of the target to a map state.
+
+    The small map frequently shows no key. A test also showed that jev makes
+    many errors when it reads left and right from a map. Thus the code gives
+    the direction in words.
+    """
+    t = _target(snap, target)
+    return {
+        "target": {k: t[k] for k in ("what", "side", "height") if k in t},
+        **state,
+    }
+
+
+def ascii_local_with_target(snap: Snapshot, target=None) -> dict:
+    return _with_target(snap, ascii_local(snap), target)
+
+
+def ascii_full_with_target(snap: Snapshot, target=None) -> dict:
+    return _with_target(snap, ascii_full(snap), target)
+
+
+ENCODERS = {
+    "words": words,
+    "ascii_local": ascii_local_with_target,
+    "ascii_full": ascii_full_with_target,
+    "hybrid": hybrid,
+}

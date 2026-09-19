@@ -1,0 +1,333 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>jev plays Manic Miner</title>
+<style>
+  :root {
+    --bg: #0d0f14; --panel: #161a22; --line: #2a303c; --text: #d8dde6; --dim: #8892a2;
+    --accent: #00d7d7; --good: #00d700; --bad: #ff4d4d; --warn: #ffd700;
+    --walk_left: #4d8dff; --walk_right: #00b7ff; --jump_left: #ff8a3d; --jump_right: #ffb03d;
+    --jump_up: #ffe14d; --wait: #7a8496;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text);
+         font: 14px/1.45 -apple-system, "Segoe UI", sans-serif; }
+  header { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center;
+           padding: 10px 16px; border-bottom: 1px solid var(--line); }
+  h1 { font-size: 16px; margin: 0 12px 0 0; }
+  h1 span { color: var(--accent); }
+  .group { display: flex; gap: 6px; align-items: center; }
+  .group label { color: var(--dim); font-size: 12px; }
+  button, select { background: var(--panel); color: var(--text); border: 1px solid var(--line);
+                   border-radius: 5px; padding: 5px 10px; font: inherit; cursor: pointer; }
+  button:hover { border-color: var(--accent); }
+  button.primary { background: var(--accent); color: #001; border-color: var(--accent); font-weight: 600; }
+  select { max-width: 330px; }
+  #cavern { max-width: 230px; }
+  main { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 16px; padding: 16px; }
+  @media (max-width: 1000px) { main { grid-template-columns: 1fr; } }
+  .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 12px; }
+  .panel + .panel { margin-top: 14px; }
+  h2 { font-size: 12px; text-transform: uppercase; letter-spacing: .08em; color: var(--dim);
+       margin: 0 0 8px; display: flex; justify-content: space-between; align-items: baseline; }
+  h2 small { text-transform: none; letter-spacing: 0; }
+  canvas { width: 100%; image-rendering: pixelated; display: block; background: #000; border-radius: 4px; }
+  .stats { display: flex; flex-wrap: wrap; gap: 6px 18px; margin-top: 10px; }
+  .stat b { display: block; font-size: 17px; font-variant-numeric: tabular-nums; }
+  .stat span { color: var(--dim); font-size: 11px; text-transform: uppercase; letter-spacing: .06em; }
+  .badge { padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 700; letter-spacing: .06em; }
+  .badge.live { background: var(--bad); color: #fff; } .badge.replay { background: var(--warn); color: #220; }
+  .badge.idle { background: var(--line); color: var(--dim); }
+  #timeline { display: flex; align-items: flex-end; gap: 1px; height: 46px; overflow-x: auto; padding-bottom: 2px; }
+  #timeline div { flex: 0 0 7px; min-height: 4px; border-radius: 2px 2px 0 0; cursor: pointer; }
+  #timeline div.sel { outline: 2px solid #fff; }
+  #timeline div.dead { flex-basis: 10px; background: var(--bad) !important; height: 100% !important; }
+  .legend { display: flex; flex-wrap: wrap; gap: 4px 12px; margin-top: 6px; font-size: 11px; color: var(--dim); }
+  .legend i { display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin-right: 4px; }
+  .bar { display: grid; grid-template-columns: 92px 1fr 46px; gap: 8px; align-items: center; margin: 4px 0; }
+  .bar .name { font-family: ui-monospace, Menlo, monospace; font-size: 12.5px; }
+  .bar .track { height: 14px; background: #0b0d12; border-radius: 3px; overflow: hidden; }
+  .bar .fill { height: 100%; border-radius: 3px; transition: width .12s; }
+  .bar .val { text-align: right; font-variant-numeric: tabular-nums; color: var(--dim); }
+  .bar.chosen .name, .bar.chosen .val { color: #fff; font-weight: 700; }
+  .bar.chosen .name::before { content: "▶ "; color: var(--accent); }
+  .bar.removed .name { text-decoration: line-through; color: var(--bad); }
+  .bar.removed .reason { grid-column: 2 / 4; color: var(--bad); font-size: 12px; }
+  header label input { vertical-align: -2px; }
+  .meta { display: flex; flex-wrap: wrap; gap: 4px 16px; color: var(--dim); font-size: 12px; margin-top: 8px; }
+  .meta b { color: var(--text); font-weight: 600; }
+  pre { margin: 0; font: 12px/1.35 ui-monospace, Menlo, monospace; white-space: pre; overflow: auto;
+        max-height: 420px; color: #b9e6c9; }
+  details summary { cursor: pointer; color: var(--dim); font-size: 12px; text-transform: uppercase; letter-spacing: .08em; }
+  details pre { margin-top: 8px; color: #c9c2e6; white-space: pre-wrap; }
+  #pinned { color: var(--warn); cursor: pointer; }
+  #error { color: var(--bad); padding: 0 16px; }
+  .outcome-good { color: var(--good); } .outcome-bad { color: var(--bad); }
+</style>
+</head>
+<body>
+<header>
+  <h1><span>jev</span> plays Manic Miner</h1>
+  <div class="group">
+    <label for="cavern">Cavern</label>
+    <select id="cavern"></select>
+    <label for="encoder">State encoder</label>
+    <select id="encoder"></select>
+    <label title="The code tries each macro first. Jev gets the result of each macro. A macro that kills Willy is not an option."><input type="checkbox" id="lookahead" checked> look-ahead</label>
+    <button class="primary" id="start">Start live run</button>
+  </div>
+  <div class="group">
+    <label for="runs">Recorded runs</label>
+    <select id="runs"></select>
+    <button id="replay">Replay (no jev calls)</button>
+  </div>
+  <div class="group">
+    <button id="pause">Pause</button>
+    <button id="step">Step</button>
+    <button id="stop">Stop</button>
+    <label for="speed">Speed</label>
+    <select id="speed">
+      <option value="0.5">0.5 x</option><option value="1" selected>1 x</option>
+      <option value="2">2 x</option><option value="4">4 x</option><option value="0">max</option>
+    </select>
+  </div>
+</header>
+<div id="error"></div>
+<main>
+  <section>
+    <div class="panel">
+      <h2><span>Game <span class="badge idle" id="mode">IDLE</span></span><small id="outcome"></small></h2>
+      <canvas id="screen" width="256" height="192"></canvas>
+      <div class="stats">
+        <div class="stat"><b id="s-decisions">0</b><span>decisions</span></div>
+        <div class="stat"><b id="s-keys">0</b><span>keys</span></div>
+        <div class="stat"><b id="s-air">100%</b><span>air</span></div>
+        <div class="stat"><b id="s-latency">–</b><span>mean jev ms</span></div>
+        <div class="stat"><b id="s-tokens">0</b><span>input tokens</span></div>
+        <div class="stat"><b id="s-cost">$0.0000</b><span>cost</span></div>
+      </div>
+    </div>
+    <div class="panel">
+      <h2><span>Decision timeline</span><small>bar height = confidence. Click a bar to examine it.</small></h2>
+      <div id="timeline"></div>
+      <div class="legend" id="legend"></div>
+    </div>
+  </section>
+  <section>
+    <div class="panel">
+      <h2><span>Target selected by jev: <b id="t-name" style="color:var(--warn)">–</b></span>
+          <small id="t-meta"></small></h2>
+      <div id="t-bars"></div>
+      <details><summary>State and question of the target request</summary>
+        <pre id="t-state"></pre></details>
+    </div>
+    <div class="panel">
+      <h2><span>Decision <span id="d-n">–</span> <span id="pinned"></span></span>
+          <small>confidence <b id="d-conf">–</b></small></h2>
+      <div id="bars"></div>
+      <div class="meta">
+        <span>result: <b id="d-result">–</b></span>
+        <span>jev time: <b id="d-latency">–</b></span>
+        <span>tokens: <b id="d-tokens">–</b></span>
+        <span>model: <b id="d-model">–</b></span>
+      </div>
+    </div>
+    <div class="panel">
+      <h2>Other answers in the same request <small>these do not control Willy</small></h2>
+      <div id="extras"></div>
+    </div>
+    <div class="panel">
+      <h2>State sent to jev <small>exact JSON of this request</small></h2>
+      <pre id="state">–</pre>
+    </div>
+    <div class="panel">
+      <details>
+        <summary>Questions sent to jev in the move request</summary>
+        <pre id="questions"></pre>
+      </details>
+    </div>
+  </section>
+</main>
+<script>
+const $ = id => document.getElementById(id);
+const MACROS = ["walk_left", "walk_right", "jump_left", "jump_right", "jump_up", "wait"];
+const USD_PER_TOKEN = 0.042 / 1e6;
+const color = m => getComputedStyle(document.documentElement).getPropertyValue("--" + m).trim();
+const ctx = $("screen").getContext("2d");
+
+let ws, decisions = [], targets = [], pinned = null, lastFrame = null, paused = false, header = null;
+
+$("legend").innerHTML = MACROS.map(m => `<span><i style="background:${color(m)}"></i>${m}</span>`).join("") +
+  `<span><i style="background:var(--bad)"></i>Willy died</span>`;
+
+function send(msg) { ws.send(JSON.stringify(msg)); }
+
+function connect() {
+  ws = new WebSocket(`ws://${location.host}/ws`);
+  ws.binaryType = "blob";
+  ws.onmessage = async e => {
+    if (typeof e.data !== "string") { lastFrame = e.data; if (pinned === null) draw(e.data); return; }
+    handle(JSON.parse(e.data));
+  };
+  ws.onclose = () => { $("error").textContent = "Connection closed. Start the server again and load this page again."; };
+}
+
+async function draw(blob, targetCell) {
+  const bitmap = await createImageBitmap(blob);
+  ctx.drawImage(bitmap, 0, 0);
+  // A yellow box shows the target that jev selected.
+  const cell = targetCell || liveTargetCell();
+  if (cell) {
+    ctx.strokeStyle = "#ffd700"; ctx.lineWidth = 1;
+    ctx.strokeRect(cell[0] * 8 - 1.5, cell[1] * 8 - 1.5, 11, 11);
+  }
+}
+function liveTargetCell() {
+  const d = decisions[decisions.length - 1];
+  return d ? d.target_cell : (targets.length ? targets[targets.length - 1].target_cell : null);
+}
+
+function handle(msg) {
+  if (msg.type === "hello") {
+    $("encoder").innerHTML = msg.encoders.map(e => `<option>${e}</option>`).join("");
+    $("cavern").innerHTML = msg.caverns.map((name, i) => `<option value="${i}">${i + 1}. ${name}</option>`).join("");
+    showRuns(msg.runs);
+  } else if (msg.type === "runs") { showRuns(msg.runs);
+  } else if (msg.type === "header") {
+    decisions = []; targets = []; pinned = null; header = msg; $("timeline").innerHTML = ""; $("outcome").textContent = "";
+    $("t-name").textContent = "–"; $("t-bars").innerHTML = ""; $("t-state").textContent = ""; $("t-meta").textContent = "";
+    $("error").textContent = "";
+    $("mode").textContent = msg.mode === "live" ? "LIVE" : "REPLAY";
+    $("mode").className = "badge " + msg.mode;
+    $("questions").textContent = JSON.stringify(msg.questions, null, 2);
+    $("outcome").textContent = `${msg.cavern_name || "Central Cavern"} · ${msg.file} · encoder: ${msg.encoder} · ${msg.look_ahead ? "look-ahead" : "rules"}`;
+    $("outcome").className = "";
+    updateStats();
+  } else if (msg.type === "target") {
+    targets.push(msg);
+    if (pinned === null) showTarget(msg);
+    updateStats();
+  } else if (msg.type === "decision") {
+    msg.target = targets[targets.length - 1];
+    msg.frame = lastFrame;  // the screen that goes with this state
+    decisions.push(msg); addTimelineBar(msg);
+    if (pinned === null) showDecision(msg);
+    updateStats();
+  } else if (msg.type === "result") {
+    const d = decisions[msg.n]; if (!d) return;
+    d.result = msg;
+    if (msg.dead) $("timeline").children[msg.n].classList.add("dead");
+    if (pinned === null || pinned === msg.n) showDecision(d);
+    updateStats();
+  } else if (msg.type === "end") {
+    $("mode").textContent = "DONE"; $("mode").className = "badge idle";
+    $("outcome").textContent = msg.outcome;
+    $("outcome").className = msg.outcome === "cavern complete" ? "outcome-good" : "outcome-bad";
+  } else if (msg.type === "status") {
+    if (msg.status === "stopped") { $("mode").textContent = "STOPPED"; $("mode").className = "badge idle"; }
+  } else if (msg.type === "error") { $("error").textContent = msg.message; }
+}
+
+function showRuns(runs) {
+  $("runs").innerHTML = runs.map(r =>
+    `<option value="${r.file}">${r.file.replace(".jsonl", "")}${r.look_ahead ? " [look-ahead]" : ""} — ${r.outcome}, ${r.decisions} decisions, ${r.keys_collected ?? 0} keys</option>`
+  ).join("") || "<option value=''>no runs yet</option>";
+}
+
+function addTimelineBar(d) {
+  const bar = document.createElement("div");
+  bar.style.background = color(d.macro);
+  bar.style.height = Math.max(8, d.confidence * 100) + "%";
+  bar.title = `#${d.n} ${d.macro} (confidence ${d.confidence.toFixed(2)})`;
+  bar.onclick = () => pin(d.n);
+  $("timeline").appendChild(bar);
+  $("timeline").scrollLeft = 1e6;
+}
+
+function pin(n) {
+  pinned = n;
+  [...$("timeline").children].forEach((b, i) => b.classList.toggle("sel", i === n));
+  $("pinned").textContent = n === null ? "" : "(pinned — click here to follow the run again)";
+  const d = n === null ? decisions[decisions.length - 1] : decisions[n];
+  if (d) showDecision(d);
+  if (n === null && lastFrame) draw(lastFrame);
+}
+$("pinned").onclick = () => pin(null);
+
+function bar(name, value, fill, chosen) {
+  return `<div class="bar ${chosen ? "chosen" : ""}"><span class="name">${name}</span>
+    <span class="track"><span class="fill" style="display:block;width:${(value * 100).toFixed(1)}%;background:${fill}"></span></span>
+    <span class="val">${value.toFixed(2)}</span></div>`;
+}
+
+function showTarget(t) {
+  if (!t) return;
+  $("t-name").textContent = `${t.choice} at column ${t.target_cell[0]}, row ${t.target_cell[1]}`;
+  if (t.forced) {
+    $("t-meta").textContent = "only one key is left: no jev call";
+    $("t-bars").innerHTML = ""; $("t-state").textContent = "";
+    return;
+  }
+  $("t-meta").textContent = `selected at decision #${t.n} · confidence ${t.confidence.toFixed(2)} · ${t.latency_ms} ms · ${t.input_tokens} tokens`;
+  $("t-bars").innerHTML = Object.keys(t.cells).map(k => bar(k, t.probabilities[k] ?? 0, "var(--warn)", k === t.choice)).join("");
+  $("t-state").textContent = "STATE\n" + JSON.stringify(t.state, null, 2) +
+    "\n\nQUESTION\n" + JSON.stringify(header && header.target_questions, null, 2);
+}
+
+function showDecision(d) {
+  showTarget(d.target);
+  $("d-n").textContent = "#" + d.n + (d.forced ? " (only one safe macro: no jev call)" : "");
+  $("d-conf").textContent = d.confidence.toFixed(2);
+  $("bars").innerHTML = (d.no_safe_move ? `<div class="outcome-bad">No safe move: all 6 macros kill Willy. Jev got all of them.</div>` : "") +
+    MACROS.map(m => (d.removed && d.removed[m] && !d.no_safe_move)
+    ? `<div class="bar removed"><span class="name">${m}</span><span class="reason">not offered to jev — ${d.removed[m]}</span></div>`
+    : bar(m, d.probabilities[m] ?? 0, color(m), m === d.macro)).join("");
+  $("d-latency").textContent = d.latency_ms + " ms";
+  $("d-tokens").textContent = d.input_tokens;
+  $("d-model").textContent = d.model;
+  const r = d.result;
+  $("d-result").textContent = !r ? "macro in progress…" :
+    r.dead ? `Willy died (${r.ticks} ticks)` : r.complete ? "cavern complete" :
+    `safe, ${r.ticks} ticks, Willy at column ${r.willy[0]}, row ${r.willy[1]}`;
+  $("d-result").className = r && r.dead ? "outcome-bad" : "";
+  let extras = "";
+  for (const [k, v] of Object.entries(d.nouls)) extras += bar(k, v, v > 0.5 ? "var(--bad)" : "var(--good)", false);
+  for (const [k, v] of Object.entries(d.scores))
+    extras += `<div class="bar"><span class="name">${k}</span><span class="val" style="text-align:left;grid-column:2/4">
+      score ${Number(v.score).toFixed(2)} · confidence ${Number(v.confidence).toFixed(2)}</span></div>`;
+  $("extras").innerHTML = extras;
+  $("state").textContent = JSON.stringify(d.state, null, 2);
+  if (pinned !== null && d.frame) draw(d.frame, d.target_cell);
+}
+
+function updateStats() {
+  const tokens = decisions.reduce((t, d) => t + d.input_tokens, 0) +
+                 targets.reduce((t, d) => t + (d.input_tokens || 0), 0);
+  const last = decisions[decisions.length - 1];
+  $("s-decisions").textContent = decisions.length;
+  $("s-tokens").textContent = tokens.toLocaleString();
+  $("s-cost").textContent = "$" + (tokens * USD_PER_TOKEN).toFixed(4);
+  $("s-latency").textContent = decisions.length ?
+    Math.round(decisions.reduce((t, d) => t + d.latency_ms, 0) / decisions.length) : "–";
+  if (last && last.result) {
+    $("s-keys").textContent = last.result.keys_collected;
+    $("s-air").textContent = Math.round(last.result.air * 100) + "%";
+  } else if (!last) { $("s-keys").textContent = 0; $("s-air").textContent = "100%"; }
+}
+
+$("start").onclick = () => { setPaused(false); send({cmd: "start", encoder: $("encoder").value, look_ahead: $("lookahead").checked, cavern: Number($("cavern").value)}); };
+$("replay").onclick = () => { if ($("runs").value) { setPaused(false); send({cmd: "replay", file: $("runs").value}); } };
+$("stop").onclick = () => send({cmd: "stop"});
+$("step").onclick = () => { setPaused(true, false); send({cmd: "step"}); };
+$("pause").onclick = () => setPaused(!paused);
+$("speed").onchange = () => send({cmd: "speed", value: $("speed").value});
+function setPaused(value, tell = true) {
+  paused = value; $("pause").textContent = paused ? "Resume" : "Pause";
+  if (tell) send({cmd: paused ? "pause" : "resume"});
+}
+connect();
+</script>
+</body>
+</html>
