@@ -155,3 +155,16 @@ def test_target_state_has_a_short_memory_for_each_key():
     assert keys["key_1"]["gave_up_on_it"] == "2 times"
     assert "current_target" not in keys["key_2"]
     assert keys["key_2"]["decisions_used_for_it"] == "none"
+
+
+def test_the_normal_questions_use_the_long_free_mode_text():
+    from jevmanic import brain
+
+    move = brain.move_questions("words", True, free=True)["move"].instructions
+    assert move == brain.FREE_MOVE_INSTRUCTIONS
+    assert brain.move_questions("words", True, free=True, brief=True)["move"].instructions == (
+        brain.BRIEF_FREE_MOVE_INSTRUCTIONS)
+    target = brain.target_question(["key_1", "key_2"], free=True, memory=True)["target"].instructions
+    assert target == brain.FREE_TARGET_INSTRUCTIONS + brain.TARGET_MEMORY_MEANING
+    rules = brain.move_questions("words", True, free=False)["move"].instructions
+    assert rules == brain.LOOK_AHEAD_INSTRUCTIONS

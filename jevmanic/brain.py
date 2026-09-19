@@ -76,7 +76,7 @@ BRIEF_TARGET_MEMORY_MEANING = (
 
 def target_question(key_names: list[str], free: bool = False, memory: bool = False, brief: bool = False) -> dict:
     criteria = {name: f"The key or switch that `keys.{name}` describes." for name in key_names}
-    instructions = BRIEF_FREE_TARGET_INSTRUCTIONS if free else TARGET_INSTRUCTIONS
+    instructions = FREE_TARGET_INSTRUCTIONS if free else TARGET_INSTRUCTIONS
     if free and brief:
         instructions = BRIEF_FREE_TARGET_INSTRUCTIONS
     if memory:
@@ -314,7 +314,7 @@ def move_questions(encoder: str, look_ahead: bool, offered=None, extras: bool = 
     it does not contain the macros that kill Willy.
     """
     if look_ahead:
-        instructions = BRIEF_FREE_MOVE_INSTRUCTIONS if free else LOOK_AHEAD_INSTRUCTIONS
+        instructions = FREE_MOVE_INSTRUCTIONS if free else LOOK_AHEAD_INSTRUCTIONS
         if free and brief:
             instructions = BRIEF_FREE_MOVE_INSTRUCTIONS
         if recent:
