@@ -1,6 +1,9 @@
 """Run one live game in the terminal, without the viewer.
 
-Run:  uv run python -m jevmanic.cli [encoder] [lookahead] [until-complete] [cavern=2] [rules]
+Run:  uv run python -m jevmanic.cli [encoder] [lookahead] [until-complete] [cavern=2] [rules] [llm=haiku]
+
+With "llm=haiku", an LLM makes the decisions through the `claude` command line
+tool, for a comparison with jev. The log file goes to runs/llm-haiku/.
 
 With "rules", jev gets the decision procedure that we wrote (comparison only).
 
@@ -17,16 +20,19 @@ import sys
 from dotenv import load_dotenv
 
 from .brain import Brain
+from .llm_brain import LLMBrain
 from .game import Game
 from .runner import Settings, play_live
 
 
+FOLDER = next(("llm-" + a.split("=")[1] for a in sys.argv if a.startswith("llm=")), "")
 SETTINGS = Settings(free_move="rules" not in sys.argv, free_target="rules" not in sys.argv)
 
 
 async def main(encoder: str, look_ahead: bool, until_complete: bool, cavern: int):
     load_dotenv(".env")
-    game, brain = Game(), Brain()
+    llm = next((a.split("=")[1] for a in sys.argv if a.startswith("llm=")), None)
+    game, brain = Game(), (LLMBrain(llm) if llm else Brain())
     for attempt in range(10 if until_complete else 1):
         outcome = await play_once(game, brain, encoder, look_ahead, cavern)
         if outcome == "cavern complete":
@@ -36,7 +42,7 @@ async def main(encoder: str, look_ahead: bool, until_complete: bool, cavern: int
 
 async def play_once(game, brain, encoder, look_ahead, cavern) -> str:
     outcome = ""
-    async for kind, data in play_live(game, brain, encoder, look_ahead, cavern, SETTINGS):
+    async for kind, data in play_live(game, brain, encoder, look_ahead, cavern, SETTINGS, FOLDER):
         if kind != "event":
             continue
         if data["type"] == "target":

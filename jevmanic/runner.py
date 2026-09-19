@@ -231,6 +231,7 @@ async def play_live(
         "mode": "live",
         "file": str(path.relative_to(RUNS_DIR)),
         "settings": asdict(settings),
+        "decision_maker": getattr(brain, "model", None) and f"claude {brain.model}" or "jev",
         "cavern": cavern,
         "cavern_name": game.snapshot().cavern_name,
         "encoder": encoder,
@@ -443,7 +444,9 @@ async def play_live(
             "decisions": n,
             "keys_collected": result.get("keys_collected", 0),
             "input_tokens": tokens,
-            "cost_usd": round(tokens * USD_PER_TOKEN, 6),
+            # An LLM decision maker counts its own cost. For jev, the cost comes
+            # from the input tokens.
+            "cost_usd": round(getattr(brain, "total_cost", None) or tokens * USD_PER_TOKEN, 6),
         }
         write(end)
         yield "event", end

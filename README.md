@@ -603,6 +603,28 @@ result came from the search, not from jev.
 
   The map has a letter for each key, `<` or `>` for a conveyor, and a legend
   that says what each symbol means for Willy.
+- **An LLM in the place of jev: one run, for comparison.** The decision
+  maker `jevmanic/llm_brain.py` calls Claude Haiku through the `claude`
+  command line tool. It gets the same instructions, the same options, and
+  the same state as jev, with no tools and no project files. One run of
+  Central Cavern, the default configuration:
+
+  | | jev | Claude Haiku |
+  | --- | --- | --- |
+  | Result | complete in 8 to 10 of 10 runs | complete (1 run) |
+  | Decisions | 70 to 75 | 123 |
+  | All 5 keys at decision | 37 to 42 | 87 |
+  | Time for the decisions of one run | 24 seconds | 39 minutes |
+  | Time for one call | 0.3 seconds | 17.8 seconds |
+  | Cost of one run | $0.004 | $1.30 |
+
+  Haiku collected the first key at decision 13 (jev: 14). Then it went left
+  and right on a lower platform for approximately 60 decisions before it
+  found the way up. It reasons before each answer, thus one call is slow.
+  This is one run only. It shows that the task is possible for an LLM with
+  the same facts, and that jev is 100 times quicker and 300 times cheaper
+  for each decision. Command:
+  `uv run python -m jevmanic.cli words lookahead cavern=1 llm=haiku`.
 - **A reasoning model as the planner, and jev as the player.** A clean
   subagent (a reasoning model) got only the map, the legend, the guardian
   limits, and the game mechanics. It gave a key order for caverns 1 to 4 with
@@ -684,6 +706,7 @@ result came from the search, not from jev.
 | `jevmanic/game.py` | start of a cavern, memory reads, macros, look-ahead, dead end check |
 | `jevmanic/describe.py` | state encoders |
 | `jevmanic/brain.py` | questions and the jev calls |
+| `jevmanic/llm_brain.py` | an LLM as the decision maker, for comparison |
 | `jevmanic/runner.py` | live run, log file, replay |
 | `jevmanic/server.py`, `jevmanic/web/` | viewer |
 | `jevmanic/cli.py` | live run in the terminal |

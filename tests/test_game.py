@@ -201,3 +201,19 @@ def test_map_has_key_letters_conveyor_direction_and_a_legend():
     assert game.snapshot().key_letters == letters
     game.select_cavern(1)  # The Cold Room: the conveyor moves Willy to the right
     assert ">" in "".join(describe.ascii_full(game.snapshot(), spaced=False)["map"])
+
+
+def test_llm_answer_parser_and_prompt():
+    from jevmanic import brain
+    from jevmanic.llm_brain import build_prompt, parse_choice
+
+    options = ["walk_left", "walk_right", "jump_left", "jump_right", "jump_up", "wait"]
+    assert parse_choice("jump_left", options) == "jump_left"
+    assert parse_choice("`walk_right`.\n", options) == "walk_right"
+    assert parse_choice("I select jump_up because the key is above.", options) == "jump_up"
+    assert parse_choice("walk_left or walk_right", options) is None  # not one clear option
+    assert parse_choice("go", options) is None
+    question = brain.move_questions("words", True, offered=["walk_left", "wait"], free=True)["move"]
+    prompt = build_prompt({"air": "plenty"}, question)
+    # The LLM gets the same instructions and the same options as jev.
+    assert brain.FREE_MOVE_INSTRUCTIONS in prompt and "- walk_left:" in prompt and "jump_up" not in prompt.split("OPTIONS")[1].split("STATE")[0]
