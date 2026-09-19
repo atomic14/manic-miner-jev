@@ -73,9 +73,26 @@ corrections, 10 runs each:
 We did not measure the other caverns again. The table above is thus a lower
 limit for them.
 
-Rules mode, 3 live runs for each cavern: cavern 1 is 3 of 3, cavern 2 is 3 of
-3, cavern 3 is 0 of 3, and cavern 4 is 2 of 3. We did not measure rules mode
-with 10 runs.
+### Rules mode compared with free mode
+
+We wrote the rules of rules mode with caverns 1 and 2. Caverns 3, 4, and 16
+are a fair test: they have horizontal guardians only, and we did not write a
+rule with them. The two modes ran at the same time with the same code. 10
+live runs for each cavern and each mode:
+
+| Cavern | Free mode | Rules mode |
+| --- | --- | --- |
+| 1 Central Cavern (rules written with it) | 10 of 10 | 10 of 10 |
+| 2 The Cold Room (rules written with it) | 6 of 10 | 9 of 10 |
+| 3 The Menagerie (fair test) | 8 of 10, 4.7 keys | 1 of 10, 1.4 keys |
+| 4 Abandoned Uranium Workings (fair test) | 0 of 10, 3.0 keys | 0 of 10, 1.3 keys |
+| 16 The Sixteenth Cavern (fair test) | 0 of 10, 1.7 keys | 0 of 10, 1.0 keys |
+
+The rules are better on the caverns that we wrote them with, and worse on the
+other caverns. They fit caverns 1 and 2 too well. Free mode is thus the normal
+configuration. Rules are a legitimate form of prompt optimisation, but each
+rule must be general, and we must measure it on caverns that we did not use
+to write it.
 
 What the measurements show:
 
