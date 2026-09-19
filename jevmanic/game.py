@@ -5,6 +5,10 @@ and runs macros. The memory addresses come from the SkoolKit disassembly
 (https://skoolkit.ca/disassemblies/manic_miner/).
 """
 
+import contextlib
+import ctypes
+import os
+import sys
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -24,6 +28,18 @@ ADDR_TILE_WALL = 32827
 ADDR_TILE_CONVEYOR = 32836
 ADDR_TILE_NASTY1 = 32845
 ADDR_TILE_NASTY2 = 32854
+# The eighth tile of a cavern is the "extra" tile. Its meaning is a property
+# of the cavern (see the SkoolKit disassembly): a floor in some caverns, a
+# switch in the two Kong Beast caverns, spider silk in The Menagerie.
+ADDR_TILE_EXTRA = 32863
+EXTRA_TILE_IS_FLOOR = (9, 10, 12, 13, 14)  # cavern numbers from 0
+SWITCH_CAVERNS = (7, 11)
+SCREEN_BUFFER = 28672  # the screen buffer that the game draws in
+ADDR_EUGENE_DIR = 32987  # 0 = Eugene moves down, 1 = up
+ADDR_EUGENE_Y = 32988  # pixel y of Eugene
+EUGENE_CAVERN = 4
+EUGENE_X = 15
+ADDR_VGUARDS = 32989  # vertical guardians: 4 x 7 bytes
 ADDR_WILLY_PIXEL_Y = 32872  # 2 x the pixel y position
 ADDR_WILLY_FRAME = 32873  # 0 to 3: the position of Willy in his cell
 ADDR_WILLY_DIR = 32874  # bit 0: 0 = Willy looks right, 1 = Willy looks left
@@ -60,6 +76,7 @@ DEAD_END_SLOT = 2  # the dead end check uses the slots from this number up
 SURVIVAL_DEPTH = 12
 # The largest number of macros that one dead end check can try.
 SURVIVAL_BUDGET = 600
+DEAD_END_CAUSE = "dead end, Willy cannot stay alive after it"
 
 # Willy moves 2 pixels in each game tick. Thus 4 ticks move him one cell.
 TICKS_PER_CELL = 4
@@ -94,9 +111,12 @@ MACROS = {
 class Guardian:
     x: int  # left column (a guardian is 2 x 2 cells)
     y: int  # top row
-    moving: str  # "left" or "right"
+    moving: str  # "left", "right", "up", or "down"
     min_x: int  # left limit of the patrol
     max_x: int  # right limit of the patrol
+    axis: str = "horizontal"  # or "vertical"
+    min_y: int = 0  # top limit of the patrol (vertical guardians)
+    max_y: int = 0  # bottom limit of the patrol
 
 
 @dataclass
@@ -112,6 +132,7 @@ class Snapshot:
     keys: list[tuple[int, int]]  # keys that Willy did not collect
     portal: tuple[int, int]  # top-left cell of the portal (2 x 2 cells)
     guardians: list[Guardian] = field(default_factory=list)
+    switches: list[tuple[int, int]] = field(default_factory=list)  # switches that are not flipped
     air: float = 1.0  # 1.0 = full, 0.0 = empty
     score: int = 0
     lives: int = 0
@@ -141,12 +162,31 @@ TILE_CONVEYOR = "c"
 TILE_NASTY = "X"
 
 
+@contextlib.contextmanager
+def _no_emulator_text():
+    """The C++ emulator prints text when it loads a snapshot. Hide that text."""
+    sys.stdout.flush()
+    saved = os.dup(1)
+    with open(os.devnull, "w") as devnull:
+        os.dup2(devnull.fileno(), 1)
+        try:
+            yield
+        finally:
+            # The C library keeps the text in a buffer. Write it out now,
+            # while the output still goes to the null device.
+            ctypes.CDLL(None).fflush(None)
+            os.dup2(saved, 1)
+            os.close(saved)
+
+
 class Game:
     """One Manic Miner game in one cavern."""
 
     def __init__(self, snapshot_path: Path = SNAPSHOT, cavern: int = 0):
-        self.emu = zxspec.RLSpectrum(False)
-        if not self.emu.load_z80(str(snapshot_path)):
+        with _no_emulator_text():
+            self.emu = zxspec.RLSpectrum(False)
+            loaded = self.emu.load_z80(str(snapshot_path))
+        if not loaded:
             raise RuntimeError(f"cannot load {snapshot_path}")
         self._boot()
         self.emu.save_state(START_SLOT)
@@ -190,6 +230,7 @@ class Game:
             self.emu.save_state(slot)
         self.cavern = cavern
         self.restart()
+        self.__dict__.pop("_switch_cells", None)
         self.start_lives = self.emu.peek(ADDR_LIVES)
         self.start_cavern = self.emu.peek(ADDR_CAVERN)
 
@@ -266,6 +307,8 @@ class Game:
             emu.peek(ADDR_TILE_NASTY1): TILE_NASTY,
             emu.peek(ADDR_TILE_NASTY2): TILE_NASTY,
         }
+        if self.cavern in EXTRA_TILE_IS_FLOOR:
+            tile_chars[emu.peek(ADDR_TILE_EXTRA)] = TILE_FLOOR
         tiles = [
             "".join(tile_chars.get(attrs[y * COLS + x], TILE_EMPTY) for x in range(COLS))
             for y in range(ROWS)
@@ -294,6 +337,24 @@ class Game:
             moving = "right" if entry[4] < 4 else "left"
             guardians.append(Guardian(x, y, moving, entry[5] & 31, entry[6] & 31))
 
+        # Vertical guardians: attribute, frame, pixel y, column, step, top, bottom.
+        data = emu.peek_range(ADDR_VGUARDS, 28)
+        for i in range(4):
+            entry = data[i * 7 : (i + 1) * 7]
+            if entry[0] == 255:
+                break
+            x, y = entry[3], entry[2] // 8
+            if entry[0] == 0 or not (0 <= x < COLS and 0 <= y < ROWS):
+                continue  # some caverns use this table for other data
+            step = entry[4] - 256 if entry[4] > 127 else entry[4]
+            guardians.append(
+                Guardian(x, y, "down" if step >= 0 else "up", x, x, "vertical", entry[5] // 8, entry[6] // 8)
+            )
+        if self.cavern == EUGENE_CAVERN:
+            eugene_y = emu.peek(ADDR_EUGENE_Y) // 8
+            moving = "up" if emu.peek(ADDR_EUGENE_DIR) else "down"
+            guardians.append(Guardian(EUGENE_X, eugene_y, moving, EUGENE_X, EUGENE_X, "vertical", 0, 11))
+
         willy_x, willy_y = self._cell(self._word(ADDR_WILLY_ATTR))
         digits = emu.peek_range(ADDR_SCORE, 6)
         return Snapshot(
@@ -306,10 +367,32 @@ class Game:
             keys=keys,
             portal=self._cell(self._word(ADDR_PORTAL_POS)),
             guardians=guardians,
+            switches=self._switches(),
             air=(emu.peek(ADDR_AIR) - AIR_EMPTY) / (AIR_FULL - AIR_EMPTY),
             score=int(digits) if digits.isdigit() else 0,
             lives=emu.peek(ADDR_LIVES),
         )
+
+    @staticmethod
+    def _screen_address(col, row, line):
+        return SCREEN_BUFFER + ((row & 0x18) << 8) + ((row & 7) << 5) + (line << 8) + col
+
+    def _cell_pixels(self, col, row):
+        return bytes(self.emu.peek(self._screen_address(col, row, i)) for i in range(8))
+
+    def _switches(self) -> list[tuple[int, int]]:
+        """The switches that are not flipped. Only the Kong Beast caverns have switches.
+
+        The game has no flag for a switch. It draws a flipped switch with a
+        different graphic, thus the code compares the pixels with the tile.
+        """
+        if self.cavern not in SWITCH_CAVERNS:
+            return []
+        graphic = bytes(self.emu.peek(ADDR_TILE_EXTRA + 1 + i) for i in range(8))
+        if not hasattr(self, "_switch_cells") or self._switch_cells[0] != self.cavern:
+            cells = [(c, r) for r in range(ROWS) for c in range(COLS) if self._cell_pixels(c, r) == graphic]
+            self._switch_cells = (self.cavern, cells)
+        return [cell for cell in self._switch_cells[1] if self._cell_pixels(*cell) == graphic]
 
     # -- control ---------------------------------------------------------------
 
@@ -426,7 +509,7 @@ class Game:
                 break
         return alive
 
-    def look_ahead(self) -> dict[str, Outcome]:
+    def look_ahead(self, survival_depth: int = SURVIVAL_DEPTH) -> dict[str, Outcome]:
         """Try each macro one time and give its result.
 
         The game goes back to the saved state after each try, thus the
@@ -446,8 +529,8 @@ class Game:
             dead, cause = self.is_dead(), ""
             if dead:
                 cause = self._death_cause(after)
-            elif not self._can_survive(SURVIVAL_DEPTH, [SURVIVAL_BUDGET]):
-                dead, cause = True, "dead end, Willy cannot stay alive after it"
+            elif survival_depth > 0 and not self._can_survive(survival_depth, [SURVIVAL_BUDGET]):
+                dead, cause = True, DEAD_END_CAUSE
             outcomes[name] = Outcome(
                 dead=dead,
                 cause=cause,
