@@ -531,15 +531,22 @@ result came from the search, not from jev.
 
 ## Open work
 
-- **The target text needs the meaning of `one_way_trip`.** In The Cold Room,
-  rules mode is 9 of 10 (61 decisions) and free mode is 4 to 6 of 10. The
-  full difference is one decision: in free mode, jev selects the key in the
-  shaft as the third target, and Willy cannot come back from it. The rules
-  mode text says that such a key must be the last one. This is general game
-  logic. Proposed sentence for the free mode target text: "`one_way_trip`
-  tells that Willy cannot come back after he gets this key. Then he cannot
-  get the keys that are left in the other parts of the cavern." It is not
-  measured yet.
+- **The target order is the open problem.** In The Cold Room, the full
+  difference between rules mode (9 of 10) and free mode (4 to 6 of 10) is
+  the order of the keys. We measured two prompt changes for it, 10 runs each:
+
+  | Change to the target text | Cavern 1 | Cavern 2 | Cavern 3 | Cavern 4 | Cavern 16 |
+  | --- | --- | --- | --- | --- | --- |
+  | None (the normal text) | 10 | 4 to 6 | 10 | 0, 4.0 keys | 0, 1.7 keys |
+  | + the meaning of `one_way_trip` | 8 | 0 | 10 | - | - |
+  | The three target rules of rules mode | 7 | 8 | 9 | 0, 0 keys | 0, 2.0 keys |
+
+  The sentence about `one_way_trip` did its task (jev did not select the
+  shaft key too early), but then a different order problem ended the runs:
+  Willy used the one crumbling way up two times. The target rules correct
+  that order in cavern 2, and they make caverns 1 and 4 worse. A good key
+  order needs a plan of the route. Jev gets facts relative to Willy, and a
+  rule about those facts fits one cavern and not the next one.
 - **The depth of the dead end check.** See the table above. Options: keep 12,
   use a smaller depth, or replace the search with experience (a memory of
   the places where Willy died in earlier runs).
