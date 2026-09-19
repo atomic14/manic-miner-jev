@@ -423,7 +423,7 @@ The state of decision 5 of the same run:
 | `willy` | the direction that Willy looks in, and the tile below him |
 | `target` | the key or switch that jev selected, or the portal. When the target is on a higher floor, it has a `way_up`: the nearest place where a jump gets to a higher platform. When the target is on a lower floor, it has a `way_down`: the nearest safe edge or crumbling floor. |
 | `to_the_left`, `to_the_right` | the first thing in the path of Willy on his level: wall, nasty, edge, or nothing, with the distance in cells |
-| `guardians` | the position of each guardian relative to Willy, and its direction. For a horizontal guardian on the level of Willy: is Willy in its patrol area, and where the patrol area ends. For a vertical guardian: does its column cross the level of Willy, and is it above, below, or on that level now. |
+| `guardians` | the position of each horizontal guardian relative to Willy, and its direction. For a guardian on the level of Willy: is Willy in its patrol area, and where the patrol area ends. (Facts about vertical guardians exist behind a switch. They are off, because they made the results worse.) |
 | `air` | plenty, low, or critical |
 | `progress_measures` | the place that `progress` measures the distance to: the target (same level), the way up (higher floor), or the way down (lower floor) |
 | `moves` | the true result of each valid macro, from the look-ahead |
@@ -603,6 +603,15 @@ result came from the search, not from jev.
 
   The map has a letter for each key, `<` or `>` for a conveyor, and a legend
   that says what each symbol means for Willy.
+- **Facts about vertical guardians made the results worse.** The code reads
+  the vertical guardians, and the state can give their column, their
+  direction, and if their column crosses the level of Willy. Caverns 9 and
+  18 (4 vertical guardians each), complete runs of 10: with the facts 9 and
+  2, without them 10 and 8. With the facts, a run needs more decisions (109
+  and not 73 in cavern 9), and more decisions have a low confidence. The
+  look-ahead already removes each move that a vertical guardian makes
+  deadly, thus the facts add text and no safety. They are off by default.
+  The switch `vertical-facts` of the measurement tool turns them on.
 - **An LLM in the place of jev: one run, for comparison.** The decision
   maker `jevmanic/llm_brain.py` calls Claude Haiku through the `claude`
   command line tool. It gets the same instructions, the same options, and
@@ -686,9 +695,9 @@ result came from the search, not from jev.
 
 ## Limits
 
-- The code now reads vertical guardians, Eugene, and the switches, and the
-  state gives facts about them. We did not measure the effect of these facts
-  yet. The 200-run table was made before them. The column and the rows of
+- The code reads vertical guardians, Eugene, and the switches. The facts
+  about vertical guardians are off by default, because they made the results
+  worse. We did not measure the switch facts. The column and the rows of
   Eugene are an assumption.
 - The Kong Beast, the Skylabs, and the light beam of cavern 19 have no facts
   in the state. The look-ahead still removes a move that they make deadly,
