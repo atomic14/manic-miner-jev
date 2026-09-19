@@ -72,7 +72,7 @@ def test_moves_state_removes_deadly_macros():
     snap = game.snapshot()
     state = describe.moves_state(snap, game.look_ahead(), snap.keys[0], set())
     assert "jump_right" not in state["moves"]
-    assert state["moves_that_kill_willy"]["jump_right"].startswith("kills Willy")
+    assert state["moves_not_offered"]["jump_right"].startswith("kills Willy")
 
 
 def test_cavern_names_come_from_the_game_memory():
@@ -80,3 +80,52 @@ def test_cavern_names_come_from_the_game_memory():
     assert len(names) == 20
     assert names[0] == "Central Cavern"
     assert names[1] == "The Cold Room"
+
+
+def test_moves_with_no_effect_are_not_offered():
+    game = Game()  # at the start, Willy is next to the left wall and no guardian is near
+    snap = game.snapshot()
+    state = describe.moves_state(snap, game.look_ahead(), snap.keys[0], set())
+    assert state["moves_not_offered"]["jump_up"].startswith("no effect")
+    assert state["moves_not_offered"]["wait"].startswith("no effect")
+    assert "walk_right" in state["moves"]
+
+
+def test_switches_and_vertical_guardians_are_in_the_snapshot():
+    game = Game(cavern=7)  # Miner Willy meets the Kong Beast
+    assert game.snapshot().switches == [(6, 0), (18, 0)]
+    game.select_cavern(8)  # Wacky Amoebatrons
+    vertical = [g for g in game.snapshot().guardians if g.axis == "vertical"]
+    assert len(vertical) == 4
+    state = describe.words(game.snapshot(), game.snapshot().keys[0])
+    assert any("vertical guardian" in g.get("type", "") for g in state["guardians"])
+
+
+def test_extra_tile_is_a_floor_in_the_endorian_forest():
+    game = Game(cavern=9)
+    assert set(game.snapshot().tiles[15]) == {"="}  # the full bottom row is floor
+
+
+def test_harmless_moves_stay_when_all_other_moves_kill_willy():
+    from jevmanic.game import MACROS, Outcome
+
+    snap = Game().snapshot()
+    dead = Outcome(True, "nasty", False, 1, 0, 0, 4, snap.willy_x + 1, snap.willy_y)
+    still = Outcome(False, "", False, 0, 0, 0, 4, snap.willy_x, snap.willy_y)
+    outcomes = {name: (still if name in ("wait", "jump_up") else dead) for name in MACROS}
+    state = describe.moves_state(snap, outcomes, snap.keys[0], set())
+    # Jev must get the 2 harmless moves, and no move that kills Willy.
+    assert set(state["moves"]) == {"wait", "jump_up"}
+    assert all(v.startswith("kills Willy") for v in state["moves_not_offered"].values())
+
+
+def test_dead_end_moves_stay_when_no_move_is_safe():
+    from jevmanic.game import DEAD_END_CAUSE, MACROS, Outcome
+
+    snap = Game().snapshot()
+    kills = Outcome(True, "guardian", False, 1, 0, 0, 4, snap.willy_x + 1, snap.willy_y)
+    dead_end = Outcome(True, DEAD_END_CAUSE, False, -1, 0, 0, 4, snap.willy_x - 1, snap.willy_y)
+    outcomes = {name: (dead_end if name == "walk_left" else kills) for name in MACROS}
+    state = describe.moves_state(snap, outcomes, snap.keys[0], set())
+    assert set(state["moves"]) == {"walk_left"}
+    assert "dead end" in state["moves"]["walk_left"]["warning"]

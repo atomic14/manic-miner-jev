@@ -76,6 +76,7 @@
     <label for="encoder">State encoder</label>
     <select id="encoder"></select>
     <label title="The code tries each macro first. Jev gets the result of each macro. A macro that kills Willy is not an option."><input type="checkbox" id="lookahead" checked> look-ahead</label>
+    <label title="Off (normal): the decisions come from jev. On: jev gets the decision procedure that we wrote. Use it for comparison only."><input type="checkbox" id="rulesmode"> rules mode</label>
     <button class="primary" id="start">Start live run</button>
   </div>
   <div class="group">
@@ -117,7 +118,7 @@
   </section>
   <section>
     <div class="panel">
-      <h2><span>Target selected by jev: <b id="t-name" style="color:var(--warn)">–</b></span>
+      <h2><span>Target (key or switch) selected by jev: <b id="t-name" style="color:var(--warn)">–</b></span>
           <small id="t-meta"></small></h2>
       <div id="t-bars"></div>
       <details><summary>State and question of the target request</summary>
@@ -202,7 +203,7 @@ function handle(msg) {
     $("mode").textContent = msg.mode === "live" ? "LIVE" : "REPLAY";
     $("mode").className = "badge " + msg.mode;
     $("questions").textContent = JSON.stringify(msg.questions, null, 2);
-    $("outcome").textContent = `${msg.cavern_name || "Central Cavern"} · ${msg.file} · encoder: ${msg.encoder} · ${msg.look_ahead ? "look-ahead" : "rules"}`;
+    $("outcome").textContent = `${msg.cavern_name || "Central Cavern"} · ${msg.file} · encoder: ${msg.encoder} · ${msg.look_ahead ? "look-ahead" : "no look-ahead"} · ${msg.settings && !msg.settings.free_move ? "rules mode" : "free mode"}`;
     $("outcome").className = "";
     updateStats();
   } else if (msg.type === "target") {
@@ -317,7 +318,7 @@ function updateStats() {
   } else if (!last) { $("s-keys").textContent = 0; $("s-air").textContent = "100%"; }
 }
 
-$("start").onclick = () => { setPaused(false); send({cmd: "start", encoder: $("encoder").value, look_ahead: $("lookahead").checked, cavern: Number($("cavern").value)}); };
+$("start").onclick = () => { setPaused(false); send({cmd: "start", encoder: $("encoder").value, look_ahead: $("lookahead").checked, rules_mode: $("rulesmode").checked, cavern: Number($("cavern").value)}); };
 $("replay").onclick = () => { if ($("runs").value) { setPaused(false); send({cmd: "replay", file: $("runs").value}); } };
 $("stop").onclick = () => send({cmd: "stop"});
 $("step").onclick = () => { setPaused(true, false); send({cmd: "step"}); };

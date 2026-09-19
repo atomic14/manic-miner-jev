@@ -15,14 +15,15 @@ end record.
 
 import json
 import re
+from collections import Counter
 import time
-from dataclasses import replace
+from dataclasses import asdict, dataclass, replace
 from datetime import datetime
 from pathlib import Path
 
 from . import describe
 from .brain import Brain, move_questions, questions_as_json, target_question
-from .game import MACROS, Game
+from .game import MACROS, SURVIVAL_DEPTH, Game
 
 RUNS_DIR = Path(__file__).resolve().parent.parent / "runs"
 # Recorded runs that are in git. Use them for a demonstration without jev calls.
@@ -37,7 +38,7 @@ USD_PER_TOKEN = 0.042 / 1_000_000  # jev-1.13 price for input tokens
 def list_runs() -> list[dict]:
     """The header and end record of each log file, newest first."""
     runs = []
-    paths = sorted(DEMO_DIR.glob("*.jsonl")) + sorted(RUNS_DIR.glob("*.jsonl"), reverse=True)
+    paths = sorted(DEMO_DIR.glob("*.jsonl")) + sorted(RUNS_DIR.rglob("*.jsonl"), reverse=True)
     for path in paths:
         lines = path.read_text().splitlines()
         if len(lines) < 2:
@@ -47,7 +48,7 @@ def list_runs() -> list[dict]:
             end = {"outcome": "incomplete", "decisions": len(lines) - 1}
         runs.append(
             {
-                "file": path.name,
+                "file": path.name if path.parent == DEMO_DIR else str(path.relative_to(RUNS_DIR)),
                 "cavern": header.get("cavern", 0),
                 "encoder": header.get("encoder"),
                 "look_ahead": header.get("look_ahead", False),
@@ -87,33 +88,71 @@ def _result(game: Game, n: int, ticks: int, keys_at_start: int) -> dict:
     }
 
 
+@dataclass
+class Settings:
+    """Switches for experiments. The defaults are the normal configuration.
+
+    The normal configuration is free mode: the decisions come from jev. The
+    instructions give the goal, the meaning of the facts, and knowledge of the
+    game. Rules mode is a decision procedure that we wrote. It is for
+    comparison only.
+    """
+
+    extra_questions: bool = True  # danger_left, danger_right, threat
+    memory: bool = True  # the facts `place` and `tried_from_here`
+    survival_depth: int = SURVIVAL_DEPTH  # 0 = no dead end check
+    free_target: bool = True  # False = the target question with our preference rules
+    free_move: bool = True  # False = the move question with our decision procedure
+
+
+
 RETARGET_DECISIONS = 12  # select a different key after this number of decisions with no new place
 
 
-async def play_live(game: Game, brain: Brain, encoder: str, look_ahead: bool = False, cavern: int = 0):
+async def play_live(
+    game: Game,
+    brain: Brain,
+    encoder: str,
+    look_ahead: bool = False,
+    cavern: int = 0,
+    settings: Settings | None = None,
+    folder: str = "",
+):
+    """Play one live game. `folder` is a folder below `runs/` for the log file."""
+    settings = settings or Settings()
     encode = describe.ENCODERS[encoder]
-    RUNS_DIR.mkdir(exist_ok=True)
+    runs_dir = RUNS_DIR / folder
+    runs_dir.mkdir(parents=True, exist_ok=True)
     mode_name = "lookahead" if look_ahead else "rules"
     game.select_cavern(cavern)
     # Example: 20260919-151227-cavern-01-central-cavern-words-lookahead.jsonl
     cavern_slug = re.sub(r"[^a-z0-9]+", "-", game.snapshot().cavern_name.lower()).strip("-")
-    path = RUNS_DIR / (
-        f"{datetime.now():%Y%m%d-%H%M%S}-cavern-{cavern + 1:02d}-{cavern_slug}-{encoder}-{mode_name}.jsonl"
-    )
+    stem = f"{datetime.now():%Y%m%d-%H%M%S}-cavern-{cavern + 1:02d}-{cavern_slug}-{encoder}-{mode_name}"
+    path = runs_dir / f"{stem}.jsonl"
+    number = 2
+    while path.exists():  # two runs can start in the same second
+        path = runs_dir / f"{stem}-{number}.jsonl"
+        number += 1
+    path.touch()
     first = game.snapshot()
     keys_at_start = len(first.keys)
     # Each key keeps one name for the full run.
     key_names = {cell: f"key_{i + 1}" for i, cell in enumerate(first.keys)}
+    # A switch is also a target that jev can select.
+    key_names.update({cell: f"switch_{i + 1}" for i, cell in enumerate(first.switches)})
     header = {
         "type": "header",
         "mode": "live",
-        "file": path.name,
+        "file": str(path.relative_to(RUNS_DIR)),
+        "settings": asdict(settings),
         "cavern": cavern,
         "cavern_name": game.snapshot().cavern_name,
         "encoder": encoder,
         "look_ahead": look_ahead,
-        "questions": questions_as_json(move_questions(encoder, look_ahead)),
-        "target_questions": questions_as_json(target_question(list(key_names.values()))),
+        "questions": questions_as_json(
+            move_questions(encoder, look_ahead, extras=settings.extra_questions, free=settings.free_move)
+        ),
+        "target_questions": questions_as_json(target_question(list(key_names.values()), settings.free_target)),
         "started": time.time(),
     }
     tokens = 0
@@ -132,7 +171,8 @@ async def play_live(game: Game, brain: Brain, encoder: str, look_ahead: bool = F
         yield "event", header
         yield "frame", game
         seen = set()  # (position, keys collected) that Willy reached
-        visited = {(first.willy_x, first.willy_y)}
+        # The number of visits of each place. This is the memory of Willy.
+        visited = Counter({(first.willy_x, first.willy_y): 1})
         tried = set()  # (position, macro) that Willy selected before
         idle = 0
         while (outcome := _outcome(game, n, idle)) is None:
@@ -142,16 +182,24 @@ async def play_live(game: Game, brain: Brain, encoder: str, look_ahead: bool = F
             if target is not None and since_new_place >= RETARGET_DECISIONS:
                 skipped.add(target)
                 target = None
-            if snap.keys and target not in snap.keys:
-                candidates = [k for k in snap.keys if k not in skipped] or list(snap.keys)
+            goals = snap.keys + snap.switches
+            if snap.keys and target not in goals:
+                candidates = [k for k in goals if k not in skipped] or list(goals)
                 record = {"type": "target", "n": n, "cells": {key_names[k]: list(k) for k in candidates}}
                 if len(candidates) == 1:
                     target = candidates[0]
                     record.update(forced=True, choice=key_names[target])
                 else:
                     names = [key_names[k] for k in candidates]
-                    state = describe.keys_state(replace(snap, keys=candidates), key_names)
-                    answer = await brain.ask(state, target_question(names), "target")
+                    state = describe.keys_state(
+                        replace(
+                            snap,
+                            keys=[c for c in candidates if c in snap.keys],
+                            switches=[c for c in candidates if c in snap.switches],
+                        ),
+                        key_names,
+                    )
+                    answer = await brain.ask(state, target_question(names, settings.free_target), "target")
                     tokens += answer.input_tokens
                     target = next(k for k in candidates if key_names[k] == answer.choice)
                     record.update(answer.to_json())
@@ -164,16 +212,19 @@ async def play_live(game: Game, brain: Brain, encoder: str, look_ahead: bool = F
             state = encode(snap, target)
             offered, removed = list(MACROS), {}
             if look_ahead:
-                extra = describe.moves_state(snap, game.look_ahead(), target, visited, tried)
+                outcomes = game.look_ahead(settings.survival_depth)
+                extra = describe.moves_state(
+                    snap, outcomes, target, visited, tried, settings.memory, not settings.free_move
+                )
                 safe = list(extra["moves"])
-                removed = extra["moves_that_kill_willy"]
+                removed = extra["moves_not_offered"]
                 removed = {} if removed == "none" else removed
                 if safe:
                     offered = safe
                 else:
                     # All macros kill Willy. Jev gets all of them, because a
                     # Choice needs options. The log keeps the causes.
-                    extra["moves"] = "none: all moves kill Willy"
+                    extra["moves"] = "none: no move is safe"
                 state = {**state, **extra}
             record = {
                 "type": "decision",
@@ -181,7 +232,7 @@ async def play_live(game: Game, brain: Brain, encoder: str, look_ahead: bool = F
                 "tick": game.tick_count,
                 "offered": offered,
                 "removed": removed,
-                "no_safe_move": look_ahead and len(removed) == len(MACROS),
+                "no_safe_move": look_ahead and offered == list(MACROS) and len(removed) == len(MACROS),
                 "target_cell": list(describe.target_cell(snap, target)),
             }
             if len(offered) == 1:
@@ -190,7 +241,10 @@ async def play_live(game: Game, brain: Brain, encoder: str, look_ahead: bool = F
                               confidence=1.0, latency_ms=0, input_tokens=0, model="none",
                               nouls={}, scores={}, state=state)
             else:
-                answer = await brain.ask(state, move_questions(encoder, look_ahead, offered), "move")
+                questions = move_questions(
+                    encoder, look_ahead, offered, settings.extra_questions, settings.free_move
+                )
+                answer = await brain.ask(state, questions, "move")
                 tokens += answer.input_tokens
                 data = answer.to_json()
                 record.update(macro=data.pop("choice"), **data)
@@ -203,7 +257,7 @@ async def play_live(game: Game, brain: Brain, encoder: str, look_ahead: bool = F
             yield "event", result
             place = tuple(result["willy"])
             since_new_place = 0 if place not in visited else since_new_place + 1
-            visited.add(place)
+            visited[place] += 1
             progress = (*place, result["keys_collected"])
             idle = 0 if progress not in seen else idle + 1
             seen.add(progress)
@@ -223,8 +277,11 @@ async def play_live(game: Game, brain: Brain, encoder: str, look_ahead: bool = F
 
 
 async def play_replay(game: Game, file: str):
-    name = Path(file).name
-    path = DEMO_DIR / name if (DEMO_DIR / name).exists() else RUNS_DIR / name
+    path = DEMO_DIR / Path(file).name
+    if not path.exists():
+        path = (RUNS_DIR / file).resolve()
+        if RUNS_DIR.resolve() not in path.parents:
+            raise ValueError(f"not a run file: {file}")
     lines = path.read_text().splitlines()
     records = [json.loads(line) for line in lines]
     header = {**records[0], "mode": "replay"}
@@ -236,7 +293,7 @@ async def play_replay(game: Game, file: str):
         if record["type"] == "end":
             yield "event", record
             return
-        if record["type"] == "target":
+        if record["type"] != "decision":  # a target record has no macro
             yield "event", record
             continue
         logged = record.pop("result", None)

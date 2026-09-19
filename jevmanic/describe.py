@@ -14,6 +14,7 @@ Encoders:
 
 from .game import (
     COLS,
+    DEAD_END_CAUSE,
     ROWS,
     TILE_CONVEYOR,
     TILE_CRUMBLING,
@@ -152,6 +153,13 @@ def _look(snap: Snapshot, direction: int) -> dict:
     return {"first_thing": "nothing, the floor is clear", "distance_cells": LOOK_AHEAD_CELLS}
 
 
+def patrol_covers(g, column: int, row: int) -> bool:
+    """Is this cell in the patrol area of the guardian? A guardian is 2 x 2 cells."""
+    if g.axis == "vertical":
+        return g.x <= column <= g.x + 1 and g.min_y <= row <= g.max_y + 1
+    return g.min_x <= column <= g.max_x + 1 and g.y <= row <= g.y + 1
+
+
 def _fall_is_safe(snap: Snapshot, x: int, floor_row: int) -> bool:
     """Is the fall safe if Willy stands at column x and the floor goes away?
 
@@ -167,7 +175,7 @@ def _fall_is_safe(snap: Snapshot, x: int, floor_row: int) -> bool:
                 break
             # The patrol of a guardian. A guardian is 2 cells wide and 2 cells high.
             for g in snap.guardians:
-                if g.min_x <= column <= g.max_x + 1 and g.y <= y <= g.y + 1:
+                if patrol_covers(g, column, y):
                     return False
     return True
 
@@ -296,7 +304,9 @@ def _relative(snap: Snapshot, x: int, y: int, width: int = 1) -> dict:
 
 
 def _target(snap: Snapshot, target) -> dict:
-    """The target: the key that jev selected, or the portal when no key is left."""
+    """The target: the key or switch that jev selected, or the portal when no key is left."""
+    if target is not None and tuple(target) in snap.switches:
+        return {"what": "selected switch", **_relative(snap, *target)}
     if not snap.keys or target is None or tuple(target) not in snap.keys:
         if snap.keys:
             return {"what": "no target selected"}
@@ -306,8 +316,8 @@ def _target(snap: Snapshot, target) -> dict:
 
 
 def target_cell(snap: Snapshot, target):
-    """The cell that Willy must go to: the selected key, or the portal."""
-    if snap.keys and target is not None and tuple(target) in snap.keys:
+    """The cell that Willy must go to: the selected key or switch, or the portal."""
+    if target is not None and tuple(target) in snap.keys + snap.switches:
         return tuple(target)
     return snap.portal
 
@@ -329,10 +339,14 @@ def _key_facts(snap: Snapshot, x: int, y: int) -> dict:
 
 def keys_state(snap: Snapshot, key_names: dict) -> dict:
     """The state for the question that selects the target key."""
-    return {
-        "willy": {"standing_on": _standing_on(snap)},
-        "keys": {key_names[k]: _key_facts(snap, *k) for k in snap.keys},
-    }
+    facts = {key_names[k]: {"what": "key", **_key_facts(snap, *k)} for k in snap.keys}
+    for cell in snap.switches:
+        facts[key_names[cell]] = {
+            "what": "switch. Willy flips it when he touches it. A switch changes the cavern: "
+                    "it can open a wall or remove a danger.",
+            **_key_facts(snap, *cell),
+        }
+    return {"willy": {"standing_on": _standing_on(snap)}, "keys": facts}
 
 
 def _progress_reference(snap: Snapshot, target):
@@ -357,7 +371,23 @@ def _progress_reference(snap: Snapshot, target):
     return (tx, snap.willy_y if height == "same level" else ty), "distance to the target"
 
 
-def moves_state(snap: Snapshot, outcomes: dict, target, visited: set, tried: set = frozenset()) -> dict:
+LOOP_VISITS = 3  # a place with this number of visits is part of a loop
+
+
+def _visit_count(visited, x, y) -> int:
+    return visited.get((x, y), 0) if hasattr(visited, "get") else int((x, y) in visited)
+
+
+def _visits_word(visited, x, y) -> str:
+    count = _visit_count(visited, x, y)
+    if count == 0:
+        return "new place"
+    if count < LOOP_VISITS:
+        return "visited before"
+    return "visited many times"
+
+
+def moves_state(snap: Snapshot, outcomes: dict, target, visited: set, tried: set = frozenset(), memory: bool = True, mark_least_visited: bool = True) -> dict:
     """The result of each macro, from the look-ahead. Deadly macros are separate."""
     (tx, ty), measure = _progress_reference(snap, target)
     goal = target_cell(snap, target)
@@ -368,9 +398,32 @@ def moves_state(snap: Snapshot, outcomes: dict, target, visited: set, tried: set
 
     now = distance(snap.willy_x, snap.willy_y)
     moves, removed = {}, {}
+    # A wait is valid only if something can change while Willy waits.
+    guardian_near = any(
+        g.get("height") == "same level" or g.get("its_column_crosses_the_level_of_willy") == "yes"
+        for g in _guardians(snap)
+    )
+    guardian_blocks = any(o.dead and o.cause in ("guardian", DEAD_END_CAUSE) for o in outcomes.values())
+    wait_can_help = guardian_near or guardian_blocks or _standing_on(snap) == "crumbling floor"
+
+    def is_useful(name, o):
+        has_effect = o.dx or o.dy or o.keys_collected or o.complete
+        return bool(has_effect) or (name == "wait" and wait_can_help)
+
+    # If no safe move has an effect, the harmless moves stay in the list. A
+    # move with no effect is always better than a move that kills Willy.
+    some_move_is_useful = any(is_useful(n, o) for n, o in outcomes.items() if not o.dead)
+    # If no move is safe, the dead end moves stay in the list. Willy is alive
+    # after a dead end move, thus it is better than a move that kills him now.
+    no_move_is_safe = all(o.dead for o in outcomes.values())
     for name, o in outcomes.items():
-        if o.dead:
+        dead_end_only = o.dead and o.cause == DEAD_END_CAUSE
+        if o.dead and not (no_move_is_safe and dead_end_only):
             removed[name] = f"kills Willy: {o.cause}"
+            continue
+        if not o.dead and some_move_is_useful and not is_useful(name, o):
+            # We know that this move is not valid, thus jev does not get it.
+            removed[name] = "no effect: Willy stays in the same place"
             continue
         if o.dx == 0 and o.dy == 0:
             movement = "Willy stays in the same place"
@@ -395,10 +448,14 @@ def moves_state(snap: Snapshot, outcomes: dict, target, visited: set, tried: set
         result = {
             "movement": movement,
             "progress": progress,
-            "place": "visited before" if (o.x, o.y) in visited else "new place",
+            "place": _visits_word(visited, o.x, o.y),
             # Memory: did Willy select this move at this place before?
             "tried_from_here": "yes" if (snap.willy_x, snap.willy_y, name) in tried else "no",
         }
+        if not memory:
+            del result["place"], result["tried_from_here"]
+        if o.dead:
+            result["warning"] = "dead end: Willy is alive after this move, but then no move is safe"
         if TILE_CRUMBLING in floor_after:
             result["ends_on"] = "crumbling floor"
         if o.keys_collected:
@@ -406,24 +463,53 @@ def moves_state(snap: Snapshot, outcomes: dict, target, visited: set, tried: set
         if o.complete:
             result["completes_cavern"] = True
         moves[name] = result
+    if memory and mark_least_visited:
+        # Mark the option with the smallest number of visits. The code
+        # compares the numbers, because jev is weak with numbers. A move that
+        # stays in the same place is an option only if no move goes away.
+        def count(name):
+            return _visit_count(visited, outcomes[name].x, outcomes[name].y)
+
+        going = [n for n in moves if outcomes[n].dx or outcomes[n].dy] or list(moves)
+        if going:
+            fewest = min(count(n) for n in going)
+            for n in going:
+                if count(n) == fewest:
+                    moves[n]["least_visited_option"] = "yes"
     return {
         "progress_measures": measure,
         "moves": moves,
-        "moves_that_kill_willy": removed or "none",
+        "moves_not_offered": removed or "none",
     }
 
 
 def _guardians(snap: Snapshot) -> list[dict]:
     out = []
+    body = (snap.willy_y, snap.willy_y + 1)
     for g in snap.guardians:
         rel = _relative(snap, g.x, g.y, 2)
+        facts = {k: rel[k] for k in ("side", "horizontal_cells", "horizontal_distance")}
+        if g.axis == "vertical":
+            # A vertical guardian goes up and down in one column.
+            facts["type"] = "vertical guardian: it moves up and down in its column"
+            facts["moves"] = g.moving
+            crosses = g.min_y <= body[1] and g.max_y + 1 >= body[0]
+            facts["its_column_crosses_the_level_of_willy"] = "yes" if crosses else "no"
+            if g.y + 1 < body[0]:
+                facts["now"] = "above the level of Willy"
+            elif g.y > body[1]:
+                facts["now"] = "below the level of Willy"
+            else:
+                facts["now"] = "on the level of Willy"
+            out.append(facts)
+            continue
         if rel["side"] == "same column":
             approach = "at Willy"
         elif rel["side"] == g.moving:
             approach = "away from Willy"
         else:
             approach = "toward Willy"
-        facts = {k: rel[k] for k in ("side", "horizontal_cells", "horizontal_distance", "height")}
+        facts["height"] = rel["height"]
         facts["moves"] = approach
         if rel["height"] == "same level":
             # The patrol area: the columns that the guardian goes through.

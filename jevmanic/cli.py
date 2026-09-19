@@ -1,6 +1,8 @@
 """Run one live game in the terminal, without the viewer.
 
-Run:  uv run python -m jevmanic.cli [encoder] [lookahead] [until-complete] [cavern=2]
+Run:  uv run python -m jevmanic.cli [encoder] [lookahead] [until-complete] [cavern=2] [rules]
+
+With "rules", jev gets the decision procedure that we wrote (comparison only).
 
 The cavern number starts at 1: cavern=1 is Central Cavern.
 
@@ -16,7 +18,10 @@ from dotenv import load_dotenv
 
 from .brain import Brain
 from .game import Game
-from .runner import play_live
+from .runner import Settings, play_live
+
+
+SETTINGS = Settings(free_move="rules" not in sys.argv, free_target="rules" not in sys.argv)
 
 
 async def main(encoder: str, look_ahead: bool, until_complete: bool, cavern: int):
@@ -31,7 +36,7 @@ async def main(encoder: str, look_ahead: bool, until_complete: bool, cavern: int
 
 async def play_once(game, brain, encoder, look_ahead, cavern) -> str:
     outcome = ""
-    async for kind, data in play_live(game, brain, encoder, look_ahead, cavern):
+    async for kind, data in play_live(game, brain, encoder, look_ahead, cavern, SETTINGS):
         if kind != "event":
             continue
         if data["type"] == "target":

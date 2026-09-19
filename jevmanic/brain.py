@@ -44,9 +44,19 @@ TARGET_INSTRUCTIONS = (
 )
 
 
-def target_question(key_names: list[str]) -> dict:
-    criteria = {name: f"The key that `keys.{name}` describes." for name in key_names}
-    return {"target": Choice(instructions=TARGET_INSTRUCTIONS, criteria=criteria)}
+# The target question with no preference rules. Jev must decide from the facts.
+FREE_TARGET_INSTRUCTIONS = (
+    "Willy is a miner in a platform game. He must collect all keys. Willy can "
+    "climb only 2 rows with one jump. `keys` gives facts about each key "
+    "or switch relative to Willy. Select the key or switch that is the best "
+    "for Willy to get next."
+)
+
+
+def target_question(key_names: list[str], free: bool = False) -> dict:
+    criteria = {name: f"The key or switch that `keys.{name}` describes." for name in key_names}
+    instructions = FREE_TARGET_INSTRUCTIONS if free else TARGET_INSTRUCTIONS
+    return {"target": Choice(instructions=instructions, criteria=criteria)}
 
 
 # -- Move request, rules mode ----------------------------------------------------
@@ -160,17 +170,45 @@ LOOK_AHEAD_INSTRUCTIONS = (
     "over the guardian. Do not walk away from it toward a wall. "
     "Rule 3: when `target.way_down.side` is Willy stands on it, select wait, "
     "because the crumbling floor breaks and Willy falls. "
-    "Rule 4: select a move whose `progress` is nearer and whose `place` is new "
+    "Rule 4: when each move whose `progress` is nearer has the `place` visited "
+    "many times, or when no move has the `progress` nearer, Willy is in a "
+    "loop and the direct way is closed. Select a move that has "
+    "`least_visited_option` yes, also when its `progress` is farther, because "
+    "Willy must find a different way. "
+    "Rule 5: select a move whose `progress` is nearer and whose `place` is new "
     "place. When `target.height` is higher, prefer a move that goes higher. "
     "When `target.height` is lower, prefer a move that goes lower. "
-    "Rule 5: select a move whose `progress` is nearer. "
-    "Rule 6: when a move toward the target is in `moves_that_kill_willy` with "
+    "Rule 6: select a move whose `progress` is nearer. "
+    "Rule 7: when a move toward the target is in `moves_not_offered` with "
     "the cause guardian, select wait, because a guardian moves away. "
-    "Rule 7: when a jump toward the target is in `moves_that_kill_willy` with "
+    "Rule 8: when a jump toward the target is in `moves_not_offered` with "
     "the cause nasty, select the walk move that goes away from the target, "
     "because a nasty does not move and a jump from 1 cell farther back can go "
     "over it. "
-    "Rule 8: select a move whose `place` is new place."
+    "Rule 9: select a move that has `least_visited_option` yes."
+)
+
+# The move question with no decision procedure. It gives the goal, the meaning
+# of the facts, and knowledge of the game. It does not say "select X when Y":
+# the decision must come from jev.
+FREE_MOVE_INSTRUCTIONS = (
+    "Willy is a miner in a platform game. He must get to the target, and he "
+    "must stay alive. Select the move that is the best for Willy now. "
+    "`moves` gives the true result of each possible move. All moves in `moves` "
+    "are safe and have an effect. `moves_not_offered` gives the moves that "
+    "Willy cannot make now, with the cause. "
+    "The meaning of the facts: `progress` tells if a move gets Willy nearer to "
+    "the place that `progress_measures` names. `place` tells how frequently "
+    "Willy was at the place where the move ends. `tried_from_here` tells if "
+    "Willy made this move from this place before. "
+    "Knowledge of the game: Willy can climb only 2 rows with one jump. If "
+    "Willy comes back to the same places again and again, the direct way is "
+    "closed, and he must go a different way, also if that way goes away from "
+    "the target first. A crumbling floor breaks a little each time Willy "
+    "stands on it. It can be the only way up, and it is also a way down. A "
+    "nasty does not move: if it stops a jump, a jump from a different cell "
+    "can go over it. A guardian moves along its patrol area: Willy can wait "
+    "for it to go away, jump over it, or go out of its patrol area."
 )
 
 LOOK_AHEAD_CRITERIA = {
@@ -209,21 +247,22 @@ EXTRA_QUESTIONS = {
 }
 
 
-def move_questions(encoder: str, look_ahead: bool, offered=None) -> dict:
+def move_questions(encoder: str, look_ahead: bool, offered=None, extras: bool = True, free: bool = False) -> dict:
     """The questions of one move request.
 
     `offered` is the list of macros that jev can select. In look-ahead mode
     it does not contain the macros that kill Willy.
     """
     if look_ahead:
-        instructions, criteria = LOOK_AHEAD_INSTRUCTIONS, LOOK_AHEAD_CRITERIA
+        instructions = FREE_MOVE_INSTRUCTIONS if free else LOOK_AHEAD_INSTRUCTIONS
+        criteria = LOOK_AHEAD_CRITERIA
     elif encoder in MAP_ONLY_ENCODERS:
         instructions, criteria = MAP_MOVE_INSTRUCTIONS, MAP_MOVE_CRITERIA
     else:
         instructions, criteria = MOVE_INSTRUCTIONS, MOVE_CRITERIA
     offered = list(MACROS) if offered is None else offered
     move = Choice(instructions=instructions, criteria={m: criteria[m] for m in offered})
-    return {"move": move, **EXTRA_QUESTIONS}
+    return {"move": move, **(EXTRA_QUESTIONS if extras else {})}
 
 
 def questions_as_json(questions: dict) -> dict:

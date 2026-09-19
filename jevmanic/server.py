@@ -24,7 +24,7 @@ from PIL import Image
 from . import describe
 from .brain import Brain
 from .game import Game
-from .runner import list_runs, play_live, play_replay
+from .runner import Settings, list_runs, play_live, play_replay
 
 WEB_DIR = Path(__file__).resolve().parent / "web"
 TICK_SECONDS = 0.08  # time for one game tick at speed 1
@@ -108,8 +108,10 @@ class Session:
                 return
             look_ahead = bool(msg.get("look_ahead", False))
             cavern = max(0, min(19, int(msg.get("cavern", 0))))
+            rules = bool(msg.get("rules_mode", False))
+            settings = Settings(free_move=not rules, free_target=not rules)
             self.task = asyncio.create_task(
-                self.run(play_live(self.game, self.brain, encoder, look_ahead, cavern))
+                self.run(play_live(self.game, self.brain, encoder, look_ahead, cavern, settings))
             )
         elif cmd == "replay":
             await self.stop()
