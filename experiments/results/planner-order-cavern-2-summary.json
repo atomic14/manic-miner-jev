@@ -1,0 +1,166 @@
+{
+  "label": "planner-order-cavern-2",
+  "options": {
+    "caverns": "2",
+    "runs": "10",
+    "label": "planner-order-cavern-2",
+    "parallel": "4",
+    "encoder": "words",
+    "key-order": "EDABC"
+  },
+  "settings": {
+    "extra_questions": true,
+    "memory": true,
+    "survival_depth": 12,
+    "free_target": true,
+    "free_move": true,
+    "two_ways_up": false,
+    "target_map": false,
+    "hybrid_keys": false,
+    "map_key_text": true,
+    "forced_key_order": "EDABC",
+    "key_decision_every": 0,
+    "brief_text": false,
+    "flexible_target": true,
+    "recent_moves": false
+  },
+  "caverns": [
+    {
+      "cavern": 2,
+      "name": "The Cold Room",
+      "runs": 10,
+      "complete": 6,
+      "mean_keys": 4.2,
+      "mean_decisions_complete": 76,
+      "tokens_per_call": 1531,
+      "low_confidence_rate": 0.64,
+      "mean_cost_usd": 0.0063,
+      "other_outcomes": {
+        "stuck: no progress": 2,
+        "Willy died": 2
+      }
+    }
+  ],
+  "runs": [
+    {
+      "cavern": 1,
+      "file": "planner-order-cavern-2/20260919-203239-cavern-02-the-cold-room-words-lookahead.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 73,
+      "tokens": 87423,
+      "cost_usd": 0.003672,
+      "mean_latency_ms": 321,
+      "low_confidence": 34,
+      "jev_calls": 57
+    },
+    {
+      "cavern": 1,
+      "file": "planner-order-cavern-2/20260919-203239-cavern-02-the-cold-room-words-lookahead-2.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 72,
+      "tokens": 102851,
+      "cost_usd": 0.00432,
+      "mean_latency_ms": 314,
+      "low_confidence": 36,
+      "jev_calls": 67
+    },
+    {
+      "cavern": 1,
+      "file": "planner-order-cavern-2/20260919-203239-cavern-02-the-cold-room-words-lookahead-3.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 4,
+      "decisions": 173,
+      "tokens": 228284,
+      "cost_usd": 0.009588,
+      "mean_latency_ms": 327,
+      "low_confidence": 106,
+      "jev_calls": 148
+    },
+    {
+      "cavern": 1,
+      "file": "planner-order-cavern-2/20260919-203239-cavern-02-the-cold-room-words-lookahead-4.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 56,
+      "tokens": 84642,
+      "cost_usd": 0.003555,
+      "mean_latency_ms": 320,
+      "low_confidence": 33,
+      "jev_calls": 55
+    },
+    {
+      "cavern": 1,
+      "file": "planner-order-cavern-2/20260919-203259-cavern-02-the-cold-room-words-lookahead.jsonl",
+      "outcome": "Willy died",
+      "keys": 0,
+      "decisions": 199,
+      "tokens": 243459,
+      "cost_usd": 0.010225,
+      "mean_latency_ms": 316,
+      "low_confidence": 109,
+      "jev_calls": 160
+    },
+    {
+      "cavern": 1,
+      "file": "planner-order-cavern-2/20260919-203300-cavern-02-the-cold-room-words-lookahead.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 73,
+      "tokens": 87423,
+      "cost_usd": 0.003672,
+      "mean_latency_ms": 323,
+      "low_confidence": 33,
+      "jev_calls": 57
+    },
+    {
+      "cavern": 1,
+      "file": "planner-order-cavern-2/20260919-203303-cavern-02-the-cold-room-words-lookahead.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 4,
+      "decisions": 170,
+      "tokens": 222015,
+      "cost_usd": 0.009325,
+      "mean_latency_ms": 337,
+      "low_confidence": 94,
+      "jev_calls": 145
+    },
+    {
+      "cavern": 1,
+      "file": "planner-order-cavern-2/20260919-203321-cavern-02-the-cold-room-words-lookahead.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 73,
+      "tokens": 87423,
+      "cost_usd": 0.003672,
+      "mean_latency_ms": 316,
+      "low_confidence": 34,
+      "jev_calls": 57
+    },
+    {
+      "cavern": 1,
+      "file": "planner-order-cavern-2/20260919-203334-cavern-02-the-cold-room-words-lookahead.jsonl",
+      "outcome": "Willy died",
+      "keys": 4,
+      "decisions": 175,
+      "tokens": 222851,
+      "cost_usd": 0.00936,
+      "mean_latency_ms": 325,
+      "low_confidence": 95,
+      "jev_calls": 146
+    },
+    {
+      "cavern": 1,
+      "file": "planner-order-cavern-2/20260919-203341-cavern-02-the-cold-room-words-lookahead.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 110,
+      "tokens": 127722,
+      "cost_usd": 0.005364,
+      "mean_latency_ms": 360,
+      "low_confidence": 52,
+      "jev_calls": 84
+    }
+  ]
+}

@@ -582,6 +582,24 @@ result came from the search, not from jev.
 
   The map has a letter for each key, `<` or `>` for a conveyor, and a legend
   that says what each symbol means for Willy.
+- **A reasoning model as the planner, and jev as the player.** A clean
+  subagent (a reasoning model) got only the map, the legend, the guardian
+  limits, and the game mechanics. It gave a key order for caverns 1 to 4 with
+  reasons, for example "the top floor can only be reached from the far left,
+  and E is on the only way up". For Central Cavern it gave E A C D B, the
+  known good order. For The Cold Room it gave the most frequent order of our
+  complete runs. We used only its key order (switch `key-order`), and jev
+  made each move decision. Complete runs of 10, caverns 1 to 4: 7, 6, 9, 0.
+  The default gives 8 to 10, 4 to 6, 10, 0. The runs need fewer decisions
+  (The Cold Room 76, not 95 to 122; The Menagerie 54, not 66), but no more
+  runs are complete. The orders are in `experiments/results/`.
+- **10 runs are not sufficient to compare two configurations that are near.**
+  The same configuration (the code sets the order E A C D B in Central
+  Cavern) gave 10 of 10 in one measurement and 7 of 10 in the next one.
+  Thus a difference such as 7 of 10 against 10 of 10 can be chance. This
+  makes some conclusions in this document weaker, for example "the second
+  key decision is the cause". Large differences (10 of 10 against 1 of 10)
+  are real.
 - **A separate key decision with the map (hybrid) gave no gain in play.**
   Switch `hybrid-keys`: jev gets the key decision, with the map, at the start
   and when Willy collects a key, and the run is then in movement mode.

@@ -1,0 +1,10 @@
+{
+  "note": "Key orders from a clean subagent (a reasoning model). Its input was only the map, the legend, the guardian patrol limits, and the game mechanics. It got no results of this project and used no tools.",
+  "orders": {"1": "EACDB", "2": "EDABC", "3": "ABCDE", "4": "EDABC"},
+  "reasons": {
+    "1": "The top floor can only be reached from the far left. E lies on the only way up, which is the right side, so it comes first. The top keys are then met in the order A, C, D, B.",
+    "2": "C is in a walled chimney and can only be reached from the top. That drop ends next to the portal, so C is last. E is only reachable at ground level, so E goes first.",
+    "3": "The right-side ledges can only be reached from above, so the route is up the left, across the top, down the right. E A B C D is an alternative with about the same cost.",
+    "4": "E is near the start and its ledges are also a way up. D cannot be taken from above, because a fall from there kills, so D comes before the final climb."
+  }
+}
