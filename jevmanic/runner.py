@@ -35,8 +35,16 @@ STUCK_DECISIONS = 30
 USD_PER_TOKEN = 0.042 / 1_000_000  # jev-1.13 price for input tokens
 
 
+EXAMPLES_GROUP = "examples"
+LIVE_GROUP = "live"
+
+
 def list_runs() -> list[dict]:
-    """The header and end record of each log file, newest first."""
+    """The header and end record of each log file, newest first.
+
+    Each run is in one group: the saved examples (folder demo/), the live
+    runs (folder runs/), or one measurement (a folder below runs/).
+    """
     runs = []
     paths = sorted(DEMO_DIR.glob("*.jsonl")) + sorted(RUNS_DIR.rglob("*.jsonl"), reverse=True)
     for path in paths:
@@ -46,10 +54,21 @@ def list_runs() -> list[dict]:
         header, end = json.loads(lines[0]), json.loads(lines[-1])
         if end.get("type") != "end":
             end = {"outcome": "incomplete", "decisions": len(lines) - 1}
+        if path.parent == DEMO_DIR:
+            group, file = EXAMPLES_GROUP, path.name
+        else:
+            file = str(path.relative_to(RUNS_DIR))
+            group = LIVE_GROUP if path.parent == RUNS_DIR else str(path.parent.relative_to(RUNS_DIR))
+        # A log file with no settings is from before free mode.
+        free_mode = header.get("settings", {}).get("free_move", False)
         runs.append(
             {
-                "file": path.name if path.parent == DEMO_DIR else str(path.relative_to(RUNS_DIR)),
+                "file": file,
+                "group": group,
                 "cavern": header.get("cavern", 0),
+                "cavern_name": header.get("cavern_name", "Central Cavern"),
+                "mode": "free mode" if free_mode else "rules mode",
+                "started": header.get("started"),
                 "encoder": header.get("encoder"),
                 "look_ahead": header.get("look_ahead", False),
                 "outcome": end.get("outcome"),
@@ -59,6 +78,42 @@ def list_runs() -> list[dict]:
             }
         )
     return runs
+
+
+def list_run_groups(runs: list[dict]) -> list[dict]:
+    """The groups of the run list, with a name and an explanation for the viewer."""
+    groups = [
+        {
+            "id": EXAMPLES_GROUP,
+            "label": "Saved example runs",
+            "description": "Complete runs that are part of the project (folder demo/). "
+            "Use them for a demonstration. A replay makes no jev calls.",
+        },
+        {
+            "id": LIVE_GROUP,
+            "label": "Your live runs",
+            "description": "Runs that you started with 'Start live run' or from the terminal "
+            "(folder runs/). Each live run is saved here.",
+        },
+    ]
+    for name in sorted({r["group"] for r in runs} - {EXAMPLES_GROUP, LIVE_GROUP}):
+        members = [r for r in runs if r["group"] == name]
+        complete = sum(1 for r in members if r["outcome"] == "cavern complete")
+        caverns = sorted({r["cavern"] + 1 for r in members})
+        groups.append(
+            {
+                "id": name,
+                "label": f"Measurement: {name}",
+                "description": f"{len(members)} live runs from the measurement tool, caverns "
+                f"{', '.join(map(str, caverns))}. {complete} of {len(members)} are complete "
+                f"(folder runs/{name}/). A failed run shows where and why jev failed.",
+            }
+        )
+    for group in groups:
+        members = [r for r in runs if r["group"] == group["id"]]
+        group["runs"] = len(members)
+        group["complete"] = sum(1 for r in members if r["outcome"] == "cavern complete")
+    return groups
 
 
 def _outcome(game: Game, decisions: int, idle: int = 0) -> str | None:

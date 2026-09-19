@@ -24,7 +24,7 @@ from PIL import Image
 from . import describe
 from .brain import Brain
 from .game import Game
-from .runner import Settings, list_runs, play_live, play_replay
+from .runner import Settings, list_run_groups, list_runs, play_live, play_replay
 
 WEB_DIR = Path(__file__).resolve().parent / "web"
 TICK_SECONDS = 0.08  # time for one game tick at speed 1
@@ -41,6 +41,11 @@ def _png(game: Game) -> bytes:
     buffer = io.BytesIO()
     Image.fromarray(game.screen_rgb()).save(buffer, format="PNG", compress_level=1)
     return buffer.getvalue()
+
+
+def _runs_message() -> dict:
+    runs = list_runs()
+    return {"type": "runs", "runs": runs, "groups": list_run_groups(runs)}
 
 
 class Session:
@@ -94,7 +99,7 @@ class Session:
                     # The pause point is between decisions.
                     await self._gate()
                 if data["type"] == "end":
-                    await self.send({"type": "runs", "runs": list_runs()})
+                    await self.send(_runs_message())
         except Exception as error:  # show the error in the viewer
             await self.send({"type": "error", "message": f"{type(error).__name__}: {error}"})
             raise
@@ -136,10 +141,10 @@ async def websocket(ws: WebSocket):
     session = Session(ws)
     await session.send(
         {
+            **_runs_message(),
             "type": "hello",
             "encoders": list(describe.ENCODERS),
             "caverns": session.game.cavern_names(),
-            "runs": list_runs(),
         }
     )
     await ws.send_bytes(_png(session.game))

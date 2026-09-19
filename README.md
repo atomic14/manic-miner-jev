@@ -104,8 +104,17 @@ Open http://127.0.0.1:8000.
 
 - **Replay** plays a recorded run. A replay makes no jev calls and costs
   nothing. The emulator is deterministic, thus a replay is always the same
-  game. The first runs in the list are complete runs from the `demo/` folder.
-  The file name tells if the run is free mode or rules mode.
+  game. Select a group of recorded runs first:
+  - **Saved example runs**: complete runs that are part of the project
+    (folder `demo/`). Use them for a demonstration.
+  - **Your live runs**: each run that you start is saved here (folder
+    `runs/`).
+  - **Measurement: name**: the runs of one measurement (folder
+    `runs/name/`). A failed run shows where and why jev failed.
+
+  The box **complete runs only** hides the runs in which Willy did not get
+  to the portal. Each entry gives the cavern, the mode, the result, and the
+  number of decisions.
 - **Start live run** plays a new game with jev. Select the cavern and the
   state encoder first. Keep the **look-ahead** box set and use the `words`
   encoder. The **rules mode** box gives jev the procedure that we wrote. Use
@@ -148,7 +157,9 @@ uv run python -m experiments.diagnose runs/my-test/<file>.jsonl
 table: complete runs, keys, decisions, tokens, and the rate of decisions with
 a confidence below 0.5. The switches `no-extras`, `no-memory`, `depth=N`,
 `rules-move`, and `rules-target` change one part of the design, to measure
-what it gives. The log files go to `runs/<label>/`.
+what it gives. The log files go to `runs/<label>/`, and the viewer shows
+them as the group "Measurement: label". The summaries of the measurements
+in this document are in `experiments/results/`.
 `experiments/diagnose.py` prints the map, the last positions, and the last
 state of one run.
 
@@ -472,6 +483,7 @@ result came from the search, not from jev.
 | `jevmanic/server.py`, `jevmanic/web/` | viewer |
 | `jevmanic/cli.py` | live run in the terminal |
 | `experiments/` | measurement, diagnosis, and tests of how well jev reads a state |
+| `experiments/results/` | the summaries of the measurements in this document |
 | `demo/` | recorded complete runs, in git |
 | `runs/` | log files of your runs (JSON Lines), not in git |
 
