@@ -30,8 +30,26 @@ This gives two modes:
 
 ## Result
 
-Free mode, 10 live runs for each cavern. A run is complete when Willy has all
-keys and goes into the portal.
+Free mode with the present configuration. 10 live runs for each cavern. A run
+is complete when Willy has all keys and goes into the portal.
+
+| Cavern | Complete runs | Note |
+| --- | --- | --- |
+| 1 Central Cavern | 10 of 10 | 71 decisions |
+| 3 The Menagerie | 10 of 10 | 66 decisions |
+| 2 The Cold Room | 4 to 6 of 10 | the key order is the problem |
+| 4 Abandoned Uranium Workings | 0 of 10 | 4.0 of 5 keys, then a trap in a corner |
+| 16 The Sixteenth Cavern | 0 of 10 | 1.7 of 4 keys |
+
+One complete run costs approximately $0.004. We measured only these caverns
+with the present configuration. They have horizontal guardians only.
+
+An older measurement of all 20 caverns (200 runs, before the corrections of
+the prompt text) is a lower limit for the other caverns. Jev completed 6 of
+the 20 caverns at least one time. Only cavern 9, which has 1 key, was
+reliable.
+
+<details><summary>The 200-run table</summary>
 
 | Cavern | Complete runs | Mean keys |
 | --- | --- | --- |
@@ -56,22 +74,7 @@ keys and goes into the portal.
 | 19 Solar Power Generator | 0 of 10 | 0.9 |
 | 20 The Final Barrier | 0 of 10 | 2.5 |
 
-Total: 26 of 200 runs. Jev completed 6 of the 20 caverns at least one
-time. Only cavern 9, which has 1 key, is reliable. The 200 runs cost $1.33.
-
-We measured this table before three corrections. Two are in "Valid moves".
-The third is the most important: the free mode instructions did not give the
-full goal ("collect all keys") and did not give the meaning of the facts
-`collects_key`, `completes_cavern`, `ends_on`, and `warning`. With the
-corrections, 10 runs each:
-
-| Cavern | Before | After |
-| --- | --- | --- |
-| 1 Central Cavern | 1 of 10 | **10 of 10**, 74 decisions |
-| 2 The Cold Room | 6 of 10 | 6 of 10 |
-
-We did not measure the other caverns again. The table above is thus a lower
-limit for them.
+</details>
 
 ### Rules mode compared with free mode
 
@@ -257,36 +260,41 @@ each request.
 
 ### Request 1: the target
 
+Jev gets this request at the start, when Willy collects a key, when he lands
+on a different floor level, and when he makes no progress for 12 decisions.
 The state has one entry for each key that is left, and for each switch that
-is not flipped. This example shows 2 of the 5 keys:
+is not flipped. This example shows 2 of the keys:
 
 ```json
 {
   "willy": {
-    "standing_on": "floor"
+    "standing_on": "crumbling floor"
   },
   "keys": {
-    "key_3": {
-      "what": "key",
-      "side": "right",
-      "horizontal_cells": 23,
-      "horizontal_distance": "far",
-      "height": "higher",
-      "floor_rows_apart": 7,
-      "rows_above_its_floor": 0,
-      "floor_below_key": "crumbling floor",
-      "between_walls": "yes",
-      "one_way_trip": "yes: Willy falls through the crumbling floor and cannot go back up"
-    },
-    "key_5": {
+    "key_2": {
       "what": "key",
       "side": "right",
       "horizontal_cells": 16,
       "horizontal_distance": "far",
-      "height": "same level",
-      "floor_rows_apart": 0,
-      "rows_above_its_floor": 2,
-      "floor_below_key": "floor"
+      "height": "higher",
+      "floor_rows_apart": 10,
+      "rows_above_its_floor": 1,
+      "floor_below_key": "floor",
+      "current_target": "yes",
+      "decisions_used_for_it": "a few"
+    },
+    "key_3": {
+      "what": "key",
+      "side": "right",
+      "horizontal_cells": 18,
+      "horizontal_distance": "far",
+      "height": "higher",
+      "floor_rows_apart": 5,
+      "rows_above_its_floor": 0,
+      "floor_below_key": "crumbling floor",
+      "between_walls": "yes",
+      "one_way_trip": "yes: Willy falls through the crumbling floor and cannot go back up",
+      "decisions_used_for_it": "none"
     }
   }
 }
@@ -299,19 +307,21 @@ is not flipped. This example shows 2 of the 5 keys:
 | `height`, `floor_rows_apart` | its floor level, compared with the floor of Willy. A key that hangs above the floor of Willy is on the same level. |
 | `rows_above_its_floor` | how high it is above its floor |
 | `floor_below_key` | floor, crumbling floor, or conveyor |
+| `current_target` | the key that Willy goes to now. Jev can keep it or change it. |
+| `decisions_used_for_it`, `gave_up_on_it` | a short memory for each key |
 | `between_walls`, `one_way_trip` | the key is in a shaft above a crumbling floor. Willy falls through and cannot go back up. |
 
 The question is a Choice with one option for each entry. The instructions:
 
-> Willy is a miner in a platform game. He must collect all keys. Willy can climb only 2 rows with one jump. `keys` gives facts about each key or switch relative to Willy. Select the key or switch that is the best for Willy to get next.
+> Willy is a miner in a platform game. He must collect all keys. Willy can climb only 2 rows with one jump. `keys` gives facts about each key or switch relative to Willy. Select the key or switch that is the best for Willy to get next. `current_target` marks the key that Willy goes to now. Willy can keep it or change it. `decisions_used_for_it` tells how many decisions Willy used for this key before. `gave_up_on_it` tells how many times Willy made no progress toward this key.
 
 The answer in the example: `key_4`, confidence
-0.28. This request used 927 input
+0.43. This request used 944 input
 tokens.
 
 ### Request 2: the move
 
-The state of decision 3 of the same run:
+The state of decision 5 of the same run:
 
 ```json
 {
@@ -321,45 +331,45 @@ The state of decision 3 of the same run:
   },
   "target": {
     "what": "selected key",
-    "side": "left",
-    "horizontal_cells": 11,
-    "horizontal_distance": "far",
-    "height": "higher",
-    "floor_rows_apart": 1,
-    "rows_above_its_floor": 1,
-    "way_up": {
-      "side": "right",
-      "horizontal_cells": 4,
-      "rows_higher": 2
-    }
+    "side": "right",
+    "horizontal_cells": 5,
+    "horizontal_distance": "medium",
+    "height": "same level",
+    "floor_rows_apart": 0,
+    "rows_above_its_floor": 2
   },
   "keys_left": 5,
   "to_the_left": {
-    "first_thing": "edge of the floor, then a drop",
-    "distance_cells": 1
+    "first_thing": "nothing, the floor is clear",
+    "distance_cells": 6
   },
   "to_the_right": {
-    "first_thing": "edge of the floor, then a drop",
-    "distance_cells": 3
+    "first_thing": "nothing, the floor is clear",
+    "distance_cells": 6
   },
   "guardians": [
     {
       "side": "left",
-      "horizontal_cells": 9,
-      "horizontal_distance": "far",
+      "horizontal_cells": 7,
+      "horizontal_distance": "medium",
       "height": "higher",
       "moves": "away from Willy"
     },
     {
-      "side": "same column",
-      "horizontal_cells": 0,
-      "horizontal_distance": "adjacent",
-      "height": "lower",
-      "moves": "at Willy"
+      "side": "right",
+      "horizontal_cells": 2,
+      "horizontal_distance": "near",
+      "height": "same level",
+      "moves": "toward Willy",
+      "willy_is_in_its_patrol_area": "yes",
+      "patrol_area_ends": {
+        "cells_to_the_left": 3,
+        "cells_to_the_right": 18
+      }
     }
   ],
   "air": "plenty",
-  "progress_measures": "distance to the way up",
+  "progress_measures": "distance to the target",
   "moves": {
     "walk_left": {
       "movement": "Willy moves 1 cells to the left",
@@ -374,17 +384,22 @@ The state of decision 3 of the same run:
       "tried_from_here": "no"
     },
     "jump_left": {
-      "movement": "Willy moves 5 cells to the left and 1 rows lower",
+      "movement": "Willy moves 3 cells to the left and 2 rows higher",
       "progress": "farther",
       "place": "new place",
       "tried_from_here": "no",
       "ends_on": "crumbling floor"
+    },
+    "wait": {
+      "movement": "Willy stays in the same place",
+      "progress": "same",
+      "place": "visited before",
+      "tried_from_here": "no"
     }
   },
   "moves_not_offered": {
-    "jump_right": "kills Willy: fall or other cause",
-    "jump_up": "no effect: Willy stays in the same place",
-    "wait": "no effect: Willy stays in the same place"
+    "jump_right": "kills Willy: guardian",
+    "jump_up": "no effect: Willy stays in the same place"
   }
 }
 ```
@@ -409,7 +424,7 @@ The request has 4 questions. Only the first one controls Willy.
 
 **`move` (Choice).** The options are the valid macros. The instructions:
 
-> Willy is a miner in a platform game. He must get to the target, and he must stay alive. Select the move that is the best for Willy now. `moves` gives the true result of each possible move. All moves in `moves` are safe and have an effect. `moves_not_offered` gives the moves that Willy cannot make now, with the cause. The meaning of the facts: `progress` tells if a move gets Willy nearer to the place that `progress_measures` names. `place` tells how frequently Willy was at the place where the move ends. `tried_from_here` tells if Willy made this move from this place before. Knowledge of the game: Willy can climb only 2 rows with one jump. If Willy comes back to the same places again and again, the direct way is closed, and he must go a different way, also if that way goes away from the target first. A crumbling floor breaks a little each time Willy stands on it. It can be the only way up, and it is also a way down. A nasty does not move: if it stops a jump, a jump from a different cell can go over it. A guardian moves along its patrol area: Willy can wait for it to go away, jump over it, or go out of its patrol area.
+> Willy is a miner in a platform game. The goal: Willy must collect all keys, then go into the exit portal, and he must stay alive. The target is the key that Willy goes to now, or the portal when no key is left. Select the move that is the best for Willy now. `moves` gives the true result of each possible move. All moves in `moves` are safe and have an effect. `moves_not_offered` gives the moves that Willy cannot make now, with the cause. The meaning of the facts: `progress` tells if a move gets Willy nearer to the place that `progress_measures` names. `place` tells how frequently Willy was at the place where the move ends. `tried_from_here` tells if Willy made this move from this place before. `collects_key` tells that Willy gets a key with this move. `completes_cavern` tells that Willy goes into the portal with this move and the cavern is complete. `ends_on` tells that Willy stands on a crumbling floor after this move. `warning` tells that no move is safe after this move. Knowledge of the game: Willy can climb only 2 rows with one jump. If Willy comes back to the same places again and again, the direct way is closed, and he must go a different way, also if that way goes away from the target first. A crumbling floor breaks a little each time Willy stands on it. It can be the only way up, and it is also a way down. A nasty does not move: if it stops a jump, a jump from a different cell can go over it. A guardian moves along its patrol area: Willy can wait for it to go away, jump over it, or go out of its patrol area.
 
 The criteria of the options:
 
@@ -428,10 +443,11 @@ time. The viewer shows their answers.
 - `threat` (Score): How large is the threat to Willy at this moment?
 
 The answer in the example: `walk_right`, confidence
-0.83. The probabilities: `walk_right` 0.88, `jump_left` 0.09, `walk_left` 0.03. This request used
-1362 input tokens and took 1187 ms.
+0.64. The probabilities: `walk_right` 0.74, `walk_left` 0.11, `jump_left` 0.08, `wait` 0.07. This request used
+1524 input tokens and took 288 ms.
 
-If only one macro is valid, the code runs it and makes no jev call.
+The code makes no jev call when only one macro is valid, and when all valid
+macros have the same result (Willy is in the air).
 
 ### Other state encoders
 
