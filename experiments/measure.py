@@ -17,6 +17,7 @@ Options (all are optional):
     no-extras        do not ask danger_left, danger_right, threat
     no-memory        do not give `place` and `tried_from_here`
     two-ways-up      give the way up on the left and on the right (measured: worse)
+    key-order=EACDB  a test: the code sets the key order, jev gets no key request
     hybrid-keys      the key decision uses the map; jev gets it at the start and
                      when Willy collects a key; then the run is in movement mode
     key-every=25     with hybrid-keys: repeat the key decision after 25 decisions
@@ -65,6 +66,8 @@ def parse(argv):
         hybrid_keys="hybrid-keys" in flags,
         two_ways_up="two-ways-up" in flags,
     )
+    if "key-order" in options:
+        settings.forced_key_order = options["key-order"]
     if "key-every" in options:
         settings.key_decision_every = int(options["key-every"])
     if "depth" in options:

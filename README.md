@@ -557,11 +557,13 @@ result came from the search, not from jev.
 
   In play (switch `target-map`), Willy has all 5 keys of Central Cavern at
   decision 35 to 39. With the facts only, he has them at decision 62 to 66.
-  But the complete runs went from 10 of 10 to 7 of 10. The runs now fail
-  after the keys: on the way from the top right down to the portal, and on
-  the way from key E to the top floor. With the old order, key E was the
-  last key, and it is on the way to the portal. The move facts cannot yet
-  do the better plan. The switch is off until the moves can do it.
+  But the complete runs went from 10 of 10 to 7 of 10. The better key order
+  is not the cause. A test in which the code sets the key order (switch
+  `key-order=EACDB`, no key request, the movement not changed) gives 10 of
+  10 with the order E A C D B, and 9 of 10 with the old order A C D B E.
+  The switch `target-map` changes more than the key order: the state of the
+  key request, its text, and the map in each repeated key request. One of
+  these changes does the harm. We do not know yet which one.
 
   The map has a letter for each key, `<` or `>` for a conveyor, and a legend
   that says what each symbol means for Willy.

@@ -1,0 +1,164 @@
+{
+  "label": "order-ACDBE",
+  "options": {
+    "caverns": "1",
+    "runs": "10",
+    "label": "order-ACDBE",
+    "parallel": "5",
+    "encoder": "words",
+    "key-order": "ACDBE"
+  },
+  "settings": {
+    "extra_questions": true,
+    "memory": true,
+    "survival_depth": 12,
+    "free_target": true,
+    "free_move": true,
+    "two_ways_up": false,
+    "target_map": false,
+    "hybrid_keys": false,
+    "forced_key_order": "ACDBE",
+    "key_decision_every": 0,
+    "brief_text": false,
+    "flexible_target": true,
+    "recent_moves": false
+  },
+  "caverns": [
+    {
+      "cavern": 1,
+      "name": "Central Cavern",
+      "runs": 10,
+      "complete": 9,
+      "mean_keys": 4.9,
+      "mean_decisions_complete": 74,
+      "tokens_per_call": 1440,
+      "low_confidence_rate": 0.51,
+      "mean_cost_usd": 0.0041,
+      "other_outcomes": {
+        "stuck: no progress": 1
+      }
+    }
+  ],
+  "runs": [
+    {
+      "cavern": 0,
+      "file": "order-ACDBE/20260919-200318-cavern-01-central-cavern-words-lookahead.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 76,
+      "tokens": 101077,
+      "cost_usd": 0.004245,
+      "mean_latency_ms": 305,
+      "low_confidence": 40,
+      "jev_calls": 70
+    },
+    {
+      "cavern": 0,
+      "file": "order-ACDBE/20260919-200318-cavern-01-central-cavern-words-lookahead-2.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 77,
+      "tokens": 99834,
+      "cost_usd": 0.004193,
+      "mean_latency_ms": 308,
+      "low_confidence": 33,
+      "jev_calls": 69
+    },
+    {
+      "cavern": 0,
+      "file": "order-ACDBE/20260919-200318-cavern-01-central-cavern-words-lookahead-3.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 74,
+      "tokens": 96984,
+      "cost_usd": 0.004073,
+      "mean_latency_ms": 309,
+      "low_confidence": 34,
+      "jev_calls": 67
+    },
+    {
+      "cavern": 0,
+      "file": "order-ACDBE/20260919-200318-cavern-01-central-cavern-words-lookahead-4.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 70,
+      "tokens": 92607,
+      "cost_usd": 0.003889,
+      "mean_latency_ms": 310,
+      "low_confidence": 34,
+      "jev_calls": 64
+    },
+    {
+      "cavern": 0,
+      "file": "order-ACDBE/20260919-200318-cavern-01-central-cavern-words-lookahead-5.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 74,
+      "tokens": 94103,
+      "cost_usd": 0.003952,
+      "mean_latency_ms": 316,
+      "low_confidence": 31,
+      "jev_calls": 65
+    },
+    {
+      "cavern": 0,
+      "file": "order-ACDBE/20260919-200340-cavern-01-central-cavern-words-lookahead.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 78,
+      "tokens": 101249,
+      "cost_usd": 0.004252,
+      "mean_latency_ms": 308,
+      "low_confidence": 37,
+      "jev_calls": 70
+    },
+    {
+      "cavern": 0,
+      "file": "order-ACDBE/20260919-200341-cavern-01-central-cavern-words-lookahead.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 66,
+      "tokens": 86631,
+      "cost_usd": 0.003639,
+      "mean_latency_ms": 314,
+      "low_confidence": 28,
+      "jev_calls": 60
+    },
+    {
+      "cavern": 0,
+      "file": "order-ACDBE/20260919-200341-cavern-01-central-cavern-words-lookahead-2.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 4,
+      "decisions": 78,
+      "tokens": 102003,
+      "cost_usd": 0.004284,
+      "mean_latency_ms": 307,
+      "low_confidence": 34,
+      "jev_calls": 73
+    },
+    {
+      "cavern": 0,
+      "file": "order-ACDBE/20260919-200341-cavern-01-central-cavern-words-lookahead-3.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 83,
+      "tokens": 107825,
+      "cost_usd": 0.004529,
+      "mean_latency_ms": 305,
+      "low_confidence": 39,
+      "jev_calls": 75
+    },
+    {
+      "cavern": 0,
+      "file": "order-ACDBE/20260919-200341-cavern-01-central-cavern-words-lookahead-4.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 69,
+      "tokens": 91125,
+      "cost_usd": 0.003827,
+      "mean_latency_ms": 296,
+      "low_confidence": 32,
+      "jev_calls": 63
+    }
+  ]
+}

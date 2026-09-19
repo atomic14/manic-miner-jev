@@ -169,6 +169,9 @@ class Settings:
     # in movement mode. `key_decision_every` repeats the key decision after
     # this number of decisions (0 = no repeat).
     hybrid_keys: bool = False
+    # A test only: the code sets the key order (letters of the map, for example
+    # "EACDB"). Jev gets no key request. The movement is not changed.
+    forced_key_order: str = ""
     key_decision_every: int = 0
     brief_text: bool = False  # the free mode text in short sentences (measured: worse)
     # The flexible target: jev gets the target question again when the situation
@@ -271,7 +274,20 @@ async def play_live(
             goals = snap.keys + snap.switches
             floor_row = snap.willy_y + 2
             gave_up = target is not None and since_new_place >= RETARGET_DECISIONS
-            if settings.hybrid_keys:
+            if settings.forced_key_order:
+                by_letter = {snap.key_letters[k]: k for k in snap.keys}
+                wanted = next((by_letter[c] for c in settings.forced_key_order if c in by_letter), None)
+                if wanted is not None and wanted != target:
+                    target = wanted
+                    record = {"type": "target", "n": n, "forced": True, "choice": key_names[target],
+                              "cells": {key_names[target]: list(target)}, "target_cell": list(target),
+                              "forced_reason": "the code sets the key order (test)"}
+                    since_new_place = 0
+                    write(record)
+                    yield "event", record
+                ask = False
+                candidates = []
+            elif settings.hybrid_keys:
                 repeat = settings.key_decision_every
                 ask = bool(snap.keys) and (
                     target not in goals
