@@ -457,9 +457,19 @@ it runs. Willy dies quickly. It is there for comparison.
   and the meaning in the text, and with no rule about what to select, the
   cavern went from 3 of 10 to 10 of 10 complete runs. The decisions per run
   (74) are near the result of our procedure in rules mode (70).
-- **The dead end check gives much help.** With the check off, Willy died in a
-  trap in 19 of 20 runs, and The Cold Room was 0 of 10. A depth of 2 gives
-  most of the gain (5 of 10). A depth of 12 is the present value (6 of 10).
+- **The dead end check gives much help.** Complete runs of 10, with the
+  present configuration:
+
+  | Depth of the check | Central Cavern | The Cold Room | The Menagerie |
+  | --- | --- | --- | --- |
+  | 0 (off) | 6 | 0 | 0 |
+  | 2 | 10 | 4 | 1 |
+  | 12 (the present value) | 10 | 4 | 10 |
+
+  In The Menagerie at depth 2, all 9 deaths are at the same place, after 4 to
+  6 decisions with no real choice: one trap that is 6 moves deep. The deep
+  check removes the first step into it. A large part of "stay alive" thus
+  comes from the code, not from jev.
 - **A shorter prompt was worse.** We wrote the move text again with the same
   content in short sentences and a "field: meaning" form (190 words, not
   293). Central Cavern needed 89 decisions, not 71. The Menagerie went from
@@ -518,6 +528,25 @@ result came from the search, not from jev.
 
 `experiments/probe_encodings.py` measures how well jev reads each encoder.
 `experiments/probe_target.py` compares target rules with a free choice.
+
+## Open work
+
+- **The target text needs the meaning of `one_way_trip`.** In The Cold Room,
+  rules mode is 9 of 10 (61 decisions) and free mode is 4 to 6 of 10. The
+  full difference is one decision: in free mode, jev selects the key in the
+  shaft as the third target, and Willy cannot come back from it. The rules
+  mode text says that such a key must be the last one. This is general game
+  logic. Proposed sentence for the free mode target text: "`one_way_trip`
+  tells that Willy cannot come back after he gets this key. Then he cannot
+  get the keys that are left in the other parts of the cavern." It is not
+  measured yet.
+- **The depth of the dead end check.** See the table above. Options: keep 12,
+  use a smaller depth, or replace the search with experience (a memory of
+  the places where Willy died in earlier runs).
+- **Cavern 4.** Each run ends in a trap in the top left corner, because the
+  code selects a single tile as "the way up".
+- **Rules mode is not a strict prompt yet.** The state still has the mark
+  `least_visited_option`, which the code selects.
 
 ## Limits
 
