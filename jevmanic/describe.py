@@ -337,8 +337,20 @@ def _key_facts(snap: Snapshot, x: int, y: int) -> dict:
     return facts
 
 
-def keys_state(snap: Snapshot, key_names: dict) -> dict:
-    """The state for the question that selects the target key."""
+def _amount_word(count: int) -> str:
+    if count == 0:
+        return "none"
+    if count <= 10:
+        return "a few"
+    return "many" if count <= 30 else "very many"
+
+
+def keys_state(snap: Snapshot, key_names: dict, memory: dict | None = None) -> dict:
+    """The state for the question that selects the target key.
+
+    `memory` is for the flexible target: {"current": cell, "used": {cell: decisions},
+    "gave_up": {cell: times}}. It gives each key a short memory.
+    """
     facts = {key_names[k]: {"what": "key", **_key_facts(snap, *k)} for k in snap.keys}
     for cell in snap.switches:
         facts[key_names[cell]] = {
@@ -346,6 +358,14 @@ def keys_state(snap: Snapshot, key_names: dict) -> dict:
                     "it can open a wall or remove a danger.",
             **_key_facts(snap, *cell),
         }
+    if memory is not None:
+        for cell in snap.keys + snap.switches:
+            fact = facts[key_names[cell]]
+            if cell == memory.get("current"):
+                fact["current_target"] = "yes"
+            fact["decisions_used_for_it"] = _amount_word(memory["used"].get(cell, 0))
+            if memory["gave_up"].get(cell, 0):
+                fact["gave_up_on_it"] = f"{memory['gave_up'][cell]} times"
     return {"willy": {"standing_on": _standing_on(snap)}, "keys": facts}
 
 

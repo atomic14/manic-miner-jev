@@ -143,3 +143,15 @@ def test_short_term_memory_in_words():
     # Willy went left and up, thus he came from the right and from a lower place.
     assert state["came_from"] == {"side": "right", "height": "lower"}
     assert describe.recent_state([])["recent_moves"].startswith("none")
+
+
+def test_target_state_has_a_short_memory_for_each_key():
+    snap = Game().snapshot()
+    names = {k: f"key_{i + 1}" for i, k in enumerate(snap.keys)}
+    memory = {"current": snap.keys[0], "used": {snap.keys[0]: 25}, "gave_up": {snap.keys[0]: 2}}
+    keys = describe.keys_state(snap, names, memory)["keys"]
+    assert keys["key_1"]["current_target"] == "yes"
+    assert keys["key_1"]["decisions_used_for_it"] == "many"
+    assert keys["key_1"]["gave_up_on_it"] == "2 times"
+    assert "current_target" not in keys["key_2"]
+    assert keys["key_2"]["decisions_used_for_it"] == "none"

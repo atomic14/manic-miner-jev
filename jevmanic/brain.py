@@ -53,9 +53,20 @@ FREE_TARGET_INSTRUCTIONS = (
 )
 
 
-def target_question(key_names: list[str], free: bool = False) -> dict:
+TARGET_MEMORY_MEANING = (
+    " `current_target` marks the key that Willy goes to now. Willy can keep it or "
+    "change it. `decisions_used_for_it` tells how many decisions Willy used for "
+    "this key before. `gave_up_on_it` tells how many times Willy made no "
+    "progress toward this key."
+)
+
+
+def target_question(key_names: list[str], free: bool = False, memory: bool = False) -> dict:
     criteria = {name: f"The key or switch that `keys.{name}` describes." for name in key_names}
     instructions = FREE_TARGET_INSTRUCTIONS if free else TARGET_INSTRUCTIONS
+    if memory:
+        # The text explains these facts only when they are in the state.
+        instructions += TARGET_MEMORY_MEANING
     return {"target": Choice(instructions=instructions, criteria=criteria)}
 
 

@@ -158,6 +158,9 @@ class Settings:
     survival_depth: int = SURVIVAL_DEPTH  # 0 = no dead end check
     free_target: bool = True  # False = the target question with our preference rules
     free_move: bool = True  # False = the move question with our decision procedure
+    # The flexible target: jev gets the target question again when the situation
+    # changes, it can keep or change the target, and each key has a short memory.
+    flexible_target: bool = True
     # Short-term memory: the last moves and their results. It is off, because a
     # measurement showed that it makes the results worse (see the README).
     recent_moves: bool = False
@@ -165,6 +168,7 @@ class Settings:
 
 
 RECENT_MOVES = 4  # the number of moves in the short-term memory
+RETARGET_MIN_GAP = 4  # decisions between two target requests for a floor change
 RETARGET_DECISIONS = 12  # select a different key after this number of decisions with no new place
 
 
@@ -211,14 +215,19 @@ async def play_live(
         "questions": questions_as_json(
             move_questions(encoder, look_ahead, extras=settings.extra_questions, free=settings.free_move)
         ),
-        "target_questions": questions_as_json(target_question(list(key_names.values()), settings.free_target)),
+        "target_questions": questions_as_json(
+            target_question(list(key_names.values()), settings.free_target, settings.flexible_target)
+        ),
         "started": time.time(),
     }
     tokens = 0
     n = 0
     result = {}
     target = None
-    skipped = set()  # keys that Willy could not get to
+    skipped = set()  # keys that Willy could not get to (rigid target only)
+    used_for = Counter()  # decisions that Willy used for each key as the target
+    gave_up_count = Counter()  # times that Willy made no progress toward each key
+    goals_at_request, floor_at_request, n_at_request = -1, -1, 0
     since_new_place = 0
     with path.open("w") as log:
 
@@ -239,18 +248,35 @@ async def play_live(
             snap = game.snapshot()
 
             # 1. Target. Jev selects the key.
-            if target is not None and since_new_place >= RETARGET_DECISIONS:
-                skipped.add(target)
-                target = None
             goals = snap.keys + snap.switches
-            if snap.keys and target not in goals:
+            floor_row = snap.willy_y + 2
+            gave_up = target is not None and since_new_place >= RETARGET_DECISIONS
+            if settings.flexible_target:
+                if gave_up and target in goals:
+                    gave_up_count[target] += 1
+                changed = (
+                    len(goals) != goals_at_request  # Willy collected a key or flipped a switch
+                    or (floor_row != floor_at_request and n - n_at_request >= RETARGET_MIN_GAP)
+                )
+                ask = bool(snap.keys) and (target not in goals or gave_up or changed)
+                candidates = list(goals)
+            else:
+                if gave_up:
+                    skipped.add(target)
+                    target = None
+                ask = bool(snap.keys) and target not in goals
                 candidates = [k for k in goals if k not in skipped] or list(goals)
+            if ask:
                 record = {"type": "target", "n": n, "cells": {key_names[k]: list(k) for k in candidates}}
                 if len(candidates) == 1:
                     target = candidates[0]
                     record.update(forced=True, choice=key_names[target])
                 else:
                     names = [key_names[k] for k in candidates]
+                    memory = (
+                        {"current": target, "used": used_for, "gave_up": gave_up_count}
+                        if settings.flexible_target else None
+                    )
                     state = describe.keys_state(
                         replace(
                             snap,
@@ -258,15 +284,22 @@ async def play_live(
                             switches=[c for c in candidates if c in snap.switches],
                         ),
                         key_names,
+                        memory,
                     )
-                    answer = await brain.ask(state, target_question(names, settings.free_target), "target")
+                    question = target_question(names, settings.free_target, settings.flexible_target)
+                    answer = await brain.ask(state, question, "target")
                     tokens += answer.input_tokens
+                    previous = target
                     target = next(k for k in candidates if key_names[k] == answer.choice)
                     record.update(answer.to_json())
+                    record["kept_target"] = previous == target
                 record["target_cell"] = list(target)
                 since_new_place = 0
+                goals_at_request, floor_at_request, n_at_request = len(goals), floor_row, n
                 write(record)
                 yield "event", record
+            if target is not None:
+                used_for[target] += 1
 
             # 2. Move. Jev selects the macro.
             state = encode(snap, target)
