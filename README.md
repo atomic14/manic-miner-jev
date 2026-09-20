@@ -75,9 +75,13 @@ That second correction gave no measurable change (2.6 keys).
 
 The causes that we found in the other caverns, not corrected yet:
 
-- Cavern 8: Willy falls into the small place between two walls where the
-  closed portal is. He is alive, but no move has an effect, and the only valid
-  move is `wait`. The dead end check asks only "can Willy stay alive?".
+- Cavern 8: Willy jumps into the small place between two walls where the
+  closed portal is. His walks have no effect there. The only way out is a
+  jump to the left, onto the level of a guardian. The look-ahead removes that
+  jump each time that the guardian makes it deadly, thus the only valid move
+  is `wait`, and the run stops after 30 decisions with no new place. (We
+  first thought that Willy could never move again there. A test showed that
+  the jump to the left gets him out when the guardian is away.)
 - Cavern 17: Willy moves between the two columns of the start platform. The
   only way forward is `walk_right`, which is "nearer", and jev selects
   `walk_left` with a confidence of 0.31.
