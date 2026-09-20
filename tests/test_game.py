@@ -234,3 +234,20 @@ def test_the_state_and_the_progress_measure_use_the_same_way():
         if isinstance(way, dict) and way.get("side") in ("left", "right") and name.endswith("way down"):
             side_of_reference = "left" if reference[0] < snap.willy_x else "right"
             assert side_of_reference == way["side"]
+
+
+def test_default_settings():
+    from dataclasses import fields
+    from jevmanic.runner import Settings
+
+    settings = Settings()
+    # The default: jev decides (free mode), and the key decision uses the map.
+    assert settings.free_move and settings.free_target
+    assert settings.hybrid_keys and settings.map_key_text and settings.key_decision_every == 25
+    assert settings.survival_depth == 12
+    # The facts that a measurement showed to be worse are off.
+    assert not settings.vertical_guardian_facts and not settings.recent_moves
+    assert not settings.two_ways_up and not settings.brief_text
+    # Each switch that the measurement tool uses must exist.
+    names = {f.name for f in fields(Settings)}
+    assert {"forced_key_order", "random_moves", "switch_targets", "target_map", "flexible_target"} <= names

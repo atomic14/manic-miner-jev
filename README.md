@@ -56,6 +56,15 @@ cavern. A run is complete when Willy has all keys and goes into the portal.
 | 19 Solar Power Generator | 0 of 10 | 1.0 of 3 | 0 of 10, 0.9 keys |
 | 20 The Final Barrier | 0 of 10 | 4.2 of 5 | 0 of 10, 2.5 keys |
 
+The table is from the configuration with the key decision from the facts
+only. The key decision now uses the map of the cavern by default. We measured
+the new default on 5 caverns (10 runs each): Central Cavern 9 of 10, The
+Menagerie 9 of 10, cavern 12 from 0.0 to 1.6 keys, cavern 8 no change, and
+The Cold Room **1 of 10** (before: 4 to 6 of 10). In The Cold Room, the first
+two key decisions are good (D, E). The third decision is key C in 9 of 10
+runs: the key in the shaft, which Willy cannot come back from. The switch
+`facts-only-keys` of the measurement tool gives the old key decision.
+
 Jev completes 4 caverns in 8 or more of 10 runs (1, 3, 9, 18), and 2 caverns
 in approximately half of the runs (2, 11). It completed caverns 4 and 7 one
 time each. 12 caverns have no complete run.
@@ -308,66 +317,97 @@ questions is in `jevmanic/brain.py`. The state encoders are in
 `jevmanic/describe.py`. The viewer shows the exact state and questions of
 each request.
 
-### Request 1: the target
+### Request 1: the key decision
 
-Jev gets this request at the start, when Willy collects a key, when he lands
-on a different floor level, and when he makes no progress for 12 decisions.
-The state has one entry for each key that is left, and for each switch that
-is not flipped. This example shows 2 of the keys:
+Jev gets this request at the start, when Willy collects a key, and again
+after 25 decisions. The state has the map of the cavern with its legend, and
+one entry with facts for each key that is left (and for each switch that is
+not flipped). This example shows 2 of the keys and 3 legend entries:
 
 ```json
 {
+  "map_legend": {
+    "W": "Willy. He is 2 cells wide and 2 cells high.",
+    "A": "key A. Willy collects it when he touches it.",
+    "B": "key B. Willy collects it when he touches it.",
+    "...": "one entry for each symbol on the map"
+  },
+  "map_note": "Each string is one row. The first row is the top of the cavern.",
+  "map": [
+    "#..................#############",
+    "#......A................B.....X#",
+    "#..............................#",
+    "#................GG..~~~=......#",
+    "#................GG............#",
+    "#===================........#..#",
+    "#....................====#~~#..#",
+    "#=~~~~~..................#C.#..#",
+    "#........................#~~#..#",
+    "#..D.....=======.........#~~#..#",
+    "#..................~~~~..#~~#..#",
+    "#..>>>>..................#~~#..#",
+    "#.............====.E.....#~~#..#",
+    "#.WW....~~~~................GPP#",
+    "#.WW........................GPP#",
+    "#==============================#"
+  ],
   "willy": {
-    "standing_on": "crumbling floor"
+    "standing_on": "floor"
   },
   "keys": {
-    "key_2": {
+    "key_C": {
       "what": "key",
       "side": "right",
-      "horizontal_cells": 16,
+      "horizontal_cells": 23,
       "horizontal_distance": "far",
       "height": "higher",
-      "floor_rows_apart": 10,
-      "rows_above_its_floor": 1,
-      "floor_below_key": "floor",
-      "current_target": "yes",
-      "decisions_used_for_it": "a few"
-    },
-    "key_3": {
-      "what": "key",
-      "side": "right",
-      "horizontal_cells": 18,
-      "horizontal_distance": "far",
-      "height": "higher",
-      "floor_rows_apart": 5,
+      "floor_rows_apart": 7,
       "rows_above_its_floor": 0,
       "floor_below_key": "crumbling floor",
       "between_walls": "yes",
       "one_way_trip": "yes: Willy falls through the crumbling floor and cannot go back up",
+      "decisions_used_for_it": "none"
+    },
+    "key_E": {
+      "what": "key",
+      "side": "right",
+      "horizontal_cells": 16,
+      "horizontal_distance": "far",
+      "height": "same level",
+      "floor_rows_apart": 0,
+      "rows_above_its_floor": 2,
+      "floor_below_key": "floor",
       "decisions_used_for_it": "none"
     }
   }
 }
 ```
 
-| Field | Meaning |
+On the map, each key has its own letter and keeps it for the full run. A
+conveyor is `<` or `>`: the direction in which it moves Willy. The legend
+says what each symbol means for Willy.
+
+| Field of a key | Meaning |
 | --- | --- |
 | `what` | key, or switch (with the fact that a switch changes the cavern) |
 | `side`, `horizontal_cells`, `horizontal_distance` | where it is, left or right of Willy |
 | `height`, `floor_rows_apart` | its floor level, compared with the floor of Willy. A key that hangs above the floor of Willy is on the same level. |
 | `rows_above_its_floor` | how high it is above its floor |
 | `floor_below_key` | floor, crumbling floor, or conveyor |
+| `between_walls`, `one_way_trip` | the key is in a shaft above a crumbling floor. Willy falls through and cannot go back up. |
 | `current_target` | the key that Willy goes to now. Jev can keep it or change it. |
 | `decisions_used_for_it`, `gave_up_on_it` | a short memory for each key |
-| `between_walls`, `one_way_trip` | the key is in a shaft above a crumbling floor. Willy falls through and cannot go back up. |
 
 The question is a Choice with one option for each entry. The instructions:
 
-> Willy is a miner in a platform game. He must collect all keys. Willy can climb only 2 rows with one jump. `keys` gives facts about each key or switch relative to Willy. Select the key or switch that is the best for Willy to get next. `current_target` marks the key that Willy goes to now. Willy can keep it or change it. `decisions_used_for_it` tells how many decisions Willy used for this key before. `gave_up_on_it` tells how many times Willy made no progress toward this key.
+> Willy is a miner in a platform game. The map shows the cavern, and `map_legend` tells what each symbol means. `keys` gives facts about each key or switch relative to Willy. Willy must collect all keys and then go into the exit portal. Willy can climb only 2 rows with one jump. He can fall to a lower floor, but after a long fall he cannot climb back. A crumbling floor breaks when Willy uses it, thus a way that goes across a crumbling floor can be open only one time. Select the key or switch that Willy gets next, in an order that lets him get all keys. `current_target` marks the key that Willy goes to now. Willy can keep it or change it. `decisions_used_for_it` tells how many decisions Willy used for this key before. `gave_up_on_it` tells how many times Willy made no progress toward this key.
 
-The answer in the example: `key_4`, confidence
-0.43. This request used 944 input
+The answer in the example: `key_D`, confidence
+0.47. This request used 1638 input
 tokens.
+
+A test showed that the text must name the map. With the map in the state and
+a text that does not name it, jev selects the same key as with no map.
 
 ### Request 2: the move
 

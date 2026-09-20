@@ -165,13 +165,17 @@ class Settings:
     two_ways_up: bool = False
     # The target request also has the full map of the cavern with its legend.
     target_map: bool = False
-    # Hybrid: two separate types of decision. The key decision uses the map. Jev
-    # gets it at the start and when Willy collects a key, and then the run is
-    # in movement mode. `key_decision_every` repeats the key decision after
-    # this number of decisions (0 = no repeat).
-    hybrid_keys: bool = False
+    # Two separate types of decision (the default). The key decision uses the
+    # map of the cavern. Jev gets it at the start and when Willy collects a
+    # key, and then the run is in movement mode. `key_decision_every` repeats
+    # the key decision after this number of decisions (0 = no repeat), thus
+    # jev can change a key that Willy cannot get to.
+    # False = the key decision with the facts only (the flexible target).
+    hybrid_keys: bool = True
+    key_decision_every: int = 25
     # The key request with the map uses its own text (MAP_TARGET_INSTRUCTIONS).
-    # False = the normal text of the key request, with no change.
+    # False = the normal text of the key request, with no change. A test showed
+    # that jev does not use the map if the text does not name the map.
     map_key_text: bool = True
     # A test only: the code sets the key order (letters of the map, for example
     # "EACDB"). Jev gets no key request. The movement is not changed.
@@ -185,7 +189,6 @@ class Settings:
     vertical_guardian_facts: bool = False
     # A base for comparison: a random choice from the valid moves, with no jev call.
     random_moves: bool = False
-    key_decision_every: int = 0
     brief_text: bool = False  # the free mode text in short sentences (measured: worse)
     # The flexible target: jev gets the target question again when the situation
     # changes, it can keep or change the target, and each key has a short memory.

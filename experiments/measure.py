@@ -67,7 +67,7 @@ def parse(argv):
         flexible_target="rigid-target" not in flags,
         brief_text="brief-text" in flags,
         target_map="target-map" in flags,
-        hybrid_keys="hybrid-keys" in flags,
+        hybrid_keys="facts-only-keys" not in flags,
         random_moves="random-moves" in flags,
         switch_targets="no-switch-targets" not in flags,
         vertical_guardian_facts="vertical-facts" in flags,
