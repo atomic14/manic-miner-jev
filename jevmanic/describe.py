@@ -300,9 +300,8 @@ def _way_up(snap: Snapshot, preferred_side: str):
     found = _find_ways_up(snap)
     if not found:
         return "none on this level"
-    # Give the way up on the side of the target, if there is one.
-    other = "left" if preferred_side == "right" else "right"
-    return found.get(preferred_side) or found.get(other) or min(found.values(), key=lambda w: w["horizontal_cells"])
+    # Give the way up on the side of the target, if there is one. If not, the nearest.
+    return found.get(preferred_side) or min(found.values(), key=lambda w: w["horizontal_cells"])
 
 
 def _ways_up(snap: Snapshot, visited) -> dict:
@@ -429,6 +428,24 @@ def keys_state(snap: Snapshot, key_names: dict, memory: dict | None = None) -> d
     return {"willy": {"standing_on": _standing_on(snap)}, "keys": facts}
 
 
+SIDE_PREFERENCE_CELLS = 3  # a target that is nearer than this gives no preferred side
+
+
+def _preferred_side(snap: Snapshot, x: int, y: int, width: int = 1) -> str:
+    """The side on which the code looks first for a way up or a way down.
+
+    The state and the progress measure must use the same side. If not, the
+    way in the state and "nearer" point to different sides, and jev goes left
+    and right with no end (cavern 6). A target that is almost directly above
+    or below Willy gives no preferred side: if it did, one step of Willy
+    would change the side.
+    """
+    rel = _relative(snap, x, y, width)
+    if rel["side"] in ("left", "right") and rel["horizontal_cells"] >= SIDE_PREFERENCE_CELLS:
+        return rel["side"]
+    return ""
+
+
 def _progress_reference(snap: Snapshot, target, two_ways_up: bool = False):
     """The place that a move must get nearer to, and the name of that measure.
 
@@ -439,12 +456,12 @@ def _progress_reference(snap: Snapshot, target, two_ways_up: bool = False):
     tx, ty = target_cell(snap, target)
     width = 1 if snap.keys else 2
     height = _relative(snap, tx, ty, width)["height"]
+    side = _preferred_side(snap, tx, ty, width)
     if height == "lower":
-        way = _way_down(snap, "left" if tx < snap.willy_x else "right")
+        way = _way_down(snap, side)
         if isinstance(way, dict) and "cell" in way:
             return way["cell"], "distance to the way down"
     if height == "higher" and not two_ways_up:
-        side = "left" if tx < snap.willy_x else "right"
         way = _way_up(snap, side)
         if isinstance(way, dict):
             return way["cell"], "distance to the way up"
@@ -605,10 +622,11 @@ def _air_word(air: float) -> str:
 
 def words(snap: Snapshot, target=None, visited=None, two_ways_up: bool = False) -> dict:
     target_words = _target(snap, target)
+    goal = target_cell(snap, target)
+    side = _preferred_side(snap, *goal, 1 if snap.keys else 2)
     if target_words.get("height") == "lower":
-        target_words["way_down"] = _public(_way_down(snap, target_words["side"]))
+        target_words["way_down"] = _public(_way_down(snap, side))
     elif target_words.get("height") == "higher":
-        side = target_words["side"] if target_words["side"] in ("left", "right") else "right"
         if two_ways_up:
             target_words["ways_up"] = _ways_up(snap, visited)
         else:

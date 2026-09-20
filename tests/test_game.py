@@ -217,3 +217,20 @@ def test_llm_answer_parser_and_prompt():
     prompt = build_prompt({"air": "plenty"}, question)
     # The LLM gets the same instructions and the same options as jev.
     assert brain.FREE_MOVE_INSTRUCTIONS in prompt and "- walk_left:" in prompt and "jump_up" not in prompt.split("OPTIONS")[1].split("STATE")[0]
+
+
+def test_the_state_and_the_progress_measure_use_the_same_way():
+    from collections import Counter
+
+    game = Game(cavern=5)  # Processing Plant: the first key is directly below the start
+    base = game.snapshot()
+    target = (15, 6)
+    for x in (15, 16):  # one step of Willy must not change the side of the way down
+        from dataclasses import replace
+        snap = replace(base, willy_x=x)
+        way = describe.words(snap, target)["target"]["way_down"]
+        (cell, _), measure = describe._progress_reference(snap, target), None
+        reference, name = describe._progress_reference(snap, target)
+        if isinstance(way, dict) and way.get("side") in ("left", "right") and name.endswith("way down"):
+            side_of_reference = "left" if reference[0] < snap.willy_x else "right"
+            assert side_of_reference == way["side"]
