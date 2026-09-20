@@ -94,8 +94,9 @@ class Session:
                         await asyncio.sleep(TICK_SECONDS / self.speed)
                     continue
                 await self.send(data)
-                if data["type"] == "result":
-                    # The pause point is between decisions.
+                if data["type"] == "decision":
+                    # The pause point is after a decision and before its macro runs,
+                    # thus the viewer can show the possible moves and the selected one.
                     await self._gate()
                 if data["type"] == "end":
                     await self.send(_runs_message())
@@ -113,10 +114,10 @@ class Session:
                 survival_depth=max(0, min(20, int(msg.get("dead_end_depth", SURVIVAL_DEPTH)))),
             )
             cavern = max(0, min(19, int(msg.get("cavern", 0))))
-            self.task = asyncio.create_task(self.run(play_live(self.game, self.brain, cavern, settings)))
+            self.task = asyncio.create_task(self.run(play_live(self.game, self.brain, cavern, settings, show_paths=True)))
         elif cmd == "replay":
             await self.stop()
-            self.task = asyncio.create_task(self.run(play_replay(self.game, msg["file"])))
+            self.task = asyncio.create_task(self.run(play_replay(self.game, msg["file"], show_paths=True)))
         elif cmd == "stop":
             await self.stop()
             await self.send({"type": "status", "status": "stopped"})

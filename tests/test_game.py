@@ -53,6 +53,17 @@ def test_look_ahead_does_not_change_the_game():
     assert not outcomes["walk_left"].dead
 
 
+def test_the_paths_for_the_viewer_do_not_change_the_game():
+    game = Game()
+    before, ticks = game.snapshot(), game.tick_count
+    paths = game.macro_paths()
+    assert game.snapshot() == before and game.tick_count == ticks
+    assert set(paths) == set(MACROS)
+    assert paths["walk_right"]["points"][0] == [16, 104]  # Willy at column 2, row 13
+    assert paths["walk_right"]["points"][-1] == [24, 104]  # 1 cell to the right
+    assert not paths["walk_right"]["dead"]
+
+
 def test_switches_vertical_guardians_and_the_extra_floor_tile():
     game = Game(cavern=7)  # Miner Willy meets the Kong Beast
     assert game.snapshot().switches == [(6, 0), (18, 0)]

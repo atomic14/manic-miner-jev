@@ -339,8 +339,13 @@ class _LiveRun:
         self.seen.add(progress)
 
 
-async def play_live(game: Game, brain, cavern: int = 0, settings: Settings | None = None, folder: str = ""):
-    """Play one live game. `folder` is a folder below `runs/` for the log file."""
+async def play_live(game: Game, brain, cavern: int = 0, settings: Settings | None = None, folder: str = "",
+                    show_paths: bool = False):
+    """Play one live game. `folder` is a folder below `runs/` for the log file.
+
+    `show_paths` is for the viewer: before each decision, an event gives the
+    path of Willy for each macro. The paths do not go to jev or to the log file.
+    """
     settings = settings or Settings()
     game.hold_against_conveyor = True
     game.select_cavern(cavern)
@@ -385,6 +390,8 @@ async def play_live(game: Game, brain, cavern: int = 0, settings: Settings | Non
             if key_record:
                 write(key_record)
                 yield "event", key_record
+            if show_paths:
+                yield "event", {"type": "paths", "n": n, "paths": game.macro_paths()}
             record = await run.move_decision(snap, n)
             yield "event", record
             start = game.tick_count
@@ -412,7 +419,7 @@ async def play_live(game: Game, brain, cavern: int = 0, settings: Settings | Non
 # -- A replay --------------------------------------------------------------------------
 
 
-async def play_replay(game: Game, file: str):
+async def play_replay(game: Game, file: str, show_paths: bool = False):
     path = DEMO_DIR / Path(file).name
     if not path.exists():
         path = (RUNS_DIR / file).resolve()
@@ -434,6 +441,8 @@ async def play_replay(game: Game, file: str):
             yield "event", record
             continue
         logged = record.pop("result", None)
+        if show_paths:
+            yield "event", {"type": "paths", "n": record["n"], "paths": game.macro_paths()}
         yield "event", record
         start = game.tick_count
         for _ in game.macro_ticks(record["macro"]):

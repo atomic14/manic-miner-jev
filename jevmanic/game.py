@@ -580,6 +580,31 @@ class Game:
                 break
         return alive
 
+    def _willy_pixel(self) -> list[int]:
+        x, _ = self._cell(self._word(ADDR_WILLY_ATTR))
+        return [x * 8 + 2 * (self.emu.peek(ADDR_WILLY_FRAME) & 3), self.emu.peek(ADDR_WILLY_PIXEL_Y) // 2]
+
+    def macro_paths(self) -> dict:
+        """The path of Willy for each macro, for the viewer. The game does not change.
+
+        Each path has the pixel position of Willy (top left) before the macro
+        and after each game tick. `dead` tells that the macro kills Willy.
+        """
+        ticks_before = self.tick_count
+        self.emu.save_state(LOOK_AHEAD_SLOT)
+        paths = {}
+        for name in MACROS:
+            points = [self._willy_pixel()]
+            for _ in self.macro_ticks(name):
+                if self.is_dead() or self.is_complete():
+                    break
+                points.append(self._willy_pixel())
+            paths[name] = {"points": points, "dead": self.is_dead()}
+            self.emu.load_state(LOOK_AHEAD_SLOT)
+            self.emu.set_joystick(0)
+            self.tick_count = ticks_before
+        return paths
+
     def look_ahead(self, survival_depth: int = SURVIVAL_DEPTH) -> dict[str, Outcome]:
         """Try each macro one time and give its result.
 

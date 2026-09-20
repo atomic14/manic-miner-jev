@@ -217,8 +217,17 @@ Open http://127.0.0.1:8000.
   that we wrote. Use it for comparison only.
 - **dead end check** selects how many moves the dead end check looks ahead
   (off, 1, 2, 4, 6, 8, 12, or 16 moves). The default is 4.
-- **Pause**, **Step**, and **Speed** control the playback. One step is one
-  decision. The game stops while jev makes a decision, thus real time is not
+- **Pause**, **Step**, and **Speed** control the playback, in a replay and
+  in a live run. One step is one decision. The game stops after a decision
+  and before its move, thus you see what jev selected before it occurs.
+- **show the possible moves**: during a pause, the game screen shows the path
+  of Willy for each of the 6 macros, as faded figures of Willy in the colour
+  of the macro, one figure for each 2 game ticks. The selected macro is the
+  brightest and has the mark ▶. A red cross marks a move that kills Willy.
+  Click a bar in the timeline to see the possible moves of an earlier
+  decision. The paths are for the viewer only: they do not go to jev or to
+  the log file.
+- The game stops while jev makes a decision, thus real time is not
   necessary.
 - Click a bar in the timeline to examine an earlier decision.
 
