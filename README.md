@@ -69,6 +69,11 @@ After a correction of the `way_down` fact (see "What we learned"), Central
 Cavern is complete in **40 of 40** runs (two measurements of 20 runs), and
 The Menagerie in 17 of 20.
 
+All results above used a dead end check of 12 moves. The default is now 4
+moves, which is a smaller help from the code. With 4 moves, Central Cavern
+is complete in 19 to 20 of 20 runs, The Cold Room in 2 of 20, and The
+Menagerie in 12 of 20.
+
 Jev completes 4 caverns in 8 or more of 10 runs (1, 3, 9, 18), and 2 caverns
 in approximately half of the runs (2, 11). It completed caverns 4 and 7 one
 time each. 12 caverns have no complete run.
@@ -211,7 +216,7 @@ Open http://127.0.0.1:8000.
   gets the map of the cavern. The **rules mode** box gives jev the procedure
   that we wrote. Use it for comparison only.
 - **dead end check** selects how many moves the dead end check looks ahead
-  (off, 1, 2, 4, 6, 8, 12, or 16 moves). The default is 12.
+  (off, 1, 2, 4, 6, 8, 12, or 16 moves). The default is 4.
 - **Pause**, **Step**, and **Speed** control the playback. One step is one
   decision. The game stops while jev makes a decision, thus real time is not
   necessary.
@@ -305,7 +310,7 @@ Jev gets only the moves that are valid. A move is not valid in three cases:
 
 1. The move kills Willy.
 2. The move is a dead end: Willy is alive after it, but then he cannot avoid
-   a death. To find this, the code looks for one sequence of 12 macros that
+   a death. To find this, the code looks for one sequence of 4 macros that
    keeps Willy alive. If there is none, the move is a dead end. Example: a
    guardian follows Willy 1 cell behind him toward a wall. Each step is safe,
    but after 5 steps no move is safe. This check asks only "can Willy stay
@@ -576,7 +581,7 @@ macros have the same result (Willy is in the air).
   | 4 | - | - | 6 |
   | 6 | - | - | 9 |
   | 8 | - | - | 9 |
-  | 12 (the present value) | 10 | 4 | 10 |
+  | 12 (the value at that time) | 10 | 4 | 10 |
 
   A second measurement of Central Cavern with the present code, 20 runs
   each: 7 of 20 with the check off, 9 with 1 move, 17 with 2 moves, and 20
@@ -585,6 +590,20 @@ macros have the same result (Willy is in the air).
   turns. With the check off, Willy is still alive at the end of each move
   that jev gets, because the look-ahead of 1 move removes each move that
   kills him directly.
+
+  **The default is now 4 moves.** It is a compromise: it is sufficient for
+  Central Cavern, and it is a smaller help from the code than 12 moves. All
+  results in this document before this change used 12 moves. 20 runs each,
+  with the present code:
+
+  | Moves of the dead end check | Central Cavern | The Cold Room | The Menagerie |
+  | --- | --- | --- | --- |
+  | 4 (the default) | 19 to 20 | 2 | 12 |
+  | 6 | - | 4 | 15 |
+  | 12 | 20 | 2 to 3 | 15 to 19 |
+
+  The Menagerie pays for the compromise: 6 of its 8 failed runs at 4 moves
+  are deaths. Use `--depth 12` to get the earlier results again.
 
   A check of 1 move gives almost no gain. 2 moves are sufficient for Central
   Cavern and The Cold Room. The Menagerie needs 6 moves.

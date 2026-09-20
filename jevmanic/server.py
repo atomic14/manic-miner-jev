@@ -22,7 +22,7 @@ from fastapi.responses import FileResponse
 from PIL import Image
 
 from .brain import Brain
-from .game import Game
+from .game import SURVIVAL_DEPTH, Game
 from .runner import Settings, list_run_groups, list_runs, play_live, play_replay
 
 WEB_DIR = Path(__file__).resolve().parent / "web"
@@ -110,7 +110,7 @@ class Session:
             settings = Settings(
                 rules_mode=bool(msg.get("rules_mode", False)),
                 map_key_decision=bool(msg.get("map_key_decision", True)),
-                survival_depth=max(0, min(20, int(msg.get("dead_end_depth", 12)))),
+                survival_depth=max(0, min(20, int(msg.get("dead_end_depth", SURVIVAL_DEPTH)))),
             )
             cavern = max(0, min(19, int(msg.get("cavern", 0))))
             self.task = asyncio.create_task(self.run(play_live(self.game, self.brain, cavern, settings)))

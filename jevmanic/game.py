@@ -74,8 +74,10 @@ START_SLOT = 0  # emulator state slot for the start of cavern 0
 CAVERN_SLOT_BASE = 100
 LOOK_AHEAD_SLOT = 1  # emulator state slot that the look-ahead uses
 DEAD_END_SLOT = 2  # the dead end check uses the slots from this number up
-# The dead end check: can Willy stay alive for this number of macros?
-SURVIVAL_DEPTH = 12
+# The dead end check: can Willy stay alive for this number of macros? 4 is a
+# compromise: it is sufficient for Central Cavern, and it is a small help from
+# the code. The Menagerie is better with 6 or more (see the README).
+SURVIVAL_DEPTH = 4
 # The largest number of macros that one dead end check can try.
 SURVIVAL_BUDGET = 600
 DEAD_END_CAUSE = "dead end, Willy cannot stay alive after it"

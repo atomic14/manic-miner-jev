@@ -2,6 +2,7 @@
 
 import argparse
 
+from .game import SURVIVAL_DEPTH
 from .runner import Settings
 
 
@@ -12,8 +13,8 @@ def add_run_options(parser: argparse.ArgumentParser):
                         help="the key decision gets the facts only, and no map of the cavern")
     parser.add_argument("--key-every", type=int, default=25, metavar="N",
                         help="repeat the key decision after N decisions, 0 = no repeat (default 25)")
-    parser.add_argument("--depth", type=int, default=12, metavar="N",
-                        help="the number of moves that the dead end check looks ahead, 0 = off (default 12)")
+    parser.add_argument("--depth", type=int, default=SURVIVAL_DEPTH, metavar="N",
+                        help="the number of moves that the dead end check looks ahead, 0 = off (default 4)")
     parser.add_argument("--key-order", default="", metavar="LETTERS",
                         help="a test: the code sets the key order, for example EACDB (no key request)")
     parser.add_argument("--random-moves", action="store_true",

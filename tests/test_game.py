@@ -227,7 +227,7 @@ def test_the_free_mode_text_gives_the_goal_and_no_rules():
 def test_default_settings():
     settings = Settings()
     assert not settings.rules_mode and settings.map_key_decision and settings.uses_map
-    assert settings.key_decision_every == 25 and settings.survival_depth == 12
+    assert settings.key_decision_every == 25 and settings.survival_depth == 4
     assert settings.forced_key_order == "" and not settings.random_moves
     assert not Settings(rules_mode=True).uses_map  # rules mode uses the key facts and no map
     assert len(fields(Settings)) == 6  # a new setting needs a reason and a measurement

@@ -80,8 +80,8 @@
     <label for="depth" title="The look-ahead finds the true result of each single move. The dead end check then looks this number of moves further ahead: a move is not offered to jev if no sequence of that length keeps Willy alive. 0 = only the result of each single move.">dead end check</label>
     <select id="depth" title="Number of moves that the dead end check looks ahead">
       <option value="0">off</option><option value="1">1 move</option><option value="2">2 moves</option>
-      <option value="4">4 moves</option><option value="6">6 moves</option><option value="8">8 moves</option>
-      <option value="12" selected>12 moves</option><option value="16">16 moves</option>
+      <option value="4" selected>4 moves</option><option value="6">6 moves</option><option value="8">8 moves</option>
+      <option value="12">12 moves</option><option value="16">16 moves</option>
     </select>
     <label title="Off (normal): the decisions come from jev. On: jev gets the decision procedure that we wrote. Use it for comparison only."><input type="checkbox" id="rulesmode"> rules mode</label>
     <button class="primary" id="start">Start live run</button>
