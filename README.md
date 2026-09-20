@@ -757,6 +757,11 @@ result came from the search, not from jev.
   Central Cavern 20 (before: 40 of 40), The Cold Room 2 (before: 3 of 20),
   The Menagerie 19 (before: 17). We kept it, because it is true and it
   corrects `ends_on` for a tile that is gone after the move.
+  We then also gave the condition to the key decision: a symbol `-` on the
+  map for a tile that is almost gone, and the condition in
+  `floor_below_key`. The key orders did not change (Central Cavern E D B in
+  20 of 20 runs, The Cold Room D E C in 17 of 20), and the results were 20,
+  2, and 16 of 20. We removed it from the key decision.
 - **The target order is the open problem.** In The Cold Room, the full
   difference between rules mode (9 of 10) and free mode (4 to 6 of 10) is
   the order of the keys. We measured two prompt changes for it, 10 runs each:
