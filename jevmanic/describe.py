@@ -134,6 +134,16 @@ def _tile(snap, x, y) -> str:
     return snap.tiles[y][x]
 
 
+ALMOST_GONE_ROWS = 4  # one walk across a tile uses approximately 4 of its 8 pixel rows
+
+
+def _crumbling_words(rows_gone: int) -> str:
+    """A crumbling floor with its condition. Jev is weak with numbers, thus the condition is a word."""
+    if rows_gone >= ALMOST_GONE_ROWS:
+        return "crumbling floor, almost gone"
+    return "crumbling floor, partly gone" if rows_gone else "crumbling floor, new"
+
+
 def _standing_on(snap: Snapshot) -> str:
     if snap.airborne:
         return "nothing, Willy is in the air"
@@ -141,7 +151,7 @@ def _standing_on(snap: Snapshot) -> str:
     if TILE_CONVEYOR in below:
         return "conveyor"
     if TILE_CRUMBLING in below:
-        return "crumbling floor"
+        return _crumbling_words(max(snap.crumbled.get((snap.willy_x + dx, snap.willy_y + 2), 0) for dx in (0, 1)))
     return "floor"
 
 
@@ -506,7 +516,7 @@ def moves_state(snap: Snapshot, outcomes: dict, target, visited, tried=frozenset
     # A wait is valid only if something can change while Willy waits.
     guardian_near = any(g["height"] == "same level" for g in _guardians(snap))
     guardian_blocks = any(o.dead and o.cause in ("guardian", DEAD_END_CAUSE) for o in outcomes.values())
-    wait_can_help = guardian_near or guardian_blocks or _standing_on(snap) == "crumbling floor"
+    wait_can_help = guardian_near or guardian_blocks or _standing_on(snap).startswith("crumbling floor")
 
     def is_useful(name, o):
         has_effect = o.dx or o.dy or o.keys_collected or o.complete
@@ -549,7 +559,7 @@ def moves_state(snap: Snapshot, outcomes: dict, target, visited, tried=frozenset
         if o.dead:
             result["warning"] = "dead end: Willy is alive after this move, but then no move is safe"
         if TILE_CRUMBLING in floor_after:
-            result["ends_on"] = "crumbling floor"
+            result["ends_on"] = _crumbling_words(o.floor_rows_gone)
         if o.keys_collected:
             result["collects_key"] = True
         if o.complete:

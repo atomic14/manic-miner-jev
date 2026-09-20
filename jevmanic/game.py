@@ -139,6 +139,8 @@ class Snapshot:
     # One letter for each key (A, B, C, ...). A key keeps its letter for the full run.
     key_letters: dict = field(default_factory=dict)
     air: float = 1.0  # 1.0 = full, 0.0 = empty
+    # The crumbling floor tiles that are partly gone: cell -> pixel rows that are gone (1 to 7).
+    crumbled: dict = field(default_factory=dict)
     score: int = 0
     lives: int = 0
 
@@ -156,6 +158,8 @@ class Outcome:
     ticks: int
     x: int  # the position of Willy after the macro
     y: int
+    # The crumbling floor below Willy after the macro: pixel rows that are gone (0 to 7).
+    floor_rows_gone: int = 0
 
 
 # Characters for the tile map.
@@ -378,6 +382,7 @@ class Game:
             conveyor_direction="right" if emu.peek(ADDR_CONVEYOR_DIR) else "left",
             key_letters=dict(getattr(self, "_key_letters", {})),
             air=(emu.peek(ADDR_AIR) - AIR_EMPTY) / (AIR_FULL - AIR_EMPTY),
+            crumbled=self._crumbled(tiles),
             score=int(digits) if digits.isdigit() else 0,
             lives=emu.peek(ADDR_LIVES),
         )
@@ -388,6 +393,33 @@ class Game:
 
     def _cell_pixels(self, col, row):
         return bytes(self.emu.peek(self._screen_address(col, row, i)) for i in range(8))
+
+    @staticmethod
+    def _floor_rows_gone(before: Snapshot, after: Snapshot) -> int:
+        """The condition of the crumbling floor below Willy after a macro. 8 = the tile is gone."""
+        worst, row = 0, after.willy_y + 2
+        for x in (after.willy_x, after.willy_x + 1):
+            if row < ROWS and 0 <= x < COLS and before.tiles[row][x] == TILE_CRUMBLING:
+                gone = after.tiles[row][x] != TILE_CRUMBLING
+                worst = max(worst, 8 if gone else after.crumbled.get((x, row), 0))
+        return worst
+
+    def _crumbled(self, tiles) -> dict:
+        """The pixel rows that are gone, for each crumbling floor tile that is partly gone.
+
+        The game has no counter for this. While Willy stands on a crumbling
+        floor, the game moves the pixels of the tile down by one row in each
+        frame. After 8 frames the tile is gone.
+        """
+        out = {}
+        for y, row in enumerate(tiles):
+            for x, tile in enumerate(row):
+                if tile == TILE_CRUMBLING:
+                    pixels = self._cell_pixels(x, y)
+                    gone = next((i for i, b in enumerate(pixels) if b), 8)
+                    if gone:
+                        out[(x, y)] = gone
+        return out
 
     def _switches(self) -> list[tuple[int, int]]:
         """The switches that are not flipped. Only the Kong Beast caverns have switches.
@@ -550,6 +582,7 @@ class Game:
                 ticks=ticks,
                 x=after.willy_x,
                 y=after.willy_y,
+                floor_rows_gone=self._floor_rows_gone(before, after),
             )
             self.emu.load_state(LOOK_AHEAD_SLOT)
             self.emu.set_joystick(0)

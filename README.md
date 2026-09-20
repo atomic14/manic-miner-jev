@@ -495,7 +495,7 @@ The state of decision 5 of the same run:
       "progress": "farther",
       "place": "new place",
       "tried_from_here": "no",
-      "ends_on": "crumbling floor"
+      "ends_on": "crumbling floor, new"
     },
     "wait": {
       "movement": "Willy stays in the same place",
@@ -524,14 +524,14 @@ The state of decision 5 of the same run:
 | `moves.*.progress` | nearer, farther, or same |
 | `moves.*.place` | new place, visited before, or visited many times (memory) |
 | `moves.*.tried_from_here` | did Willy select this macro at this place before (memory) |
-| `moves.*.ends_on`, `collects_key`, `completes_cavern`, `warning` | only when they apply |
+| `moves.*.ends_on`, `collects_key`, `completes_cavern`, `warning` | only when they apply. `ends_on` and `willy.standing_on` give the condition of a crumbling floor: new, partly gone, or almost gone. The code reads it from the pixels of the tile. |
 | `moves_not_offered` | each macro that jev does not get, with the cause: it kills Willy (guardian, nasty, fall, or dead end), or it has no effect |
 
 The request has 4 questions. Only the first one controls Willy.
 
 **`move` (Choice).** The options are the valid macros. The instructions:
 
-> Willy is a miner in a platform game. The goal: Willy must collect all keys, then go into the exit portal, and he must stay alive. The target is the key that Willy goes to now, or the portal when no key is left. Select the move that is the best for Willy now. `moves` gives the true result of each possible move. All moves in `moves` are safe and have an effect. `moves_not_offered` gives the moves that Willy cannot make now, with the cause. The meaning of the facts: `progress` tells if a move gets Willy nearer to the place that `progress_measures` names. `place` tells how frequently Willy was at the place where the move ends. `tried_from_here` tells if Willy made this move from this place before. `collects_key` tells that Willy gets a key with this move. `completes_cavern` tells that Willy goes into the portal with this move and the cavern is complete. `ends_on` tells that Willy stands on a crumbling floor after this move. `warning` tells that no move is safe after this move. Knowledge of the game: Willy can climb only 2 rows with one jump. If Willy comes back to the same places again and again, the direct way is closed, and he must go a different way, also if that way goes away from the target first. A crumbling floor breaks a little each time Willy stands on it. It can be the only way up, and it is also a way down. A nasty does not move: if it stops a jump, a jump from a different cell can go over it. A guardian moves along its patrol area: Willy can wait for it to go away, jump over it, or go out of its patrol area.
+> Willy is a miner in a platform game. The goal: Willy must collect all keys, then go into the exit portal, and he must stay alive. The target is the key that Willy goes to now, or the portal when no key is left. Select the move that is the best for Willy now. `moves` gives the true result of each possible move. All moves in `moves` are safe and have an effect. `moves_not_offered` gives the moves that Willy cannot make now, with the cause. The meaning of the facts: `progress` tells if a move gets Willy nearer to the place that `progress_measures` names. `place` tells how frequently Willy was at the place where the move ends. `tried_from_here` tells if Willy made this move from this place before. `collects_key` tells that Willy gets a key with this move. `completes_cavern` tells that Willy goes into the portal with this move and the cavern is complete. `ends_on` tells that Willy stands on a crumbling floor after this move, and how much of that floor is left. `warning` tells that no move is safe after this move. Knowledge of the game: Willy can climb only 2 rows with one jump. If Willy comes back to the same places again and again, the direct way is closed, and he must go a different way, also if that way goes away from the target first. A crumbling floor breaks a little each time Willy stands on it. It can be the only way up, and it is also a way down. A nasty does not move: if it stops a jump, a jump from a different cell can go over it. A guardian moves along its patrol area: Willy can wait for it to go away, jump over it, or go out of its patrol area.
 
 The criteria of the options:
 
@@ -750,6 +750,13 @@ result came from the search, not from jev.
   safe fall place on that floor that is nearest to the target. `way_down`
   and `progress` use that place. Result: Central Cavern 20 of 20 and 20 of
   20, The Menagerie 17 of 20, The Cold Room 2 of 10 (no change).
+- **The condition of a crumbling floor: no harm, and no gain that we can
+  measure.** The game keeps no counter. It moves the pixels of the tile down
+  while Willy stands on it, and one walk across a tile uses approximately
+  half of it. The move facts now give the condition as a word. 20 runs each:
+  Central Cavern 20 (before: 40 of 40), The Cold Room 2 (before: 3 of 20),
+  The Menagerie 19 (before: 17). We kept it, because it is true and it
+  corrects `ends_on` for a tile that is gone after the move.
 - **The target order is the open problem.** In The Cold Room, the full
   difference between rules mode (9 of 10) and free mode (4 to 6 of 10) is
   the order of the keys. We measured two prompt changes for it, 10 runs each:
