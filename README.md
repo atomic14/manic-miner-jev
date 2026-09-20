@@ -40,7 +40,7 @@ cavern. A run is complete when Willy has all keys and goes into the portal.
 | 3 The Menagerie | **10 of 10** | 5 of 5 | 2 of 10, 2.3 keys |
 | 4 Abandoned Uranium Workings | 0 of 10 | 4.0 of 5 | 0 of 10, 1.8 keys |
 | 5 Eugene's Lair | 0 of 10 | 0.5 of 5 | 0 of 10, 1.9 keys |
-| 6 Processing Plant | 0 of 10 | 0.0 of 5 | 0 of 10, 3.6 keys |
+| 6 Processing Plant | 0 of 10 | 2.6 of 5 (after a correction, see below) | 0 of 10, 3.6 keys |
 | 7 The Vat | 1 of 10 | 0.5 of 5 | 4 of 10, 2.9 keys |
 | 8 Miner Willy meets the Kong Beast | 0 of 10 | 0.7 of 4 | 0 of 10, 1.8 keys |
 | 9 Wacky Amoebatrons | **10 of 10** | 1 of 1 | 10 of 10 |
@@ -90,16 +90,39 @@ One complete run costs approximately $0.004 to $0.010. The summaries of all
 measurements are in `experiments/results/`.
 
 **The base for comparison: a random player.** It gets the same valid moves as
-jev (the same look-ahead and dead end check) and selects one at random. 30
-runs for each cavern, with no jev call:
+jev (the same look-ahead and the same dead end check of 12 moves) and selects
+one at random. It makes no jev call. 10 runs for each cavern:
 
-| Cavern | Random player | Jev |
-| --- | --- | --- |
-| 1 Central Cavern | 0 of 30, 0.3 keys | 8 to 10 of 10, 5 keys |
-| 2 The Cold Room | 1 of 30, 1.3 keys | 4 to 6 of 10, 3.5 keys |
-| 3 The Menagerie | 0 of 30, 0.6 keys | 9 to 10 of 10, 5 keys |
+| Cavern | Jev: complete | Jev: keys | Random: complete | Random: keys |
+| --- | --- | --- | --- | --- |
+| 1 Central Cavern | 10 of 10 | 5 | 0 of 10 | 0.1 |
+| 2 The Cold Room | 4 to 6 of 10 | 3.0 to 4.1 | 0 of 10 | 1 |
+| 3 The Menagerie | 10 of 10 | 5 | 0 of 10 | 0.6 |
+| 4 Abandoned Uranium Workings | 0 of 10 | 4.0 | 0 of 10 | 0.1 |
+| 5 Eugene's Lair | 0 of 10 | 0.5 | 0 of 10 | 0.6 |
+| 6 Processing Plant | 0 of 10 | 2.6 | 0 of 10 | 0.9 |
+| 7 The Vat | 1 of 10 | 0.5 | 0 of 10 | 0 |
+| 8 Miner Willy meets the Kong Beast | 0 of 10 | 0.7 | 0 of 10 | 0.2 |
+| 9 Wacky Amoebatrons | 10 of 10 | 1 | 0 of 10 | 0 |
+| 10 The Endorian Forest | 0 of 10 | 2.2 | 0 of 10 | 0.6 |
+| 11 Attack of the Mutant Telephones | 5 of 10 | 3.8 | 0 of 10 | 0 |
+| 12 Return of the Alien Kong Beast | 0 of 10 | 0.0 | 0 of 10 | 0.5 |
+| 13 Ore Refinery | 0 of 10 | 1.0 | 0 of 10 | 0 |
+| 14 Skylab Landing Bay | 0 of 10 | 0.4 | 0 of 10 | 0.1 |
+| 15 The Bank | 0 of 10 | 1.8 | 0 of 10 | 0.3 |
+| 16 The Sixteenth Cavern | 0 of 10 | 1.7 | 0 of 10 | 0 |
+| 17 The Warehouse | 0 of 10 | 0.7 | 0 of 10 | 0 |
+| 18 Amoebatrons' Revenge | 8 of 10 | 0.8 | 0 of 10 | 0 |
+| 19 Solar Power Generator | 0 of 10 | 1.0 | 0 of 10 | 0.4 |
+| 20 The Final Barrier | 0 of 10 | 4.2 | 0 of 10 | 0 |
 
-Thus the look-ahead alone does not complete a cavern. The decisions of jev do.
+The random player completed 0 of 200 runs, and it collects 0.3 keys in a run
+(the mean of all caverns). Jev completed 48 to 50 of 200 runs and collects
+1.9 keys. Thus the look-ahead alone does not complete a cavern. The decisions
+of jev do. In 3 caverns jev is not better than the random player: cavern 5
+(0.5 and 0.6 keys), cavern 12 (0.0 and 0.5 keys), and cavern 14 (0.4 and 0.1
+keys, no complete run). An earlier measurement with 30 random runs for each
+of caverns 1, 2, and 3 gave 0, 1, and 0 complete runs.
 
 ### Rules mode compared with free mode
 

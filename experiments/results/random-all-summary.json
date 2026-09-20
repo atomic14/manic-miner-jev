@@ -1,0 +1,218 @@
+{
+  "label": "random-all",
+  "note": "A random choice from the valid moves, with the same look-ahead and dead end check as jev. No jev call.",
+  "caverns": [
+    {
+      "cavern": 1,
+      "name": "Central Cavern",
+      "runs": 10,
+      "complete": 0,
+      "mean_keys": 0.1,
+      "outcomes": {
+        "stuck: no progress": 10
+      }
+    },
+    {
+      "cavern": 2,
+      "name": "The Cold Room",
+      "runs": 10,
+      "complete": 0,
+      "mean_keys": 1,
+      "outcomes": {
+        "stuck: no progress": 8,
+        "Willy died": 2
+      }
+    },
+    {
+      "cavern": 3,
+      "name": "The Menagerie",
+      "runs": 10,
+      "complete": 0,
+      "mean_keys": 0.6,
+      "outcomes": {
+        "stuck: no progress": 5,
+        "Willy died": 5
+      }
+    },
+    {
+      "cavern": 4,
+      "name": "Abandoned Uranium Workings",
+      "runs": 10,
+      "complete": 0,
+      "mean_keys": 0.1,
+      "outcomes": {
+        "stuck: no progress": 9,
+        "Willy died": 1
+      }
+    },
+    {
+      "cavern": 5,
+      "name": "Eugene's Lair",
+      "runs": 10,
+      "complete": 0,
+      "mean_keys": 0.6,
+      "outcomes": {
+        "Willy died": 4,
+        "stuck: no progress": 6
+      }
+    },
+    {
+      "cavern": 6,
+      "name": "Processing Plant",
+      "runs": 10,
+      "complete": 0,
+      "mean_keys": 0.9,
+      "outcomes": {
+        "stuck: no progress": 10
+      }
+    },
+    {
+      "cavern": 7,
+      "name": "The Vat",
+      "runs": 10,
+      "complete": 0,
+      "mean_keys": 0,
+      "outcomes": {
+        "stuck: no progress": 9,
+        "Willy died": 1
+      }
+    },
+    {
+      "cavern": 8,
+      "name": "Miner Willy meets the Kong Beast",
+      "runs": 10,
+      "complete": 0,
+      "mean_keys": 0.2,
+      "outcomes": {
+        "stuck: no progress": 10
+      }
+    },
+    {
+      "cavern": 9,
+      "name": "Wacky Amoebatrons",
+      "runs": 10,
+      "complete": 0,
+      "mean_keys": 0,
+      "outcomes": {
+        "stuck: no progress": 9,
+        "Willy died": 1
+      }
+    },
+    {
+      "cavern": 10,
+      "name": "The Endorian Forest",
+      "runs": 10,
+      "complete": 0,
+      "mean_keys": 0.6,
+      "outcomes": {
+        "Willy died": 3,
+        "stuck: no progress": 7
+      }
+    },
+    {
+      "cavern": 11,
+      "name": "Attack of the Mutant Telephones",
+      "runs": 10,
+      "complete": 0,
+      "mean_keys": 0,
+      "outcomes": {
+        "stuck: no progress": 9,
+        "Willy died": 1
+      }
+    },
+    {
+      "cavern": 12,
+      "name": "Return of the Alien Kong Beast",
+      "runs": 10,
+      "complete": 0,
+      "mean_keys": 0.5,
+      "outcomes": {
+        "Willy died": 1,
+        "stuck: no progress": 9
+      }
+    },
+    {
+      "cavern": 13,
+      "name": "Ore Refinery",
+      "runs": 10,
+      "complete": 0,
+      "mean_keys": 0,
+      "outcomes": {
+        "stuck: no progress": 10
+      }
+    },
+    {
+      "cavern": 14,
+      "name": "Skylab Landing Bay",
+      "runs": 10,
+      "complete": 0,
+      "mean_keys": 0.1,
+      "outcomes": {
+        "Willy died": 9,
+        "stuck: no progress": 1
+      }
+    },
+    {
+      "cavern": 15,
+      "name": "The Bank",
+      "runs": 10,
+      "complete": 0,
+      "mean_keys": 0.3,
+      "outcomes": {
+        "stuck: no progress": 10
+      }
+    },
+    {
+      "cavern": 16,
+      "name": "The Sixteenth Cavern",
+      "runs": 10,
+      "complete": 0,
+      "mean_keys": 0,
+      "outcomes": {
+        "Willy died": 10
+      }
+    },
+    {
+      "cavern": 17,
+      "name": "The Warehouse",
+      "runs": 10,
+      "complete": 0,
+      "mean_keys": 0,
+      "outcomes": {
+        "stuck: no progress": 9,
+        "Willy died": 1
+      }
+    },
+    {
+      "cavern": 18,
+      "name": "Amoebatrons' Revenge",
+      "runs": 10,
+      "complete": 0,
+      "mean_keys": 0,
+      "outcomes": {
+        "stuck: no progress": 10
+      }
+    },
+    {
+      "cavern": 19,
+      "name": "Solar Power Generator",
+      "runs": 10,
+      "complete": 0,
+      "mean_keys": 0.4,
+      "outcomes": {
+        "Willy died": 3,
+        "stuck: no progress": 7
+      }
+    },
+    {
+      "cavern": 20,
+      "name": "The Final Barrier",
+      "runs": 10,
+      "complete": 0,
+      "mean_keys": 0,
+      "outcomes": {
+        "stuck: no progress": 10
+      }
+    }
+  ]
+}
