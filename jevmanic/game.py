@@ -69,7 +69,9 @@ JOY_LEFT = 2
 JOY_FIRE = 16
 
 START_SLOT = 0  # emulator state slot for the start of cavern 0
-CAVERN_SLOT_BASE = 10  # slot 10 + n has the start of cavern n
+# Slot 100 + n has the start of cavern n. The look-ahead uses slot 1, and the
+# dead end check uses the slots from 2 to 2 + depth. They must not overlap.
+CAVERN_SLOT_BASE = 100
 LOOK_AHEAD_SLOT = 1  # emulator state slot that the look-ahead uses
 DEAD_END_SLOT = 2  # the dead end check uses the slots from this number up
 # The dead end check: can Willy stay alive for this number of macros?

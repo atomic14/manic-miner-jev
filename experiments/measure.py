@@ -1,92 +1,54 @@
 """Measure how well jev plays: run many live games and print a table.
 
 Jev does not always give the same answer for the same state, thus one run
-tells us little. Use this script before and after each change to the state or
-to the questions.
+tells us little. Use this tool before and after each change to the state or to
+the questions. 10 runs for each cavern show only large effects.
 
-Run:
-    uv run python -m experiments.measure caverns=4,6,7 runs=3 label=baseline
+Examples:
+    uv run python -m experiments.measure --caverns 1,2,3 --runs 10 --label my-test
+    uv run python -m experiments.measure --caverns 1,2 --label rules --rules
+    uv run python -m experiments.measure --caverns 1 --label random --random-moves --key-order ABCDE
 
-Options (all are optional):
-    caverns=1,2,3    cavern numbers, 1 to 20            (default 1,2,3)
-    runs=3           live games for each cavern         (default 3)
-    label=baseline   name of the folder below runs/     (default "measure")
-    parallel=5       games that run at the same time    (default 5)
-    encoder=words    state encoder                      (default words)
-    depth=12         depth of the dead end check, 0 = off
-    no-extras        do not ask danger_left, danger_right, threat
-    no-memory        do not give `place` and `tried_from_here`
-    two-ways-up      give the way up on the left and on the right (measured: worse)
-    vertical-facts   the state gets facts about the vertical guardians (measured: worse)
-    no-switch-targets  a switch is not a target that jev can select
-    random-moves     a base: a random choice from the valid moves, no jev call
-    key-order=EACDB  a test: the code sets the key order, jev gets no key request
-    hybrid-keys      the key decision uses the map; jev gets it at the start and
-                     when Willy collects a key; then the run is in movement mode
-    normal-key-text  with the map: use the normal text of the key request
-    key-every=25     with hybrid-keys: repeat the key decision after 25 decisions
-    target-map       the target request also has the full map of the cavern
-    brief-text       the free mode text in short sentences (measured: worse)
-    rigid-target     ask for the target only when Willy collects it or gives up
-    recent-moves     give the short-term memory `recent_moves` and `came_from`
-    rules-move       move question with our decision procedure (comparison only)
-    rules-target     target question with our preference rules (comparison only)
-
-The log files go to runs/<label>/. The viewer can replay them. The summary
+The log files go to runs/<label>/, and the viewer can replay them. The summary
 goes to runs/<label>/summary.json.
 """
 
+import argparse
 import asyncio
 import json
 import statistics
-import sys
 from collections import Counter
+from dataclasses import asdict
 
 from dotenv import load_dotenv
 
 from jevmanic.brain import Brain
 from jevmanic.game import Game
-from jevmanic.runner import RUNS_DIR, Settings, play_live
+from jevmanic.options import add_run_options, settings_from
+from jevmanic.runner import RUNS_DIR, play_live
 
 
-def parse(argv):
-    options = {"caverns": "1,2,3", "runs": "3", "label": "measure", "parallel": "5", "encoder": "words"}
-    flags = set()
-    for arg in argv:
-        if "=" in arg:
-            key, value = arg.split("=", 1)
-            options[key] = value
-        else:
-            flags.add(arg)
-    settings = Settings(
-        extra_questions="no-extras" not in flags,
-        memory="no-memory" not in flags,
-        free_target="rules-target" not in flags,
-        free_move="rules-move" not in flags,
-        recent_moves="recent-moves" in flags,
-        flexible_target="rigid-target" not in flags,
-        brief_text="brief-text" in flags,
-        target_map="target-map" in flags,
-        hybrid_keys="facts-only-keys" not in flags,
-        random_moves="random-moves" in flags,
-        switch_targets="no-switch-targets" not in flags,
-        vertical_guardian_facts="vertical-facts" in flags,
-        map_key_text="normal-key-text" not in flags,
-        two_ways_up="two-ways-up" in flags,
-    )
-    if "key-order" in options:
-        settings.forced_key_order = options["key-order"]
-    if "key-every" in options:
-        settings.key_decision_every = int(options["key-every"])
-    if "depth" in options:
-        settings.survival_depth = int(options["depth"])
-    return options, settings
+def parse():
+    parser = argparse.ArgumentParser(description="Measure how well jev plays Manic Miner.")
+    parser.add_argument("--caverns", default="1,2,3", help="cavern numbers, 1 to 20 (default 1,2,3)")
+    parser.add_argument("--runs", type=int, default=10, help="live games for each cavern (default 10)")
+    parser.add_argument("--label", default="measure", help="the name of the folder below runs/")
+    parser.add_argument("--parallel", type=int, default=5, help="games that run at the same time (default 5)")
+    add_run_options(parser)
+    args = parser.parse_args()
+    try:
+        args.cavern_list = [int(c) - 1 for c in args.caverns.split(",")]
+    except ValueError:
+        parser.error("--caverns must be numbers with commas, for example 1,2,3")
+    if not all(0 <= c < 20 for c in args.cavern_list):
+        parser.error("each cavern number must be 1 to 20")
+    return args
 
 
-async def one_run(brain, limit, cavern, encoder, settings, label):
+async def one_run(brain, limit, cavern, settings, label):
     """Play one game and give a summary of it. An error in one game does not stop the others."""
     try:
-        return await _one_run(brain, limit, cavern, encoder, settings, label)
+        return await _one_run(brain, limit, cavern, settings, label)
     except Exception as error:
         print(f"  cavern {cavern + 1:2}: ERROR {type(error).__name__}: {error}", flush=True)
         return {"cavern": cavern, "file": "", "outcome": f"error: {type(error).__name__}", "keys": 0,
@@ -94,12 +56,12 @@ async def one_run(brain, limit, cavern, encoder, settings, label):
                 "low_confidence": 0, "jev_calls": 0}
 
 
-async def _one_run(brain, limit, cavern, encoder, settings, label):
+async def _one_run(brain, limit, cavern, settings, label):
     async with limit:
         game = Game()
         decisions, latencies, confidences = 0, [], []
         end, file = {}, ""
-        async for kind, data in play_live(game, brain, encoder, True, cavern, settings, label):
+        async for kind, data in play_live(game, brain, cavern, settings, label):
             if kind != "event":
                 continue
             if data["type"] == "header":
@@ -158,18 +120,17 @@ def table(results, names):
 
 async def main():
     load_dotenv(".env")
-    options, settings = parse(sys.argv[1:])
-    caverns = [int(c) - 1 for c in options["caverns"].split(",")]
-    runs, label = int(options["runs"]), options["label"]
-    print(f"label={label} caverns={[c + 1 for c in caverns]} runs={runs} settings={settings}")
+    args = parse()
+    settings = settings_from(args)
+    print(f"label={args.label} caverns={[c + 1 for c in args.cavern_list]} runs={args.runs} {settings}")
     brain = Brain()
-    limit = asyncio.Semaphore(int(options["parallel"]))
-    jobs = [one_run(brain, limit, c, options["encoder"], settings, label) for c in caverns for _ in range(runs)]
+    limit = asyncio.Semaphore(args.parallel)
+    jobs = [one_run(brain, limit, c, settings, args.label) for c in args.cavern_list for _ in range(args.runs)]
     results = await asyncio.gather(*jobs)
     await brain.close()
     rows = table(results, Game().cavern_names())
-    summary = {"label": label, "options": options, "settings": settings.__dict__, "caverns": rows, "runs": results}
-    (RUNS_DIR / label / "summary.json").write_text(json.dumps(summary, indent=2))
+    summary = {"label": args.label, "settings": asdict(settings), "caverns": rows, "runs": results}
+    (RUNS_DIR / args.label / "summary.json").write_text(json.dumps(summary, indent=2))
 
 
 if __name__ == "__main__":

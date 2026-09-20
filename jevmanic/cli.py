@@ -1,59 +1,43 @@
-"""Run one live game in the terminal, without the viewer.
+"""Run live games in the terminal, without the viewer.
 
-Run:  uv run python -m jevmanic.cli [encoder] [lookahead] [until-complete] [cavern=2] [rules] [llm=haiku]
+Examples:
+    uv run python -m jevmanic.cli --cavern 2
+    uv run python -m jevmanic.cli --cavern 2 --until-complete
+    uv run python -m jevmanic.cli --cavern 1 --rules
+    uv run python -m jevmanic.cli --cavern 1 --llm haiku
 
-With "llm=haiku", an LLM makes the decisions through the `claude` command line
-tool, for a comparison with jev. The log file goes to runs/llm-haiku/.
-
-With "rules", jev gets the decision procedure that we wrote (comparison only).
-
-The cavern number starts at 1: cavern=1 is Central Cavern.
-
-With "until-complete", the script plays again until jev completes the cavern
-(10 runs at most). Jev does not give the same answer each time, thus some
-runs fail and some runs succeed.
+The cavern number starts at 1: cavern 1 is Central Cavern. Each run writes a
+log file in runs/, and the viewer can replay it.
 """
 
+import argparse
 import asyncio
-import sys
 
 from dotenv import load_dotenv
 
 from .brain import Brain
-from .llm_brain import LLMBrain
 from .game import Game
-from .runner import Settings, play_live
+from .llm_brain import LLMBrain
+from .options import add_run_options, settings_from
+from .runner import play_live
+
+MAX_ATTEMPTS = 10
 
 
-FOLDER = next(("llm-" + a.split("=")[1] for a in sys.argv if a.startswith("llm=")), "")
-SETTINGS = Settings(free_move="rules" not in sys.argv, free_target="rules" not in sys.argv)
-
-
-async def main(encoder: str, look_ahead: bool, until_complete: bool, cavern: int):
-    load_dotenv(".env")
-    llm = next((a.split("=")[1] for a in sys.argv if a.startswith("llm=")), None)
-    game, brain = Game(), (LLMBrain(llm) if llm else Brain())
-    for attempt in range(10 if until_complete else 1):
-        outcome = await play_once(game, brain, encoder, look_ahead, cavern)
-        if outcome == "cavern complete":
-            break
-    await brain.close()
-
-
-async def play_once(game, brain, encoder, look_ahead, cavern) -> str:
+async def play_once(game, brain, cavern, settings, folder) -> str:
     outcome = ""
-    async for kind, data in play_live(game, brain, encoder, look_ahead, cavern, SETTINGS, FOLDER):
+    async for kind, data in play_live(game, brain, cavern, settings, folder):
         if kind != "event":
             continue
         if data["type"] == "target":
-            print(f"    TARGET {data['choice']} at {data['target_cell']} "
-                  f"conf={data.get('confidence', 1):.2f} {data.get('probabilities', 'forced')}")
+            print(f"    KEY {data['choice']} at {data['target_cell']} "
+                  f"confidence={data.get('confidence', 1):.2f} {data.get('forced_reason', '')}")
         elif data["type"] == "decision":
             top = sorted(data["probabilities"].items(), key=lambda kv: -kv[1])[:3]
             probs = " ".join(f"{k}={v:.2f}" for k, v in top)
-            print(f"{data['n']:3} {data['macro']:11} conf={data['confidence']:.2f} "
-                  f"{data['latency_ms']:4} ms  {probs}"
-                  + (f"  removed={list(data['removed'])}" if data["removed"] else ""))
+            not_offered = f"  not offered={list(data['removed'])}" if data["removed"] else ""
+            print(f"{data['n']:3} {data['macro']:11} confidence={data['confidence']:.2f} "
+                  f"{data['latency_ms']:5} ms  {probs}{not_offered}")
         elif data["type"] == "result":
             print(f"      -> willy={data['willy']} keys={data['keys_collected']} air={data['air']}")
         elif data["type"] == "end":
@@ -62,6 +46,26 @@ async def play_once(game, brain, encoder, look_ahead, cavern) -> str:
     return outcome
 
 
+async def main():
+    parser = argparse.ArgumentParser(description="Play Manic Miner with jev in the terminal.")
+    parser.add_argument("--cavern", type=int, default=1, help="cavern number, 1 to 20 (default 1)")
+    parser.add_argument("--until-complete", action="store_true",
+                        help=f"play again until a run is complete ({MAX_ATTEMPTS} runs at most)")
+    parser.add_argument("--llm", metavar="MODEL", help="an LLM makes the decisions through the "
+                        "`claude` command line tool, for example haiku (for comparison, slow)")
+    add_run_options(parser)
+    args = parser.parse_args()
+    if not 1 <= args.cavern <= 20:
+        parser.error("the cavern number must be 1 to 20")
+    load_dotenv(".env")
+    game = Game()
+    brain = LLMBrain(args.llm) if args.llm else Brain()
+    folder = f"llm-{args.llm}" if args.llm else ""
+    for _ in range(MAX_ATTEMPTS if args.until_complete else 1):
+        if await play_once(game, brain, args.cavern - 1, settings_from(args), folder) == "cavern complete":
+            break
+    await brain.close()
+
+
 if __name__ == "__main__":
-    asyncio.run(main(sys.argv[1] if len(sys.argv) > 1 and sys.argv[1] in ("words", "hybrid", "ascii_local", "ascii_full") else "words", "lookahead" in sys.argv, "until-complete" in sys.argv,
-                     next((int(a.split("=")[1]) - 1 for a in sys.argv if a.startswith("cavern=")), 0)))
+    asyncio.run(main())

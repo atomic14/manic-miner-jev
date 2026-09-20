@@ -2,9 +2,15 @@
 
 import asyncio
 import json
+from collections import Counter
+from dataclasses import fields, replace
 
-from jevmanic import describe, runner
-from jevmanic.game import Game
+from jevmanic import brain, describe, runner
+from jevmanic.game import DEAD_END_CAUSE, MACROS, Game, Outcome
+from jevmanic.llm_brain import build_prompt, parse_choice
+from jevmanic.runner import Settings
+
+# -- The game layer -----------------------------------------------------------------------
 
 
 def test_start_of_central_cavern():
@@ -13,6 +19,13 @@ def test_start_of_central_cavern():
     assert (snap.willy_x, snap.willy_y) == (2, 13)
     assert len(snap.keys) == 5
     assert len(snap.guardians) == 1
+
+
+def test_cavern_names_come_from_the_game_memory():
+    names = Game().cavern_names()
+    assert len(names) == 20
+    assert names[0] == "Central Cavern"
+    assert names[1] == "The Cold Room"
 
 
 def test_macros_are_deterministic():
@@ -25,31 +38,6 @@ def test_macros_are_deterministic():
         snap = game.snapshot()
         positions.append((snap.willy_x, snap.willy_y, snap.guardians[0].x))
     assert positions[0] == positions[1]
-
-
-def test_all_encoders_give_json():
-    snap = Game().snapshot()
-    for encode in describe.ENCODERS.values():
-        assert json.dumps(encode(snap))
-
-
-def test_replay_gives_the_logged_positions(tmp_path, monkeypatch):
-    monkeypatch.setattr(runner, "RUNS_DIR", tmp_path)
-    game = Game()
-    lines = [{"type": "header", "encoder": "words", "questions": {}}]
-    for n, macro in enumerate(["walk_right", "jump_right"]):
-        game.run_macro(macro)
-        snap = game.snapshot()
-        lines.append({"type": "decision", "n": n, "macro": macro,
-                      "result": {"willy": [snap.willy_x, snap.willy_y]}})
-    (tmp_path / "run.jsonl").write_text("\n".join(json.dumps(x) for x in lines))
-
-    async def collect():
-        return [d async for kind, d in runner.play_replay(game, "run.jsonl") if kind == "event"]
-
-    results = [e for e in asyncio.run(collect()) if e["type"] == "result"]
-    assert len(results) == 2
-    assert not any(r.get("replay_mismatch") for r in results)
 
 
 def test_look_ahead_does_not_change_the_game():
@@ -65,189 +53,197 @@ def test_look_ahead_does_not_change_the_game():
     assert not outcomes["walk_left"].dead
 
 
-def test_moves_state_removes_deadly_macros():
+def test_switches_vertical_guardians_and_the_extra_floor_tile():
+    game = Game(cavern=7)  # Miner Willy meets the Kong Beast
+    assert game.snapshot().switches == [(6, 0), (18, 0)]
+    game.select_cavern(8)  # Wacky Amoebatrons
+    snap = game.snapshot()
+    assert len([g for g in snap.guardians if g.axis == "vertical"]) == 4
+    # The facts describe the horizontal guardians only (see describe._horizontal_guardians).
+    assert len(describe.words(snap, snap.keys[0])["guardians"]) == 2
+    game.select_cavern(9)  # The Endorian Forest: the extra tile is a floor
+    assert set(game.snapshot().tiles[15]) == {"="}
+
+
+def test_the_look_ahead_does_not_write_over_the_start_of_a_cavern():
+    from jevmanic.game import CAVERN_SLOT_BASE, DEAD_END_SLOT, LOOK_AHEAD_SLOT, SURVIVAL_DEPTH
+
+    assert max(LOOK_AHEAD_SLOT, DEAD_END_SLOT + 20) < CAVERN_SLOT_BASE  # 20 = the largest depth of the viewer
+    game = Game()
+    start = game.snapshot()
+    for name in ["jump_right", "walk_right", "walk_right"]:
+        game.run_macro(name)
+        game.look_ahead(SURVIVAL_DEPTH)
+    game.restart()
+    assert game.snapshot() == start
+
+
+# -- The state ----------------------------------------------------------------------------
+
+
+def test_the_map_has_key_letters_conveyor_direction_and_a_legend():
+    game = Game()  # Central Cavern: 5 keys, and a conveyor that moves Willy to the left
+    snap = game.snapshot()
+    full = describe.cavern_map(snap)
+    text = "".join(full["map"])
+    assert all(letter in text for letter in "ABCDE") and "K" not in text
+    assert "<" in text and ">" not in text and "c" not in text
+    assert set(full["map_legend"]) == set(text)  # one legend entry for each symbol on the map
+    game.select_cavern(1)  # The Cold Room: the conveyor moves Willy to the right
+    assert ">" in "".join(describe.cavern_map(game.snapshot())["map"])
+
+
+def test_key_facts_have_a_short_memory():
+    snap = Game().snapshot()
+    names = {k: f"key_{snap.key_letters[k]}" for k in snap.keys}
+    memory = {"current": snap.keys[0], "used": {snap.keys[0]: 25}, "gave_up": {snap.keys[0]: 2}}
+    keys = describe.keys_state(snap, names, memory)["keys"]
+    assert keys["key_A"]["current_target"] == "yes"
+    assert keys["key_A"]["decisions_used_for_it"] == "many"
+    assert keys["key_A"]["gave_up_on_it"] == "2 times"
+    assert "current_target" not in keys["key_B"]
+    assert keys["key_B"]["decisions_used_for_it"] == "none"
+    assert json.dumps(describe.words(snap, snap.keys[0]))
+
+
+def _moves(snap, outcomes, target=None):
+    return describe.moves_state(snap, outcomes, target if target else snap.keys[0], Counter())
+
+
+def test_a_move_that_kills_willy_is_not_offered():
     game = Game()
     for name in ["jump_right", "walk_right", "walk_right", "walk_right"]:
         game.run_macro(name)
     snap = game.snapshot()
-    state = describe.moves_state(snap, game.look_ahead(), snap.keys[0], set())
+    state = _moves(snap, game.look_ahead())
     assert "jump_right" not in state["moves"]
     assert state["moves_not_offered"]["jump_right"].startswith("kills Willy")
 
 
-def test_cavern_names_come_from_the_game_memory():
-    names = Game().cavern_names()
-    assert len(names) == 20
-    assert names[0] == "Central Cavern"
-    assert names[1] == "The Cold Room"
-
-
-def test_moves_with_no_effect_are_not_offered():
+def test_a_move_with_no_effect_is_not_offered():
     game = Game()  # at the start, Willy is next to the left wall and no guardian is near
     snap = game.snapshot()
-    state = describe.moves_state(snap, game.look_ahead(), snap.keys[0], set())
+    state = _moves(snap, game.look_ahead())
     assert state["moves_not_offered"]["jump_up"].startswith("no effect")
     assert state["moves_not_offered"]["wait"].startswith("no effect")
     assert "walk_right" in state["moves"]
 
 
-def test_switches_and_vertical_guardians_are_in_the_snapshot():
-    game = Game(cavern=7)  # Miner Willy meets the Kong Beast
-    assert game.snapshot().switches == [(6, 0), (18, 0)]
-    game.select_cavern(8)  # Wacky Amoebatrons
-    vertical = [g for g in game.snapshot().guardians if g.axis == "vertical"]
-    assert len(vertical) == 4
-    state = describe.words(game.snapshot(), game.snapshot().keys[0])
-    assert any("vertical guardian" in g.get("type", "") for g in state["guardians"])
-
-
-def test_extra_tile_is_a_floor_in_the_endorian_forest():
-    game = Game(cavern=9)
-    assert set(game.snapshot().tiles[15]) == {"="}  # the full bottom row is floor
-
-
 def test_harmless_moves_stay_when_all_other_moves_kill_willy():
-    from jevmanic.game import MACROS, Outcome
-
     snap = Game().snapshot()
     dead = Outcome(True, "nasty", False, 1, 0, 0, 4, snap.willy_x + 1, snap.willy_y)
     still = Outcome(False, "", False, 0, 0, 0, 4, snap.willy_x, snap.willy_y)
-    outcomes = {name: (still if name in ("wait", "jump_up") else dead) for name in MACROS}
-    state = describe.moves_state(snap, outcomes, snap.keys[0], set())
-    # Jev must get the 2 harmless moves, and no move that kills Willy.
+    state = _moves(snap, {name: (still if name in ("wait", "jump_up") else dead) for name in MACROS})
     assert set(state["moves"]) == {"wait", "jump_up"}
     assert all(v.startswith("kills Willy") for v in state["moves_not_offered"].values())
 
 
 def test_dead_end_moves_stay_when_no_move_is_safe():
-    from jevmanic.game import DEAD_END_CAUSE, MACROS, Outcome
-
     snap = Game().snapshot()
     kills = Outcome(True, "guardian", False, 1, 0, 0, 4, snap.willy_x + 1, snap.willy_y)
     dead_end = Outcome(True, DEAD_END_CAUSE, False, -1, 0, 0, 4, snap.willy_x - 1, snap.willy_y)
-    outcomes = {name: (dead_end if name == "walk_left" else kills) for name in MACROS}
-    state = describe.moves_state(snap, outcomes, snap.keys[0], set())
+    state = _moves(snap, {name: (dead_end if name == "walk_left" else kills) for name in MACROS})
     assert set(state["moves"]) == {"walk_left"}
     assert "dead end" in state["moves"]["walk_left"]["warning"]
 
 
-def test_short_term_memory_in_words():
-    history = [
-        {"move": "jump_left", "dx": -1, "dy": 2, "collected_key": False},
-        {"move": "jump_up", "dx": 0, "dy": 0, "collected_key": True},
-    ]
-    state = describe.recent_state(history)
-    assert state["recent_moves"][0] == {
-        "move": "jump_left", "result": "Willy moved 1 cells to the left and 2 rows higher"}
-    assert state["recent_moves"][1]["result"] == "Willy stayed in the same place and collected a key"
-    # Willy went left and up, thus he came from the right and from a lower place.
-    assert state["came_from"] == {"side": "right", "height": "lower"}
-    assert describe.recent_state([])["recent_moves"].startswith("none")
+def test_the_state_and_the_progress_measure_use_the_same_way():
+    base = Game(cavern=5).snapshot()  # Processing Plant: the first key is directly below the start
+    target = (15, 6)
+    for x in (15, 16):  # one step of Willy must not make the two disagree
+        snap = replace(base, willy_x=x)
+        way = describe.words(snap, target)["target"]["way_down"]
+        reference, name = describe._progress_reference(snap, target)
+        assert name.endswith("way down") and way["side"] in ("left", "right")
+        assert ("left" if reference[0] < snap.willy_x else "right") == way["side"]
 
 
-def test_target_state_has_a_short_memory_for_each_key():
-    snap = Game().snapshot()
-    names = {k: f"key_{i + 1}" for i, k in enumerate(snap.keys)}
-    memory = {"current": snap.keys[0], "used": {snap.keys[0]: 25}, "gave_up": {snap.keys[0]: 2}}
-    keys = describe.keys_state(snap, names, memory)["keys"]
-    assert keys["key_1"]["current_target"] == "yes"
-    assert keys["key_1"]["decisions_used_for_it"] == "many"
-    assert keys["key_1"]["gave_up_on_it"] == "2 times"
-    assert "current_target" not in keys["key_2"]
-    assert keys["key_2"]["decisions_used_for_it"] == "none"
+def test_a_way_down_is_not_a_drop_that_kills_willy():
+    snap = Game(cavern=5).snapshot()  # the start platform of Processing Plant is 5 rows above the floor
+    assert not describe._fall_is_safe(snap, 13, snap.willy_y + 2)
 
 
-def test_the_normal_questions_use_the_long_free_mode_text():
-    from jevmanic import brain
-
-    move = brain.move_questions("words", True, free=True)["move"].instructions
-    assert move == brain.FREE_MOVE_INSTRUCTIONS
-    assert brain.move_questions("words", True, free=True, brief=True)["move"].instructions == (
-        brain.BRIEF_FREE_MOVE_INSTRUCTIONS)
-    target = brain.target_question(["key_1", "key_2"], free=True, memory=True)["target"].instructions
-    assert target == brain.FREE_TARGET_INSTRUCTIONS + brain.TARGET_MEMORY_MEANING
-    rules = brain.move_questions("words", True, free=False)["move"].instructions
-    assert rules == brain.LOOK_AHEAD_INSTRUCTIONS
+# -- The questions ------------------------------------------------------------------------
 
 
-def test_two_ways_up_are_facts_and_the_code_selects_none():
-    from collections import Counter
-
-    game = Game()  # Central Cavern: a platform is above on the right of the start
-    snap = game.snapshot()
-    target = snap.keys[-1]
-    state = describe.words(snap, target, Counter(), two_ways_up=True)
-    assert "way_up" not in state["target"]
-    ways = state["target"]["ways_up"]
-    assert ways["left"] == "none"
-    assert ways["right"]["rows_higher"] == 2 and ways["right"]["willy_was_there"] == "never"
-    moves = describe.moves_state(snap, game.look_ahead(), target, Counter(), two_ways_up=True)
-    assert moves["progress_measures"] == "distance to the target"
-    # The old behaviour: the code selects one way up and measures the distance to it.
-    old = describe.moves_state(snap, game.look_ahead(), target, Counter())
-    assert old["progress_measures"] == "distance to the way up"
+def test_each_mode_uses_its_text():
+    assert brain.move_question()["move"].instructions == brain.FREE_MOVE_INSTRUCTIONS
+    assert brain.move_question(rules_mode=True)["move"].instructions == brain.RULES_MOVE_INSTRUCTIONS
+    names = ["key_A", "key_B"]
+    memory = brain.KEY_MEMORY_MEANING
+    assert brain.key_question(names)["key"].instructions == brain.MAP_KEY_INSTRUCTIONS + memory
+    assert brain.key_question(names, with_map=False)["key"].instructions == brain.FACTS_KEY_INSTRUCTIONS + memory
+    assert brain.key_question(names, rules_mode=True)["key"].instructions == brain.RULES_KEY_INSTRUCTIONS + memory
+    # The move question offers only the valid moves.
+    assert list(brain.move_question(["walk_left", "wait"])["move"].criteria) == ["walk_left", "wait"]
 
 
-def test_map_has_key_letters_conveyor_direction_and_a_legend():
-    game = Game()  # Central Cavern: 5 keys, and a conveyor that moves Willy to the left
-    snap = game.snapshot()
-    full = describe.ascii_full(snap, spaced=False)
-    text = "".join(full["map"])
-    assert all(letter in text for letter in "ABCDE") and "K" not in text
-    assert "<" in text and ">" not in text and "c" not in text
-    assert set(full["map_legend"]) == set(text)  # one legend entry for each symbol on the map
-    # A key keeps its letter after Willy collects a different key.
-    letters = dict(snap.key_letters)
-    assert game.snapshot().key_letters == letters
-    game.select_cavern(1)  # The Cold Room: the conveyor moves Willy to the right
-    assert ">" in "".join(describe.ascii_full(game.snapshot(), spaced=False)["map"])
+def test_the_free_mode_text_gives_the_goal_and_no_rules():
+    text = brain.FREE_MOVE_INSTRUCTIONS
+    assert "collect all keys" in text and "`collects_key`" in text
+    assert "Rule 1" not in text
+    # Rules mode is a strict prompt: it has no mark that the code selects.
+    assert "Rule 1" in brain.RULES_MOVE_INSTRUCTIONS
+    assert "least_visited" not in brain.RULES_MOVE_INSTRUCTIONS
+
+
+def test_default_settings():
+    settings = Settings()
+    assert not settings.rules_mode and settings.map_key_decision and settings.uses_map
+    assert settings.key_decision_every == 25 and settings.survival_depth == 12
+    assert settings.forced_key_order == "" and not settings.random_moves
+    assert not Settings(rules_mode=True).uses_map  # rules mode uses the key facts and no map
+    assert len(fields(Settings)) == 6  # a new setting needs a reason and a measurement
 
 
 def test_llm_answer_parser_and_prompt():
-    from jevmanic import brain
-    from jevmanic.llm_brain import build_prompt, parse_choice
-
     options = ["walk_left", "walk_right", "jump_left", "jump_right", "jump_up", "wait"]
     assert parse_choice("jump_left", options) == "jump_left"
     assert parse_choice("`walk_right`.\n", options) == "walk_right"
     assert parse_choice("I select jump_up because the key is above.", options) == "jump_up"
     assert parse_choice("walk_left or walk_right", options) is None  # not one clear option
     assert parse_choice("go", options) is None
-    question = brain.move_questions("words", True, offered=["walk_left", "wait"], free=True)["move"]
+    question = brain.move_question(["walk_left", "wait"])["move"]
     prompt = build_prompt({"air": "plenty"}, question)
     # The LLM gets the same instructions and the same options as jev.
-    assert brain.FREE_MOVE_INSTRUCTIONS in prompt and "- walk_left:" in prompt and "jump_up" not in prompt.split("OPTIONS")[1].split("STATE")[0]
+    assert brain.FREE_MOVE_INSTRUCTIONS in prompt and "- walk_left:" in prompt
+    assert "jump_up" not in prompt.split("OPTIONS")[1].split("STATE")[0]
 
 
-def test_the_state_and_the_progress_measure_use_the_same_way():
-    from collections import Counter
-
-    game = Game(cavern=5)  # Processing Plant: the first key is directly below the start
-    base = game.snapshot()
-    target = (15, 6)
-    for x in (15, 16):  # one step of Willy must not change the side of the way down
-        from dataclasses import replace
-        snap = replace(base, willy_x=x)
-        way = describe.words(snap, target)["target"]["way_down"]
-        (cell, _), measure = describe._progress_reference(snap, target), None
-        reference, name = describe._progress_reference(snap, target)
-        if isinstance(way, dict) and way.get("side") in ("left", "right") and name.endswith("way down"):
-            side_of_reference = "left" if reference[0] < snap.willy_x else "right"
-            assert side_of_reference == way["side"]
+# -- Live runs and replays ------------------------------------------------------------------
 
 
-def test_default_settings():
-    from dataclasses import fields
-    from jevmanic.runner import Settings
+def _events(generator):
+    async def collect():
+        return [data async for kind, data in generator if kind == "event"]
 
-    settings = Settings()
-    # The default: jev decides (free mode), and the key decision uses the map.
-    assert settings.free_move and settings.free_target
-    assert settings.hybrid_keys and settings.map_key_text and settings.key_decision_every == 25
-    assert settings.survival_depth == 12
-    # The facts that a measurement showed to be worse are off.
-    assert not settings.vertical_guardian_facts and not settings.recent_moves
-    assert not settings.two_ways_up and not settings.brief_text
-    # Each switch that the measurement tool uses must exist.
-    names = {f.name for f in fields(Settings)}
-    assert {"forced_key_order", "random_moves", "switch_targets", "target_map", "flexible_target"} <= names
+    return asyncio.run(collect())
+
+
+def test_a_live_run_with_no_jev_call_and_its_replay(tmp_path, monkeypatch):
+    """A random player with a key order from the code needs no decision maker."""
+    monkeypatch.setattr(runner, "RUNS_DIR", tmp_path)
+    monkeypatch.setattr(runner, "MAX_DECISIONS", 12)
+    game = Game()
+    settings = Settings(random_moves=True, forced_key_order="ABCDE")
+    events = _events(runner.play_live(game, None, 0, settings))
+    header, end = events[0], events[-1]
+    assert header["type"] == "header" and header["settings"]["random_moves"]
+    assert end["type"] == "end" and end["input_tokens"] == 0
+    decisions = [e for e in events if e["type"] == "decision"]
+    assert decisions and all(set(d["offered"]) <= set(MACROS) for d in decisions)
+    assert [e for e in events if e["type"] == "target"][0]["choice"] == "key_A"
+    # The replay gives the same positions as the live run.
+    results = [e for e in _events(runner.play_replay(game, header["file"])) if e["type"] == "result"]
+    assert len(results) == len(decisions)
+    assert not any(r.get("replay_mismatch") for r in results)
+    assert runner.list_runs()[-1]["mode"] == "random moves" or any(
+        r["mode"] == "random moves" for r in runner.list_runs())
+
+
+def test_the_saved_examples_replay_to_a_complete_cavern():
+    game = Game()
+    for run in [r for r in runner.list_runs() if r["group"] == runner.EXAMPLES_GROUP]:
+        results = [e for e in _events(runner.play_replay(game, run["file"])) if e["type"] == "result"]
+        assert results[-1]["complete"], run["file"]
+        assert not any(r.get("replay_mismatch") for r in results), run["file"]

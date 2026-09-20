@@ -30,15 +30,7 @@ from typesafe_sdk import Choice, TypeSafeClient
 from jevmanic import brain, describe
 from jevmanic.game import Game
 
-MAP_INSTRUCTIONS = (
-    "Willy is a miner in a platform game. The map shows the cavern, and "
-    "`map_legend` tells what each symbol means. Willy must collect all keys and "
-    "then go into the exit portal. Willy can climb only 2 rows with one jump. He "
-    "can fall to a lower floor, but after a long fall he cannot climb back. A "
-    "crumbling floor breaks when Willy uses it, thus a way that goes across a "
-    "crumbling floor can be open only one time. Select the key that Willy gets "
-    "next, in an order that lets him get all keys."
-)
+MAP_INSTRUCTIONS = brain.MAP_KEY_INSTRUCTIONS  # the text of the real key decision
 
 
 def complete_runs():
@@ -116,7 +108,7 @@ def main():
         for order in as_letters:
             for i, key in enumerate(order):
                 good_next[frozenset(order[:i])][key] += 1
-        for row in describe.ascii_full(first, spaced=False)["map"]:
+        for row in describe.cavern_map(first)["map"]:
             print("   " + row)
         for snap in situations(game, cavern, shortest[cavern]):
             left = [letters[k] for k in snap.keys]
@@ -125,15 +117,15 @@ def main():
             if not good or len(good) == len(left):
                 continue  # each key that is left is good: the question tells us nothing
             names = {k: f"key_{letters[k]}" for k in snap.keys}
-            full_map = describe.ascii_full(snap, spaced=False)
+            full_map = describe.cavern_map(snap)
             # The same map with the letters in the opposite sequence.
             swap = dict(zip(sorted(left), sorted(left, reverse=True)))
             swapped = replace(snap, key_letters={k: swap[letters[k]] for k in snap.keys})
             inputs = {
-                "facts": (describe.keys_state(snap, names), brain.FREE_TARGET_INSTRUCTIONS, None),
+                "facts": (describe.keys_state(snap, names), brain.FACTS_KEY_INSTRUCTIONS, None),
                 "map": (full_map, MAP_INSTRUCTIONS, None),
                 "map+facts": ({**full_map, **describe.keys_state(snap, names)}, MAP_INSTRUCTIONS, None),
-                "map, other letters": (describe.ascii_full(swapped, spaced=False), MAP_INSTRUCTIONS, swap),
+                "map, other letters": (describe.cavern_map(swapped), MAP_INSTRUCTIONS, swap),
             }
             print(f"   collected {''.join(sorted(collected)) or '-':5} good next: {''.join(sorted(good)):4}", end="")
             for name, (state, instructions, mapping) in inputs.items():

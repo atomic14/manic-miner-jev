@@ -21,7 +21,7 @@ def main(path):
     snap = game.snapshot()
     print(f"{header.get('cavern_name')} | {end.get('outcome')} | keys {end.get('keys_collected')} | decisions {len(decisions)}")
     print("map before the last decision (W Willy, G guardian, K key, P portal, T target):")
-    grid = [row for row in describe.ascii_full(snap, spaced=False)["map"]]
+    grid = [row for row in describe.cavern_map(snap)["map"]]
     tx, ty = decisions[-1]["target_cell"]
     grid[ty] = grid[ty][:tx] + "T" + grid[ty][tx + 1:]
     for y, row in enumerate(grid):

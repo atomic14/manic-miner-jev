@@ -1,15 +1,16 @@
-"""State encoders. Each encoder changes a game Snapshot into the `state`
-that we send to jev.
+"""The state that we send to jev: a game Snapshot changed into facts.
 
-Jev reads text only. Jev is weak with coordinates and with large states.
-Thus each encoder gives positions relative to Willy, and uses words together
-with small cell counts.
+Jev reads text only. Jev is weak with coordinates and with large states. Thus
+the state gives positions relative to Willy, in words and small numbers.
 
-Encoders:
-    words        a description in words, no map
-    ascii_local  a small ASCII map around Willy + the direction of the target
-    ascii_full   the full ASCII map of the cavern + the direction of the target
-    hybrid       words + ascii_local
+    cavern_map   the map of the cavern with its legend (for the key decision)
+    keys_state   facts about each key and switch (for the key decision)
+    words        facts about Willy, the target, and the guardians (for a move)
+    moves_state  the true result of each valid move, from the look-ahead
+
+The geometry facts (`way_up`, `way_down`, `progress`) are guesses of the code
+from the tile map. Each of them was wrong in one cavern or more. Measure each
+change (see the README).
 """
 
 from .game import (
@@ -60,9 +61,6 @@ def map_legend(rows: list[str], snap: Snapshot) -> dict:
 
 LOOK_AHEAD_CELLS = 6  # how far the words encoder looks to the left and right
 MAX_JUMP_ROWS = 2  # a jump can reach a platform that is 2 rows higher
-LOCAL_HALF_WIDTH = 8
-LOCAL_ROWS_UP = 4
-LOCAL_ROWS_DOWN = 3  # below the top row of Willy
 
 
 # -- ASCII maps ---------------------------------------------------------------
@@ -91,8 +89,7 @@ def _grid(snap: Snapshot) -> list[list[str]]:
     return grid
 
 
-def _rows(grid, x0, x1, y0, y1, spaced):
-    sep = " " if spaced else ""
+def _rows(grid, x0, x1, y0, y1):
     out = []
     for y in range(y0, y1 + 1):
         # Cells outside the cavern show as wall.
@@ -100,12 +97,13 @@ def _rows(grid, x0, x1, y0, y1, spaced):
             grid[y][x] if 0 <= x < COLS and 0 <= y < ROWS else TILE_WALL
             for x in range(x0, x1 + 1)
         ]
-        out.append(sep.join(cells))
+        out.append("".join(cells))
     return out
 
 
-def ascii_full(snap: Snapshot, spaced=True) -> dict:
-    rows = _rows(_grid(snap), 0, COLS - 1, 0, ROWS - 1, spaced)
+def cavern_map(snap: Snapshot) -> dict:
+    """The full map of the cavern with its legend. Each string is one row."""
+    rows = _rows(_grid(snap), 0, COLS - 1, 0, ROWS - 1)
     return {
         "map_legend": map_legend(rows, snap),
         "map_note": "Each string is one row. The first row is the top of the cavern.",
@@ -113,20 +111,6 @@ def ascii_full(snap: Snapshot, spaced=True) -> dict:
     }
 
 
-def ascii_local(snap: Snapshot, spaced=True) -> dict:
-    x0 = snap.willy_x - LOCAL_HALF_WIDTH
-    x1 = snap.willy_x + 1 + LOCAL_HALF_WIDTH
-    y0 = snap.willy_y - LOCAL_ROWS_UP
-    y1 = snap.willy_y + LOCAL_ROWS_DOWN
-    rows = _rows(_grid(snap), x0, x1, y0, y1, spaced)
-    return {
-        "map_legend": map_legend(rows, snap),
-        "map_note": (
-            "The map shows only the area near Willy. Each string is one row. "
-            "The first row is the highest row. Willy is in the center."
-        ),
-        "map": rows,
-    }
 
 
 # -- Words ----------------------------------------------------------------------
@@ -179,10 +163,19 @@ def _look(snap: Snapshot, direction: int) -> dict:
     return {"first_thing": "nothing, the floor is clear", "distance_cells": LOOK_AHEAD_CELLS}
 
 
+def _horizontal_guardians(snap: Snapshot) -> list:
+    """The guardians that the facts describe.
+
+    The snapshot also has the vertical guardians, and the map shows them. The
+    facts do not: a measurement showed that facts about vertical guardians
+    make the results worse. The look-ahead runs the real game, thus it removes
+    a move that a vertical guardian makes deadly.
+    """
+    return [g for g in snap.guardians if g.axis == "horizontal"]
+
+
 def patrol_covers(g, column: int, row: int) -> bool:
-    """Is this cell in the patrol area of the guardian? A guardian is 2 x 2 cells."""
-    if g.axis == "vertical":
-        return g.x <= column <= g.x + 1 and g.min_y <= row <= g.max_y + 1
+    """Is this cell in the patrol area of a horizontal guardian? A guardian is 2 x 2 cells."""
     return g.min_x <= column <= g.max_x + 1 and g.y <= row <= g.y + 1
 
 
@@ -208,7 +201,7 @@ def _fall_is_safe(snap: Snapshot, x: int, floor_row: int) -> bool:
                 landing = y
                 break
             # The patrol of a guardian. A guardian is 2 cells wide and 2 cells high.
-            for g in snap.guardians:
+            for g in _horizontal_guardians(snap):
                 if patrol_covers(g, column, y):
                     return False
         drops.append(landing - floor_row)
@@ -313,32 +306,6 @@ def _way_up(snap: Snapshot, preferred_side: str):
     return found.get(preferred_side) or min(found.values(), key=lambda w: w["horizontal_cells"])
 
 
-def _ways_up(snap: Snapshot, visited) -> dict:
-    """The way up on the left and the way up on the right, as facts for jev.
-
-    The code does not select one of them. In cavern 4, the code selected a
-    single tile in a corner as "the way up", and jev went into that trap in 9
-    of 10 runs. `willy_was_there` is a memory: a way up that Willy used before
-    and came back from did not help him.
-    """
-    found = _find_ways_up(snap)
-    out = {}
-    for side in ("left", "right"):
-        way = found.get(side)
-        if way is None:
-            out[side] = "none"
-            continue
-        x, _ = way["cell"]
-        top_row = snap.willy_y - way["rows_higher"]  # the row of Willy when he stands up there
-        visits = sum(
-            _visit_count(visited, px, top_row) for px in range(x - 2, x + 2)
-        ) if visited is not None else 0
-        out[side] = {
-            "horizontal_cells": way["horizontal_cells"],
-            "rows_higher": way["rows_higher"],
-            "willy_was_there": "never" if visits == 0 else "before" if visits < LOOP_VISITS else "many times",
-        }
-    return out
 
 
 def _relative(snap: Snapshot, x: int, y: int, width: int = 1) -> dict:
@@ -455,7 +422,7 @@ def _preferred_side(snap: Snapshot, x: int, y: int, width: int = 1) -> str:
     return ""
 
 
-def _progress_reference(snap: Snapshot, target, two_ways_up: bool = False):
+def _progress_reference(snap: Snapshot, target):
     """The place that a move must get nearer to, and the name of that measure.
 
     Same level: the target. Higher floor: the way up. Lower floor: the way
@@ -470,7 +437,7 @@ def _progress_reference(snap: Snapshot, target, two_ways_up: bool = False):
         way = _way_down(snap, side)
         if isinstance(way, dict) and "cell" in way:
             return way["cell"], "distance to the way down"
-    if height == "higher" and not two_ways_up:
+    if height == "higher":
         way = _way_up(snap, side)
         if isinstance(way, dict):
             return way["cell"], "distance to the way up"
@@ -493,9 +460,9 @@ def _visits_word(visited, x, y) -> str:
     return "visited many times"
 
 
-def moves_state(snap: Snapshot, outcomes: dict, target, visited: set, tried: set = frozenset(), memory: bool = True, mark_least_visited: bool = True, two_ways_up: bool = False) -> dict:
+def moves_state(snap: Snapshot, outcomes: dict, target, visited, tried=frozenset()) -> dict:
     """The result of each macro, from the look-ahead. Deadly macros are separate."""
-    (tx, ty), measure = _progress_reference(snap, target, two_ways_up)
+    (tx, ty), measure = _progress_reference(snap, target)
     goal = target_cell(snap, target)
     same_level = _relative(snap, *goal, 1 if snap.keys else 2)["height"] == "same level"
 
@@ -505,10 +472,7 @@ def moves_state(snap: Snapshot, outcomes: dict, target, visited: set, tried: set
     now = distance(snap.willy_x, snap.willy_y)
     moves, removed = {}, {}
     # A wait is valid only if something can change while Willy waits.
-    guardian_near = any(
-        g.get("height") == "same level" or g.get("its_column_crosses_the_level_of_willy") == "yes"
-        for g in _guardians(snap)
-    )
+    guardian_near = any(g["height"] == "same level" for g in _guardians(snap))
     guardian_blocks = any(o.dead and o.cause in ("guardian", DEAD_END_CAUSE) for o in outcomes.values())
     wait_can_help = guardian_near or guardian_blocks or _standing_on(snap) == "crumbling floor"
 
@@ -550,8 +514,6 @@ def moves_state(snap: Snapshot, outcomes: dict, target, visited: set, tried: set
             # Memory: did Willy select this move at this place before?
             "tried_from_here": "yes" if (snap.willy_x, snap.willy_y, name) in tried else "no",
         }
-        if not memory:
-            del result["place"], result["tried_from_here"]
         if o.dead:
             result["warning"] = "dead end: Willy is alive after this move, but then no move is safe"
         if TILE_CRUMBLING in floor_after:
@@ -561,19 +523,6 @@ def moves_state(snap: Snapshot, outcomes: dict, target, visited: set, tried: set
         if o.complete:
             result["completes_cavern"] = True
         moves[name] = result
-    if memory and mark_least_visited:
-        # Mark the option with the smallest number of visits. The code
-        # compares the numbers, because jev is weak with numbers. A move that
-        # stays in the same place is an option only if no move goes away.
-        def count(name):
-            return _visit_count(visited, outcomes[name].x, outcomes[name].y)
-
-        going = [n for n in moves if outcomes[n].dx or outcomes[n].dy] or list(moves)
-        if going:
-            fewest = min(count(n) for n in going)
-            for n in going:
-                if count(n) == fewest:
-                    moves[n]["least_visited_option"] = "yes"
     return {
         "progress_measures": measure,
         "moves": moves,
@@ -583,24 +532,9 @@ def moves_state(snap: Snapshot, outcomes: dict, target, visited: set, tried: set
 
 def _guardians(snap: Snapshot) -> list[dict]:
     out = []
-    body = (snap.willy_y, snap.willy_y + 1)
-    for g in snap.guardians:
+    for g in _horizontal_guardians(snap):
         rel = _relative(snap, g.x, g.y, 2)
         facts = {k: rel[k] for k in ("side", "horizontal_cells", "horizontal_distance")}
-        if g.axis == "vertical":
-            # A vertical guardian goes up and down in one column.
-            facts["type"] = "vertical guardian: it moves up and down in its column"
-            facts["moves"] = g.moving
-            crosses = g.min_y <= body[1] and g.max_y + 1 >= body[0]
-            facts["its_column_crosses_the_level_of_willy"] = "yes" if crosses else "no"
-            if g.y + 1 < body[0]:
-                facts["now"] = "above the level of Willy"
-            elif g.y > body[1]:
-                facts["now"] = "below the level of Willy"
-            else:
-                facts["now"] = "on the level of Willy"
-            out.append(facts)
-            continue
         if rel["side"] == "same column":
             approach = "at Willy"
         elif rel["side"] == g.moving:
@@ -629,17 +563,14 @@ def _air_word(air: float) -> str:
     return "critical"
 
 
-def words(snap: Snapshot, target=None, visited=None, two_ways_up: bool = False) -> dict:
+def words(snap: Snapshot, target=None) -> dict:
     target_words = _target(snap, target)
     goal = target_cell(snap, target)
     side = _preferred_side(snap, *goal, 1 if snap.keys else 2)
     if target_words.get("height") == "lower":
         target_words["way_down"] = _public(_way_down(snap, side))
     elif target_words.get("height") == "higher":
-        if two_ways_up:
-            target_words["ways_up"] = _ways_up(snap, visited)
-        else:
-            target_words["way_up"] = _public(_way_up(snap, side))
+        target_words["way_up"] = _public(_way_up(snap, side))
     return {
         "willy": {"facing": snap.willy_facing, "standing_on": _standing_on(snap)},
         "target": target_words,
@@ -651,41 +582,16 @@ def words(snap: Snapshot, target=None, visited=None, two_ways_up: bool = False) 
     }
 
 
-def movement_words(dx: int, dy: int, past: bool = False) -> str:
+def movement_words(dx: int, dy: int) -> str:
     """The change of place in words. `dx` is cells to the right, `dy` is rows higher."""
-    verb = "moved" if past else "moves"
     if dx == 0 and dy == 0:
-        return "Willy stayed in the same place" if past else "Willy stays in the same place"
+        return "Willy stays in the same place"
     parts = []
     if dx:
         parts.append(f"{abs(dx)} cells to the {'right' if dx > 0 else 'left'}")
     if dy:
         parts.append(f"{abs(dy)} rows {'higher' if dy > 0 else 'lower'}")
-    return f"Willy {verb} " + " and ".join(parts)
-
-
-def recent_state(history: list[dict]) -> dict:
-    """Short-term memory: the last moves of Willy with their results.
-
-    `history` has one entry for each move, the newest is the last:
-    {"move", "dx", "dy", "collected_key"}.
-    """
-    recent = []
-    for h in history:
-        result = movement_words(h["dx"], h["dy"], past=True)
-        if h.get("collected_key"):
-            result += " and collected a key"
-        recent.append({"move": h["move"], "result": result})
-    out = {"recent_moves": recent or "none: this is the first move"}
-    last = next((h for h in reversed(history) if h["dx"] or h["dy"]), None)
-    if last:
-        came = {}
-        if last["dx"]:
-            came["side"] = "left" if last["dx"] > 0 else "right"
-        if last["dy"]:
-            came["height"] = "lower" if last["dy"] > 0 else "higher"
-        out["came_from"] = came
-    return out
+    return "Willy moves " + " and ".join(parts)
 
 
 def _public(way):
@@ -693,35 +599,11 @@ def _public(way):
     return {k: v for k, v in way.items() if k != "cell"} if isinstance(way, dict) else way
 
 
-def hybrid(snap: Snapshot, target=None, visited=None, two_ways_up: bool = False) -> dict:
-    return {**words(snap, target, visited, two_ways_up), **ascii_local(snap)}
 
 
-def _with_target(snap: Snapshot, state: dict, target) -> dict:
-    """Add the direction of the target to a map state.
-
-    The small map frequently shows no key. A test also showed that jev makes
-    many errors when it reads left and right from a map. Thus the code gives
-    the direction in words.
-    """
-    t = _target(snap, target)
-    return {
-        "target": {k: t[k] for k in ("what", "side", "height") if k in t},
-        **state,
-    }
 
 
-def ascii_local_with_target(snap: Snapshot, target=None, visited=None, two_ways_up: bool = False) -> dict:
-    return _with_target(snap, ascii_local(snap), target)
 
 
-def ascii_full_with_target(snap: Snapshot, target=None, visited=None, two_ways_up: bool = False) -> dict:
-    return _with_target(snap, ascii_full(snap), target)
 
 
-ENCODERS = {
-    "words": words,
-    "ascii_local": ascii_local_with_target,
-    "ascii_full": ascii_full_with_target,
-    "hybrid": hybrid,
-}

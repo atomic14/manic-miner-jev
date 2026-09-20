@@ -76,10 +76,8 @@
   <div class="group">
     <label for="cavern">Cavern</label>
     <select id="cavern"></select>
-    <label for="encoder">State encoder</label>
-    <select id="encoder"></select>
-    <label title="The code tries each macro first. Jev gets the result of each macro. A macro that kills Willy is not an option."><input type="checkbox" id="lookahead" checked> look-ahead</label>
-    <label for="depth" title="The look-ahead first finds the true result of each single move. The dead end check then looks this number of moves further ahead: a move is not offered to jev if no sequence of that length keeps Willy alive. 0 = only the result of each single move.">dead end check</label>
+    <label title="On (normal): the key decision gets the map of the cavern. Off: the key decision gets the facts only."><input type="checkbox" id="mapkeys" checked> map for the key decision</label>
+    <label for="depth" title="The look-ahead finds the true result of each single move. The dead end check then looks this number of moves further ahead: a move is not offered to jev if no sequence of that length keeps Willy alive. 0 = only the result of each single move.">dead end check</label>
     <select id="depth" title="Number of moves that the dead end check looks ahead">
       <option value="0">off</option><option value="1">1 move</option><option value="2">2 moves</option>
       <option value="4">4 moves</option><option value="6">6 moves</option><option value="8">8 moves</option>
@@ -130,10 +128,10 @@
   </section>
   <section>
     <div class="panel">
-      <h2><span>Target (key or switch) selected by jev: <b id="t-name" style="color:var(--warn)">–</b></span>
+      <h2><span>Key decision of jev: <b id="t-name" style="color:var(--warn)">–</b></span>
           <small id="t-meta"></small></h2>
       <div id="t-bars"></div>
-      <details><summary>State and question of the target request</summary>
+      <details><summary>State and question of the key decision</summary>
         <pre id="t-state"></pre></details>
     </div>
     <div class="panel">
@@ -146,10 +144,6 @@
         <span>tokens: <b id="d-tokens">–</b></span>
         <span>model: <b id="d-model">–</b></span>
       </div>
-    </div>
-    <div class="panel">
-      <h2>Other answers in the same request <small>these do not control Willy</small></h2>
-      <div id="extras"></div>
     </div>
     <div class="panel">
       <h2>State sent to jev <small>exact JSON of this request</small></h2>
@@ -205,7 +199,6 @@ function liveTargetCell() {
 
 function handle(msg) {
   if (msg.type === "hello") {
-    $("encoder").innerHTML = msg.encoders.map(e => `<option>${e}</option>`).join("");
     $("cavern").innerHTML = msg.caverns.map((name, i) => `<option value="${i}">${i + 1}. ${name}</option>`).join("");
     showRuns(msg.runs, msg.groups);
   } else if (msg.type === "runs") { showRuns(msg.runs, msg.groups);
@@ -216,7 +209,11 @@ function handle(msg) {
     $("mode").textContent = msg.mode === "live" ? "LIVE" : "REPLAY";
     $("mode").className = "badge " + msg.mode;
     $("questions").textContent = JSON.stringify(msg.questions, null, 2);
-    $("outcome").textContent = `${msg.cavern_name || "Central Cavern"} · ${msg.file} · encoder: ${msg.encoder} · ${msg.look_ahead ? "look-ahead, dead end check " + (msg.settings ? msg.settings.survival_depth : 12) + " moves" : "no look-ahead"} · ${msg.settings && !msg.settings.free_move ? "rules mode" : "free mode"}`;
+    const st = msg.settings || {};
+    const maker = msg.decision_maker && msg.decision_maker !== "jev" ? msg.decision_maker :
+      st.random_moves ? "random moves" : (st.rules_mode || st.free_move === false) ? "rules mode" : "free mode";
+    const depth = st.survival_depth ?? 12;
+    $("outcome").textContent = `${msg.cavern_name || "Central Cavern"} · ${maker} · dead end check ${depth} moves · ${msg.file}`;
     $("outcome").className = "";
     updateStats();
   } else if (msg.type === "target") {
@@ -300,13 +297,16 @@ function showTarget(t) {
   if (!t) return;
   $("t-name").textContent = `${t.choice} at column ${t.target_cell[0]}, row ${t.target_cell[1]}`;
   if (t.forced) {
-    $("t-meta").textContent = "only one key is left: no jev call";
+    $("t-meta").textContent = `no jev call: ${t.forced_reason || "only one key is left"}`;
     $("t-bars").innerHTML = ""; $("t-state").textContent = "";
     return;
   }
   $("t-meta").textContent = `selected at decision #${t.n} · confidence ${t.confidence.toFixed(2)} · ${t.latency_ms} ms · ${t.input_tokens} tokens`;
   $("t-bars").innerHTML = Object.keys(t.cells).map(k => bar(k, t.probabilities[k] ?? 0, "var(--warn)", k === t.choice)).join("");
-  $("t-state").textContent = "STATE\n" + JSON.stringify(t.state, null, 2) +
+  // The map of the key request as plain rows, thus a person can read it. The
+  // full state below has the same rows.
+  const map = t.state && t.state.map ? "MAP IN THIS REQUEST\n" + t.state.map.join("\n") + "\n\n" : "";
+  $("t-state").textContent = map + "STATE\n" + JSON.stringify(t.state, null, 2) +
     "\n\nQUESTION\n" + JSON.stringify(header && header.target_questions, null, 2);
 }
 
@@ -326,12 +326,6 @@ function showDecision(d) {
     r.dead ? `Willy died (${r.ticks} ticks)` : r.complete ? "cavern complete" :
     `safe, ${r.ticks} ticks, Willy at column ${r.willy[0]}, row ${r.willy[1]}`;
   $("d-result").className = r && r.dead ? "outcome-bad" : "";
-  let extras = "";
-  for (const [k, v] of Object.entries(d.nouls)) extras += bar(k, v, v > 0.5 ? "var(--bad)" : "var(--good)", false);
-  for (const [k, v] of Object.entries(d.scores))
-    extras += `<div class="bar"><span class="name">${k}</span><span class="val" style="text-align:left;grid-column:2/4">
-      score ${Number(v.score).toFixed(2)} · confidence ${Number(v.confidence).toFixed(2)}</span></div>`;
-  $("extras").innerHTML = extras;
   $("state").textContent = JSON.stringify(d.state, null, 2);
   if (pinned !== null && d.frame) draw(d.frame, d.target_cell);
 }
@@ -351,14 +345,18 @@ function updateStats() {
   } else if (!last) { $("s-keys").textContent = 0; $("s-air").textContent = "100%"; }
 }
 
-$("start").onclick = () => { setPaused(false); send({cmd: "start", encoder: $("encoder").value, look_ahead: $("lookahead").checked, dead_end_depth: Number($("depth").value), rules_mode: $("rulesmode").checked, cavern: Number($("cavern").value)}); };
+$("start").onclick = () => {
+  setPaused(false);
+  send({cmd: "start", cavern: Number($("cavern").value), rules_mode: $("rulesmode").checked,
+        map_key_decision: $("mapkeys").checked, dead_end_depth: Number($("depth").value)});
+};
 $("replay").onclick = () => { if ($("runs").value) { setPaused(false); send({cmd: "replay", file: $("runs").value}); } };
 $("stop").onclick = () => send({cmd: "stop"});
 $("step").onclick = () => { setPaused(true, false); send({cmd: "step"}); };
 $("pause").onclick = () => setPaused(!paused);
 $("rungroup").onchange = showRunList;
 $("completeonly").onchange = showRunList;
-$("lookahead").onchange = () => { $("depth").disabled = !$("lookahead").checked; };
+$("rulesmode").onchange = () => { $("mapkeys").disabled = $("rulesmode").checked; };
 $("speed").onchange = () => send({cmd: "speed", value: $("speed").value});
 function setPaused(value, tell = true) {
   paused = value; $("pause").textContent = paused ? "Resume" : "Pause";
