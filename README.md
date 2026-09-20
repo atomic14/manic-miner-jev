@@ -118,7 +118,7 @@ one at random. It makes no jev call. 10 runs for each cavern:
 
 The random player completed 0 of 200 runs, and it collects 0.3 keys in a run
 (the mean of all caverns). Jev completed 48 to 50 of 200 runs and collects
-1.9 keys. Thus the look-ahead alone does not complete a cavern. The decisions
+2.0 keys. Thus the look-ahead alone does not complete a cavern. The decisions
 of jev do. In 3 caverns jev is not better than the random player: cavern 5
 (0.5 and 0.6 keys), cavern 12 (0.0 and 0.5 keys), and cavern 14 (0.4 and 0.1
 keys, no complete run). An earlier measurement with 30 random runs for each
