@@ -29,7 +29,6 @@
   #cavern { max-width: 230px; }
   #rungroup { max-width: 260px; }
   #runs { max-width: 460px; }
-  #groupinfo { padding: 6px 16px 0; color: var(--dim); font-size: 12px; }
   main { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 16px; padding: 16px; }
   @media (max-width: 1000px) { main { grid-template-columns: 1fr; } }
   .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 12px; }
@@ -69,64 +68,137 @@
   #pinned { color: var(--warn); cursor: pointer; }
   #error { color: var(--bad); padding: 0 16px; }
   .outcome-good { color: var(--good); } .outcome-bad { color: var(--bad); }
+  /* The top of the page: what this is, and the two ways to start. */
+  .intro { padding: 12px 16px 0; max-width: 1100px; color: var(--text); }
+  .intro p { margin: 0 0 6px; }
+  .intro details { color: var(--dim); } .intro ol { margin: 6px 0 0; padding-left: 20px; } .intro li { margin: 2px 0; }
+  .starts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; padding: 12px 16px 0; }
+  @media (max-width: 1000px) { .starts { grid-template-columns: 1fr; } }
+  .starts .panel { margin-top: 0; }
+  .start-card h3 { margin: 0 0 2px; font-size: 14px; }
+  .start-card .hint { margin-bottom: 8px; }
+  .hint { color: var(--dim); font-size: 12px; margin: 0 0 8px; }
+  .row { display: flex; flex-wrap: wrap; gap: 6px 8px; align-items: center; margin-top: 6px; }
+  .row label { color: var(--dim); font-size: 12px; }
+  .settings { margin-top: 8px; } .settings > div { margin-top: 8px; }
+  .settings .hint { margin: 2px 0 0 0; }
+  .free { color: var(--good); font-weight: 600; } .paid { color: var(--warn); font-weight: 600; }
+  .controls { display: flex; flex-wrap: wrap; gap: 6px 8px; align-items: center; margin-top: 10px; }
+  .controls label { color: var(--dim); font-size: 12px; }
+  button:disabled { opacity: 0.4; cursor: default; } button:disabled:hover { border-color: var(--line); }
+  kbd { border: 1px solid var(--line); border-radius: 3px; padding: 0 4px; font: 11px ui-monospace, Menlo, monospace; color: var(--dim); }
+  #statusline { margin-top: 8px; font-size: 13px; }
+  #statusline.good { color: var(--good); } #statusline.bad { color: var(--bad); }
+  #pinned { border: 1px solid var(--warn); border-radius: 10px; padding: 0 8px; font-size: 11px; text-transform: none; letter-spacing: 0; }
+  #pinned:empty { display: none; }
 </style>
 </head>
 <body>
 <header>
   <h1><span>jev</span> plays Manic Miner</h1>
-  <div class="group">
-    <label for="cavern">Cavern</label>
-    <select id="cavern"></select>
-    <label title="On (normal): the key decision gets the map of the cavern. Off: the key decision gets the facts only."><input type="checkbox" id="mapkeys" checked> map for the key decision</label>
-    <label for="keymode" title="jev selects: jev makes each key decision. Fixed order: the code sets the key order, there is no key request, and jev makes only the move decisions.">keys</label>
-    <select id="keymode"><option value="jev" selected>jev selects</option><option value="fixed">fixed order</option></select>
-    <input type="text" id="keyorder" size="6" maxlength="5" disabled title="The key order as key letters, for example EACDB. It starts with the optimum order of the selected cavern.">
-    <label for="depth" title="The look-ahead finds the true result of each single move. The dead end check then looks this number of moves further ahead: a move is not offered to jev if no sequence of that length keeps Willy alive. 0 = only the result of each single move.">dead end check</label>
-    <select id="depth" title="Number of moves that the dead end check looks ahead">
-      <option value="0">off</option><option value="1">1 move</option><option value="2">2 moves</option>
-      <option value="4" selected>4 moves</option><option value="6">6 moves</option><option value="8">8 moves</option>
-      <option value="12">12 moves</option><option value="16">16 moves</option>
-    </select>
-    <label title="Off (normal): the decisions come from jev. On: jev gets the decision procedure that we wrote. Use it for comparison only."><input type="checkbox" id="rulesmode"> rules mode</label>
-    <button class="primary" id="start">Start live run</button>
-  </div>
-  <div class="group recorded">
-    <label for="rungroup">Recorded runs</label>
-    <select id="rungroup" title="The group of recorded runs"></select>
-    <label title="Show only the runs in which Willy got all keys and went into the portal"><input type="checkbox" id="completeonly" checked> complete runs only</label>
-    <select id="runs"></select>
-    <button id="replay">Replay (no jev calls)</button>
-  </div>
-  <div class="group">
-    <button id="pause">Pause</button>
-    <button id="step" title="Run one decision, then stop before the next move">Step</button>
-    <label title="During a pause, and for a decision that you select in the timeline: show the path of Willy for each possible move"><input type="checkbox" id="ghosts" checked> show the possible moves</label>
-    <button id="stop">Stop</button>
-    <label for="speed">Speed</label>
-    <select id="speed">
-      <option value="0.5">0.5 x</option><option value="1" selected>1 x</option>
-      <option value="2">2 x</option><option value="4">4 x</option><option value="0">max</option>
-    </select>
-  </div>
 </header>
-<div id="groupinfo"></div>
+<div class="intro">
+  <p><b>jev</b> is a small decision model from TypeSafe. It does not write text: it gets a description of a situation
+     and a question, and it selects one answer. On this page it plays <b>Manic Miner</b> (ZX Spectrum, 1983).
+     Miner Willy must collect all keys in a cavern and then go into the exit portal, and he must stay alive.</p>
+  <details><summary>How it works, and how to read this page</summary>
+    <ol>
+      <li>The game stops before each move. The code reads the game and writes a description as text. jev gets no picture.</li>
+      <li>The code tries each of the 6 moves in the emulator first. A move that kills Willy is not offered to jev.</li>
+      <li>jev selects one move (walk left or right, jump left, right, or up, or wait). The game runs that move, and then stops again.</li>
+      <li>Less frequently, jev selects the key that Willy goes to next. A yellow box in the game shows that key.</li>
+      <li>The right side of the page shows each answer of jev with its probabilities, and the exact data that jev got.</li>
+    </ol>
+  </details>
+</div>
+<div class="starts">
+  <div class="panel start-card">
+    <h3>1 · Watch a recorded run <span class="free">· free</span></h3>
+    <p class="hint">A replay plays a game that jev played before. It makes no jev calls and needs no API key. Start here.</p>
+    <div class="row">
+      <label for="rungroup">From</label>
+      <select id="rungroup" title="The group of recorded runs"></select>
+      <label title="Show only the runs in which Willy got all keys and went into the portal"><input type="checkbox" id="completeonly" checked> complete runs only</label>
+    </div>
+    <div class="row">
+      <label for="runs">Run</label>
+      <select id="runs"></select>
+      <button class="primary" id="replay">▶ Replay</button>
+    </div>
+    <p class="hint" id="groupinfo" style="margin-top:8px"></p>
+  </div>
+  <div class="panel start-card">
+    <h3>2 · Let jev play a new game <span class="paid">· uses the jev API</span></h3>
+    <p class="hint">A live run calls jev before each move. One run costs approximately $0.005. It needs
+       <code>TYPESAFE_API_KEY</code> in the <code>.env</code> file. The run is recorded, and you can replay it later.</p>
+    <div class="row">
+      <label for="cavern">Cavern</label>
+      <select id="cavern"></select>
+      <button id="start">● Start live run</button>
+    </div>
+    <details class="settings"><summary>Settings (the defaults are the normal configuration)</summary>
+      <div>
+        <label for="keymode">Who selects the next key?</label>
+        <select id="keymode"><option value="jev" selected>jev selects</option><option value="fixed">fixed order</option></select>
+        <input type="text" id="keyorder" size="6" maxlength="5" disabled aria-label="key order">
+        <p class="hint">"jev selects": jev makes each key decision. "Fixed order": you give the order as key letters
+           (the field starts with the optimum order of the cavern), and jev makes only the move decisions.</p>
+      </div>
+      <div>
+        <label><input type="checkbox" id="mapkeys" checked> Give jev a map of the cavern for the key decision</label>
+        <p class="hint">On (normal): the key decision gets a text map of the cavern. Off: it gets facts about each key only.</p>
+      </div>
+      <div>
+        <label for="depth">Dead end check</label>
+        <select id="depth">
+          <option value="0">off</option><option value="1">1 move</option><option value="2">2 moves</option>
+          <option value="4" selected>4 moves</option><option value="6">6 moves</option><option value="8">8 moves</option>
+          <option value="12">12 moves</option><option value="16">16 moves</option>
+        </select>
+        <p class="hint">The code always removes a move that kills Willy directly. This check also removes a move after which
+           Willy cannot stay alive for this number of moves. A larger number is more help from the code.</p>
+      </div>
+      <div>
+        <label><input type="checkbox" id="rulesmode"> Rules mode (for comparison only)</label>
+        <p class="hint">Off (normal): jev gets the goal and the facts, and it decides. On: jev gets a list of rules that we wrote.</p>
+      </div>
+    </details>
+  </div>
+</div>
+
 <div id="error"></div>
 <main>
   <section>
     <div class="panel">
       <h2><span>Game <span class="badge idle" id="mode">IDLE</span></span><small id="outcome"></small></h2>
+      <div id="statusline" style="margin:0 0 2px">Select a recorded run above and press <b>▶ Replay</b>.</div>
+      <div class="controls">
+        <button id="pause" disabled>⏸ Pause</button>
+        <button id="step" disabled title="Run one decision, then stop before the next move">⏭ Step</button>
+        <button id="stop" disabled>⏹ Stop</button>
+        <label for="speed">Speed</label>
+        <select id="speed">
+          <option value="0.5">0.5 x</option><option value="1" selected>1 x</option>
+          <option value="2">2 x</option><option value="4">4 x</option><option value="0">max</option>
+        </select>
+        <label title="During a pause, and for a decision that you select in the timeline: show the path of Willy for each possible move"><input type="checkbox" id="ghosts" checked> show the possible moves</label>
+      </div>
+      <p class="hint" style="margin:8px 0 10px">Keys: <kbd>Space</kbd> pause or resume · <kbd>→</kbd> step. During a pause, the game shows
+         where each possible move takes Willy: the selected move has the mark ▶, and ✕ marks a move that kills him.</p>
       <canvas id="screen" width="768" height="576"></canvas>
       <div class="stats">
         <div class="stat"><b id="s-decisions">0</b><span>decisions</span></div>
         <div class="stat"><b id="s-keys">0</b><span>keys</span></div>
         <div class="stat"><b id="s-air">100%</b><span>air</span></div>
-        <div class="stat"><b id="s-latency">–</b><span>mean jev ms</span></div>
-        <div class="stat"><b id="s-tokens">0</b><span>input tokens</span></div>
-        <div class="stat"><b id="s-cost">$0.0000</b><span>cost</span></div>
+        <div class="stat" title="The mean time of one jev call, in milliseconds"><b id="s-latency">–</b><span>ms for a jev call</span></div>
+        <div class="stat" title="The size of all text that jev got in this run"><b id="s-tokens">0</b><span>input tokens</span></div>
+        <div class="stat" title="The cost of the jev calls of this run. A replay costs nothing: this is the cost of the recorded run."><b id="s-cost">$0.0000</b><span>jev cost</span></div>
       </div>
     </div>
     <div class="panel">
-      <h2><span>Decision timeline</span><small>bar height = confidence. Click a bar to examine it.</small></h2>
+      <h2><span>Decision timeline</span></h2>
+      <p class="hint">One bar for each move decision. The colour is the selected move, and the height is how sure jev was.
+         A red bar: Willy died. <b>Click a bar</b> to examine that decision.</p>
       <div id="timeline"></div>
       <div class="legend" id="legend"></div>
     </div>
@@ -135,13 +207,17 @@
     <div class="panel">
       <h2><span>Key decision of jev: <b id="t-name" style="color:var(--warn)">–</b></span>
           <small id="t-meta"></small></h2>
+      <p class="hint">jev selects the key that Willy goes to next (the yellow box in the game). Each bar is the probability
+         that jev gave to a key.</p>
       <div id="t-bars"></div>
-      <details><summary>State and question of the key decision</summary>
+      <details><summary>The exact data of this key decision (with the map)</summary>
         <pre id="t-state"></pre></details>
     </div>
     <div class="panel">
       <h2><span>Decision <span id="d-n">–</span> <span id="pinned"></span></span>
           <small>confidence <b id="d-conf">–</b></small></h2>
+      <p class="hint">Before each move, jev gets the state below and selects one move. Each bar is the probability that jev gave
+         to a move. A move with a line through it was not offered to jev, and the text gives the cause.</p>
       <div id="bars"></div>
       <div class="meta">
         <span>result: <b id="d-result">–</b></span>
@@ -152,11 +228,13 @@
     </div>
     <div class="panel">
       <h2>State sent to jev <small>exact JSON of this request</small></h2>
+      <p class="hint">This text is all that jev knows about the game for this decision. <code>moves</code> has the true result
+         of each possible move, from a test in the emulator.</p>
       <pre id="state">–</pre>
     </div>
     <div class="panel">
       <details>
-        <summary>Questions sent to jev in the move request</summary>
+        <summary>The question and the instructions that jev gets with each state</summary>
         <pre id="questions"></pre>
       </details>
     </div>
@@ -171,6 +249,7 @@ const ctx = $("screen").getContext("2d");
 
 let allRuns = [], runGroups = [];
 let ws, decisions = [], targets = [], pinned = null, lastFrame = null, paused = false, header = null;
+let runState = "idle";  // idle, running, or done
 let keyOrders = {};  // the optimum key order of each cavern
 let pendingPaths = null;  // the paths of the possible moves for the next decision
 
@@ -178,6 +257,29 @@ $("legend").innerHTML = MACROS.map(m => `<span><i style="background:${color(m)}"
   `<span><i style="background:var(--bad)"></i>Willy died</span>`;
 
 function send(msg) { ws.send(JSON.stringify(msg)); }
+
+// One line under the game tells what occurs now and what the person can do next.
+let endInfo = {text: "", good: false};
+function updateControls(endText, good) {
+  if (endText !== undefined) endInfo = {text: endText, good};
+  const active = runState === "running";
+  $("pause").disabled = $("step").disabled = $("stop").disabled = !active;
+  $("pause").textContent = paused && active ? "▶ Resume" : "⏸ Pause";
+  const line = $("statusline");
+  line.className = "";
+  if (runState === "idle") {
+    line.innerHTML = "Select a recorded run above and press <b>▶ Replay</b>.";
+  } else if (runState === "done") {
+    line.className = endInfo.good ? "good" : "bad";
+    line.textContent = endInfo.text + " Click a bar in the timeline to examine a decision, or start a different run.";
+  } else {
+    const what = header && header.mode === "live" ? "Live run" : "Replay";
+    const n = decisions.length;
+    line.innerHTML = paused
+      ? `${what} · paused before move ${n}. The game shows the possible moves. Press <b>⏭ Step</b> to run the selected move, or <b>▶ Resume</b>.`
+      : `${what} · decision ${n} · press <b>⏸ Pause</b> to stop before the next move.`;
+  }
+}
 
 function connect() {
   ws = new WebSocket(`ws://${location.host}/ws`);
@@ -278,6 +380,7 @@ function handle(msg) {
   } else if (msg.type === "runs") { showRuns(msg.runs, msg.groups);
   } else if (msg.type === "header") {
     decisions = []; targets = []; pinned = null; header = msg; $("timeline").innerHTML = ""; $("outcome").textContent = "";
+    $("pinned").textContent = ""; runState = "running"; updateControls();
     $("t-name").textContent = "–"; $("t-bars").innerHTML = ""; $("t-state").textContent = ""; $("t-meta").textContent = "";
     $("error").textContent = "";
     $("mode").textContent = msg.mode === "live" ? "LIVE" : "REPLAY";
@@ -306,7 +409,7 @@ function handle(msg) {
     if (pinned === null) showDecision(msg);
     // During a pause, the game stops here, before the macro runs: show the possible moves.
     if (pinned === null && paused && msg.frame) draw(msg.frame, msg.target_cell, msg);
-    updateStats();
+    updateStats(); updateControls();
   } else if (msg.type === "result") {
     const d = decisions[msg.n]; if (!d) return;
     d.result = msg;
@@ -317,9 +420,21 @@ function handle(msg) {
     $("mode").textContent = "DONE"; $("mode").className = "badge idle";
     $("outcome").textContent = msg.outcome;
     $("outcome").className = msg.outcome === "cavern complete" ? "outcome-good" : "outcome-bad";
+    const good = msg.outcome === "cavern complete";
+    const text = good ? "Cavern complete: Willy has all keys and is in the portal." :
+      msg.outcome === "Willy died" ? "The run ended: Willy died." :
+      msg.outcome.startsWith("stuck") ? "The run ended: Willy made no progress for 30 decisions." : `The run ended: ${msg.outcome}.`;
+    runState = "done"; updateControls(text, good);
   } else if (msg.type === "status") {
-    if (msg.status === "stopped") { $("mode").textContent = "STOPPED"; $("mode").className = "badge idle"; }
-  } else if (msg.type === "error") { $("error").textContent = msg.message; }
+    if (msg.status === "stopped") {
+      $("mode").textContent = "STOPPED"; $("mode").className = "badge idle";
+      runState = "done"; updateControls("You stopped the run.", false);
+    }
+  } else if (msg.type === "error") {
+    $("error").textContent = "Error: " + msg.message +
+      (/api|key|401|402|auth/i.test(msg.message) ? " — a live run needs TYPESAFE_API_KEY in the .env file, and credit on the account. A replay needs neither." : "");
+    runState = "done"; updateControls("The run stopped because of an error.", false);
+  }
 }
 
 function showRuns(runs, groups) {
@@ -361,7 +476,7 @@ function addTimelineBar(d) {
 function pin(n) {
   pinned = n;
   [...$("timeline").children].forEach((b, i) => b.classList.toggle("sel", i === n));
-  $("pinned").textContent = n === null ? "" : "(pinned — click here to follow the run again)";
+  $("pinned").textContent = n === null ? "" : `you look at decision #${n} — click here to go back to the run`;
   const d = n === null ? decisions[decisions.length - 1] : decisions[n];
   if (d) showDecision(d);
   if (n === null && lastFrame) draw(lastFrame);
@@ -403,7 +518,7 @@ function showDecision(d) {
   $("d-tokens").textContent = d.input_tokens;
   $("d-model").textContent = d.model;
   const r = d.result;
-  $("d-result").textContent = !r ? "macro in progress…" :
+  $("d-result").textContent = !r ? (paused ? "the move did not run yet" : "the move is in progress…") :
     r.dead ? `Willy died (${r.ticks} ticks)` : r.complete ? "cavern complete" :
     `safe, ${r.ticks} ticks, Willy at column ${r.willy[0]}, row ${r.willy[1]}`;
   $("d-result").className = r && r.dead ? "outcome-bad" : "";
@@ -427,6 +542,10 @@ function updateStats() {
 }
 
 $("start").onclick = () => {
+  if ($("keymode").value === "fixed" && !/^[A-Ea-e]+$/.test($("keyorder").value)) {
+    $("error").textContent = "Give the key order as key letters, for example " + (keyOrders[$("cavern").value] || "EACDB") + ".";
+    return;
+  }
   setPaused(false);
   send({cmd: "start", cavern: Number($("cavern").value), rules_mode: $("rulesmode").checked,
         map_key_decision: $("mapkeys").checked, dead_end_depth: Number($("depth").value),
@@ -453,9 +572,17 @@ $("keymode").onchange = updateKeyControls;
 $("cavern").onchange = () => { $("keyorder").value = keyOrders[$("cavern").value] || ""; };
 $("speed").onchange = () => send({cmd: "speed", value: $("speed").value});
 function setPaused(value, tell = true) {
-  paused = value; $("pause").textContent = paused ? "Resume" : "Pause";
+  paused = value;
   if (tell) send({cmd: paused ? "pause" : "resume"});
+  if (!paused && pinned !== null) pin(null);  // follow the run again
+  updateControls();
 }
+// Keyboard: Space = pause or resume, right arrow = step.
+document.addEventListener("keydown", e => {
+  if (["INPUT", "SELECT", "TEXTAREA", "BUTTON"].includes(e.target.tagName) || runState !== "running") return;
+  if (e.code === "Space") { e.preventDefault(); $("pause").click(); }
+  else if (e.code === "ArrowRight") { e.preventDefault(); $("step").click(); }
+});
 connect();
 </script>
 </body>

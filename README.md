@@ -196,10 +196,11 @@ uv run pytest                           # tests, no jev calls
 uv run python -m jevmanic.server
 ```
 
-Open http://127.0.0.1:8000.
+Open http://127.0.0.1:8000. The page explains itself: it starts with what
+jev and the game are, and how to read the page.
 
-- **Replay** plays a recorded run. A replay makes no jev calls and costs
-  nothing. The emulator is deterministic, thus a replay is always the same
+- **1 · Watch a recorded run** (free). A replay makes no jev calls and needs
+  no API key. The emulator is deterministic, thus a replay is always the same
   game. Select a group of recorded runs first:
   - **Saved example runs**: complete runs that are part of the project
     (folder `demo/`). Use them for a demonstration.
@@ -209,27 +210,25 @@ Open http://127.0.0.1:8000.
     `runs/name/`). A failed run shows where and why jev failed.
 
   The box **complete runs only** hides the runs in which Willy did not get
-  to the portal. Each entry gives the cavern, the mode, the result, and the
-  number of decisions.
-- **Start live run** plays a new game with jev. Select the cavern first.
-  The **map for the key decision** box is set by default: the key decision
-  gets the map of the cavern. The **rules mode** box gives jev the procedure
-  that we wrote. Use it for comparison only.
-- **dead end check** selects how many moves the dead end check looks ahead
-  (off, 1, 2, 4, 6, 8, 12, or 16 moves). The default is 4.
-- **Pause**, **Step**, and **Speed** control the playback, in a replay and
-  in a live run. One step is one decision. The game stops after a decision
-  and before its move, thus you see what jev selected before it occurs.
+  to the portal.
+- **2 · Let jev play a new game** (uses the jev API). Select the cavern and
+  press **Start live run**. **Settings** has the options, each with a short
+  text: who selects the next key (jev, or a fixed order that starts with the
+  optimum order of the cavern), the map for the key decision, the depth of
+  the dead end check (the default is 4 moves), and rules mode.
+- **Pause**, **Step**, **Stop**, and **Speed** are above the game screen, in
+  a replay and in a live run. A line of text tells what occurs now and what
+  you can do next. The keys: Space = pause or resume, right arrow = step. The
+  game stops after a decision and before its move, thus you see what jev
+  selected before it occurs.
 - **show the possible moves**: during a pause, the game screen shows the path
   of Willy for each of the 6 macros, as faded figures of Willy in the colour
   of the macro, one figure for each 2 game ticks. The selected macro is the
   brightest and has the mark ▶. A red cross marks a move that kills Willy.
-  Click a bar in the timeline to see the possible moves of an earlier
-  decision. The paths are for the viewer only: they do not go to jev or to
-  the log file.
-- The game stops while jev makes a decision, thus real time is not
-  necessary.
-- Click a bar in the timeline to examine an earlier decision.
+  The paths are for the viewer only: they do not go to jev or to the log
+  file.
+- Click a bar in the timeline to examine an earlier decision, with its
+  possible moves.
 
 The page shows, for each decision:
 
