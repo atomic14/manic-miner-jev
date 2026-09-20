@@ -264,8 +264,8 @@ right down to the row 4 ledge and walk into the portal.
 
 ## The test in play
 
-We used only the key order of the subagent. The code set it with the switch
-`key-order`, and jev got no key request. Jev made each move decision with the
+We used only the key order of the subagent. The code set it with the option
+`--key-order`, and jev got no key request. Jev made each move decision with the
 normal movement, which we did not change. We did not give the route plan to
 jev. 10 live runs for each cavern.
 

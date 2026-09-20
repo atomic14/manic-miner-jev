@@ -59,7 +59,7 @@ def map_legend(rows: list[str], snap: Snapshot) -> dict:
     return legend
 
 
-LOOK_AHEAD_CELLS = 6  # how far the words encoder looks to the left and right
+LOOK_AHEAD_CELLS = 6  # how far the move facts look to the left and right
 MAX_JUMP_ROWS = 2  # a jump can reach a platform that is 2 rows higher
 
 

@@ -6,8 +6,6 @@ one option name. The differences from jev:
 
 - The answer is text. The code checks that it is one of the options.
 - There are no calibrated probabilities. The selected option gets 1.0.
-- The LLM answers only the question that controls Willy. It does not get the
-  other questions of the request (danger_left, danger_right, threat).
 - A call takes seconds, not a fraction of a second.
 
 The call uses no tools, no project settings, and an empty working folder, thus

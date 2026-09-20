@@ -1,0 +1,269 @@
+{
+  "label": "after-clean-cavern-1",
+  "settings": {
+    "rules_mode": false,
+    "map_key_decision": true,
+    "key_decision_every": 25,
+    "survival_depth": 12,
+    "forced_key_order": "",
+    "random_moves": false
+  },
+  "caverns": [
+    {
+      "cavern": 1,
+      "name": "Central Cavern",
+      "runs": 20,
+      "complete": 19,
+      "mean_keys": 5,
+      "mean_decisions_complete": 97,
+      "tokens_per_call": 1330,
+      "low_confidence_rate": 0.45,
+      "mean_cost_usd": 0.0048,
+      "other_outcomes": {
+        "stuck: no progress": 1
+      }
+    }
+  ],
+  "runs": [
+    {
+      "cavern": 0,
+      "file": "after-clean-cavern-1/20260920-084120-cavern-01-central-cavern-free.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 78,
+      "tokens": 92091,
+      "cost_usd": 0.003868,
+      "mean_latency_ms": 306,
+      "low_confidence": 19,
+      "jev_calls": 69
+    },
+    {
+      "cavern": 0,
+      "file": "after-clean-cavern-1/20260920-084120-cavern-01-central-cavern-free-2.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 129,
+      "tokens": 155858,
+      "cost_usd": 0.006546,
+      "mean_latency_ms": 319,
+      "low_confidence": 64,
+      "jev_calls": 117
+    },
+    {
+      "cavern": 0,
+      "file": "after-clean-cavern-1/20260920-084120-cavern-01-central-cavern-free-3.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 5,
+      "decisions": 78,
+      "tokens": 93303,
+      "cost_usd": 0.003919,
+      "mean_latency_ms": 308,
+      "low_confidence": 33,
+      "jev_calls": 72
+    },
+    {
+      "cavern": 0,
+      "file": "after-clean-cavern-1/20260920-084120-cavern-01-central-cavern-free-4.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 78,
+      "tokens": 92091,
+      "cost_usd": 0.003868,
+      "mean_latency_ms": 327,
+      "low_confidence": 21,
+      "jev_calls": 69
+    },
+    {
+      "cavern": 0,
+      "file": "after-clean-cavern-1/20260920-084120-cavern-01-central-cavern-free-5.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 129,
+      "tokens": 155515,
+      "cost_usd": 0.006532,
+      "mean_latency_ms": 332,
+      "low_confidence": 62,
+      "jev_calls": 117
+    },
+    {
+      "cavern": 0,
+      "file": "after-clean-cavern-1/20260920-084120-cavern-01-central-cavern-free-6.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 78,
+      "tokens": 92091,
+      "cost_usd": 0.003868,
+      "mean_latency_ms": 330,
+      "low_confidence": 21,
+      "jev_calls": 69
+    },
+    {
+      "cavern": 0,
+      "file": "after-clean-cavern-1/20260920-084146-cavern-01-central-cavern-free.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 123,
+      "tokens": 146863,
+      "cost_usd": 0.006168,
+      "mean_latency_ms": 306,
+      "low_confidence": 62,
+      "jev_calls": 110
+    },
+    {
+      "cavern": 0,
+      "file": "after-clean-cavern-1/20260920-084147-cavern-01-central-cavern-free.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 122,
+      "tokens": 149440,
+      "cost_usd": 0.006276,
+      "mean_latency_ms": 307,
+      "low_confidence": 68,
+      "jev_calls": 112
+    },
+    {
+      "cavern": 0,
+      "file": "after-clean-cavern-1/20260920-084147-cavern-01-central-cavern-free-2.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 78,
+      "tokens": 92091,
+      "cost_usd": 0.003868,
+      "mean_latency_ms": 331,
+      "low_confidence": 20,
+      "jev_calls": 69
+    },
+    {
+      "cavern": 0,
+      "file": "after-clean-cavern-1/20260920-084147-cavern-01-central-cavern-free-3.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 82,
+      "tokens": 98624,
+      "cost_usd": 0.004142,
+      "mean_latency_ms": 313,
+      "low_confidence": 25,
+      "jev_calls": 74
+    },
+    {
+      "cavern": 0,
+      "file": "after-clean-cavern-1/20260920-084204-cavern-01-central-cavern-free.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 144,
+      "tokens": 175036,
+      "cost_usd": 0.007352,
+      "mean_latency_ms": 324,
+      "low_confidence": 76,
+      "jev_calls": 132
+    },
+    {
+      "cavern": 0,
+      "file": "after-clean-cavern-1/20260920-084206-cavern-01-central-cavern-free.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 123,
+      "tokens": 146936,
+      "cost_usd": 0.006171,
+      "mean_latency_ms": 336,
+      "low_confidence": 63,
+      "jev_calls": 110
+    },
+    {
+      "cavern": 0,
+      "file": "after-clean-cavern-1/20260920-084214-cavern-01-central-cavern-free.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 78,
+      "tokens": 92091,
+      "cost_usd": 0.003868,
+      "mean_latency_ms": 324,
+      "low_confidence": 22,
+      "jev_calls": 69
+    },
+    {
+      "cavern": 0,
+      "file": "after-clean-cavern-1/20260920-084214-cavern-01-central-cavern-free-2.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 78,
+      "tokens": 92091,
+      "cost_usd": 0.003868,
+      "mean_latency_ms": 319,
+      "low_confidence": 25,
+      "jev_calls": 69
+    },
+    {
+      "cavern": 0,
+      "file": "after-clean-cavern-1/20260920-084226-cavern-01-central-cavern-free.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 78,
+      "tokens": 92091,
+      "cost_usd": 0.003868,
+      "mean_latency_ms": 302,
+      "low_confidence": 24,
+      "jev_calls": 69
+    },
+    {
+      "cavern": 0,
+      "file": "after-clean-cavern-1/20260920-084227-cavern-01-central-cavern-free.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 78,
+      "tokens": 92091,
+      "cost_usd": 0.003868,
+      "mean_latency_ms": 299,
+      "low_confidence": 22,
+      "jev_calls": 69
+    },
+    {
+      "cavern": 0,
+      "file": "after-clean-cavern-1/20260920-084240-cavern-01-central-cavern-free.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 78,
+      "tokens": 92091,
+      "cost_usd": 0.003868,
+      "mean_latency_ms": 301,
+      "low_confidence": 21,
+      "jev_calls": 69
+    },
+    {
+      "cavern": 0,
+      "file": "after-clean-cavern-1/20260920-084240-cavern-01-central-cavern-free-2.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 86,
+      "tokens": 102938,
+      "cost_usd": 0.004323,
+      "mean_latency_ms": 312,
+      "low_confidence": 33,
+      "jev_calls": 78
+    },
+    {
+      "cavern": 0,
+      "file": "after-clean-cavern-1/20260920-084249-cavern-01-central-cavern-free.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 125,
+      "tokens": 147597,
+      "cost_usd": 0.006199,
+      "mean_latency_ms": 291,
+      "low_confidence": 65,
+      "jev_calls": 111
+    },
+    {
+      "cavern": 0,
+      "file": "after-clean-cavern-1/20260920-084250-cavern-01-central-cavern-free.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 81,
+      "tokens": 96811,
+      "cost_usd": 0.004066,
+      "mean_latency_ms": 289,
+      "low_confidence": 23,
+      "jev_calls": 73
+    }
+  ]
+}

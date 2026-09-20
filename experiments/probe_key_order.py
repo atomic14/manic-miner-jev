@@ -15,12 +15,12 @@ Inputs:
     map+facts    the two together
     map, letters in a different sequence    to see if a letter has an influence
 
-Run:  uv run python -m experiments.probe_key_order [caverns=1,2,3,4]
+Run:  uv run python -m experiments.probe_key_order [--caverns 1,2,3,4]
 """
 
+import argparse
 import glob
 import json
-import sys
 from collections import Counter, defaultdict
 from dataclasses import replace
 
@@ -86,10 +86,9 @@ def ask(client, state, instructions, letters):
 
 def main():
     load_dotenv(".env")
-    caverns = [0, 1, 2, 3]
-    for arg in sys.argv[1:]:
-        if arg.startswith("caverns="):
-            caverns = [int(c) - 1 for c in arg.split("=")[1].split(",")]
+    parser = argparse.ArgumentParser(description="Test: can jev select a good next key?")
+    parser.add_argument("--caverns", default="1,2,3,4", help="cavern numbers, 1 to 20 (default 1,2,3,4)")
+    caverns = [int(c) - 1 for c in parser.parse_args().caverns.split(",")]
     client = TypeSafeClient()
     game = Game()
     orders, shortest = key_orders(game, caverns)

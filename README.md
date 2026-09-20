@@ -202,10 +202,10 @@ Open http://127.0.0.1:8000.
   The box **complete runs only** hides the runs in which Willy did not get
   to the portal. Each entry gives the cavern, the mode, the result, and the
   number of decisions.
-- **Start live run** plays a new game with jev. Select the cavern and the
-  state encoder first. Keep the **look-ahead** box set and use the `words`
-  encoder. The **rules mode** box gives jev the procedure that we wrote. Use
-  it for comparison only.
+- **Start live run** plays a new game with jev. Select the cavern first.
+  The **map for the key decision** box is set by default: the key decision
+  gets the map of the cavern. The **rules mode** box gives jev the procedure
+  that we wrote. Use it for comparison only.
 - **dead end check** selects how many moves the dead end check looks ahead
   (off, 1, 2, 4, 6, 8, 12, or 16 moves). The default is 12.
 - **Pause**, **Step**, and **Speed** control the playback. One step is one
@@ -225,28 +225,42 @@ The page shows, for each decision:
 ### The terminal
 
 ```sh
-uv run python -m jevmanic.cli words lookahead cavern=2
-uv run python -m jevmanic.cli words lookahead cavern=2 until-complete
-uv run python -m jevmanic.cli words lookahead cavern=2 rules     # comparison only
+uv run python -m jevmanic.cli --cavern 2
+uv run python -m jevmanic.cli --cavern 2 --until-complete
+uv run python -m jevmanic.cli --cavern 2 --rules          # comparison only
+uv run python -m jevmanic.cli --help                      # all options
 ```
 
-The cavern number starts at 1. With `until-complete`, the script plays again
+The cavern number starts at 1. With `--until-complete`, the script plays again
 until a run is complete (10 runs at most). Each live run writes a log file in
 `runs/`. The viewer can replay it.
 
 ### Measurement
 
 ```sh
-uv run python -m experiments.measure caverns=1,2 runs=10 label=my-test
-uv run python -m experiments.measure caverns=1,2 runs=10 label=rules rules-move rules-target
+uv run python -m experiments.measure --caverns 1,2 --runs 10 --label my-test
+uv run python -m experiments.measure --caverns 1,2 --runs 10 --label rules --rules
 uv run python -m experiments.diagnose runs/my-test/<file>.jsonl
 ```
 
 `experiments/measure.py` plays many live games at the same time and prints a
 table: complete runs, keys, decisions, tokens, and the rate of decisions with
-a confidence below 0.5. The switches `no-extras`, `no-memory`, `depth=N`,
-`rules-move`, and `rules-target` change one part of the design, to measure
-what it gives. The log files go to `runs/<label>/`, and the viewer shows
+a confidence below 0.5. The terminal and the measurement have the same 6 run
+options. Each option changes one part of the design, to measure what it
+gives:
+
+| Option | Effect |
+| --- | --- |
+| `--rules` | rules mode (comparison) |
+| `--facts-only-keys` | the key decision gets the facts only, and no map |
+| `--key-every N` | repeat the key decision after N decisions (default 25, 0 = no repeat) |
+| `--depth N` | the moves that the dead end check looks ahead (default 12, 0 = off) |
+| `--key-order LETTERS` | a test: the code sets the key order, and there is no key request |
+| `--random-moves` | a base for comparison: a random choice from the valid moves |
+
+Earlier measurements used switches that are now removed, because the
+measurement showed no gain. Their results stay in `experiments/results/`.
+The log files go to `runs/<label>/`, and the viewer shows
 them as the group "Measurement: label". The summaries of the measurements
 in this document are in `experiments/results/`.
 `experiments/diagnose.py` prints the map, the last positions, and the last
@@ -272,8 +286,7 @@ and in line with the cell grid.
 
 There is a second, less frequent request: jev selects the **target** (a key,
 or a switch in the two caverns that have switches). The code sends it at the
-start, after each collected key, and after 12 decisions with no new place
-(that target is then left out).
+start, after each collected key, and again after 25 decisions.
 
 ### Valid moves
 
@@ -313,7 +326,7 @@ positions relative to Willy, in words and small numbers.
 
 All examples below are from the recorded run
 `demo/cavern-02-the-cold-room-free-mode.jsonl`. The exact text of all
-questions is in `jevmanic/brain.py`. The state encoders are in
+questions is in `jevmanic/brain.py`. The code that makes the state is in
 `jevmanic/describe.py`. The viewer shows the exact state and questions of
 each request.
 
@@ -525,34 +538,12 @@ The criteria of the options:
 - `jump_up`: Jump straight up. The result is in `moves.jump_up`.
 - `wait`: Do not move. The result is in `moves.wait`.
 
-**The other questions.** They go in the same request, thus they add almost no
-time. The viewer shows their answers.
-
-- `danger_right` (Noul): If Willy walks 2 cells to the right now, does he touch a nasty or a guardian, or fall from an edge?
-- `danger_left` (Noul): If Willy walks 2 cells to the left now, does he touch a nasty or a guardian, or fall from an edge?
-- `threat` (Score): How large is the threat to Willy at this moment?
-
 The answer in the example: `walk_right`, confidence
 0.64. The probabilities: `walk_right` 0.74, `walk_left` 0.11, `jump_left` 0.08, `wait` 0.07. This request used
 1524 input tokens and took 288 ms.
 
 The code makes no jev call when only one macro is valid, and when all valid
 macros have the same result (Willy is in the air).
-
-### Other state encoders
-
-The viewer has 4 encoders. `words` is the one above.
-
-| Encoder | Content |
-| --- | --- |
-| `words` | the facts in words, as above |
-| `ascii_local` | a small ASCII map around Willy + the direction of the target |
-| `ascii_full` | the full ASCII map of the cavern + the direction of the target |
-| `hybrid` | `words` + `ascii_local` |
-
-You can also run with no look-ahead. Then the criteria of the `move` question
-give exact rules about the state, and the code does not check a macro before
-it runs. Willy dies quickly. It is there for comparison.
 
 ## What we learned about jev
 
@@ -587,15 +578,14 @@ it runs. Willy dies quickly. It is there for comparison.
   content in short sentences and a "field: meaning" form (190 words, not
   293). Central Cavern needed 89 decisions, not 71. The Menagerie went from
   10 of 10 to 4 of 10. Jev reads full sentences better than a terse list.
-  The switch `brief-text` of the measurement tool turns it on.
+  We removed the short text.
 - **A code guess can be better than two honest facts.** In cavern 4, the
   code selects a single tile in a corner as "the way up", `progress` points
   to it, and Willy goes into that trap in each run. We gave jev the way up on
   the left and on the right as facts, and measured `progress` to the target.
   Cavern 4 got its first complete run, but Central Cavern went from 10 of 10
   to 5 of 10, and The Menagerie from 10 of 10 to 1 of 10. The one reference
-  that the code selects does important work. The switch `two-ways-up` of the
-  measurement tool turns the two facts on.
+  that the code selects does important work. We removed the two facts.
 - **A less rigid target helped.** Jev now gets the target question again when
   Willy collects a key, lands on a different floor level, or makes no
   progress. It can keep or change the target, and each key has a short memory
@@ -607,8 +597,8 @@ it runs. Willy dies quickly. It is there for comparison.
   right and back did not change (32 % of the decisions with it and without
   it). But jev selected a move that collects a key in 67 % of the cases, and
   in 89 % without the memory. The Menagerie went from 9 of 10 to 5 of 10.
-  More text in the state takes weight away from the important facts. The
-  switch `recent-moves` of the measurement tool turns it on.
+  More text in the state takes weight away from the important facts. We
+  removed this memory.
 - **The memory facts are not decisive.** Central Cavern is 9 of 10 with no
   memory facts, and 10 of 10 with them.
 - **Jev cannot count the cells on an ASCII map.** `experiments/probe_gap.py`
@@ -639,7 +629,6 @@ code walked the path. It completed caverns 2 and 3 in 9 and 10 of 10 runs,
 but the code walked 3459 macros and jev selected 175 single moves. That
 result came from the search, not from jev.
 
-`experiments/probe_encodings.py` measures how well jev reads each encoder.
 `experiments/probe_target.py` compares target rules with a free choice.
 
 ## Open work
@@ -652,11 +641,11 @@ result came from the search, not from jev.
   That is the known good order (E, A, C, D, B). With the facts only, it
   selects D first and gets E last.
 
-  In play (switch `target-map`), Willy has all 5 keys of Central Cavern at
+  In play, with the map in the key decision, Willy has all 5 keys of Central Cavern at
   decision 35 to 39. With the facts only, he has them at decision 62 to 66.
   But the complete runs went from 10 of 10 to 7 of 10. The better key order
-  is not the cause. A test in which the code sets the key order (switch
-  `key-order=EACDB`, no key request, the movement not changed) gives 10 of
+  is not the cause. A test in which the code sets the key order (option
+  `--key-order EACDB`, no key request, the movement not changed) gives 10 of
   10 with the order E A C D B, and 9 of 10 with the old order A C D B E.
   We then changed one thing each time, in Central Cavern, 10 runs each:
 
@@ -691,8 +680,7 @@ result came from the search, not from jev.
   2, without them 10 and 8. With the facts, a run needs more decisions (109
   and not 73 in cavern 9), and more decisions have a low confidence. The
   look-ahead already removes each move that a vertical guardian makes
-  deadly, thus the facts add text and no safety. They are off by default.
-  The switch `vertical-facts` of the measurement tool turns them on.
+  deadly, thus the facts add text and no safety. We removed them.
 - **An LLM in the place of jev: one run, for comparison.** The decision
   maker `jevmanic/llm_brain.py` calls Claude Haiku through the `claude`
   command line tool. It gets the same instructions, the same options, and
@@ -714,14 +702,14 @@ result came from the search, not from jev.
   This is one run only. It shows that the task is possible for an LLM with
   the same facts, and that jev is 100 times quicker and 300 times cheaper
   for each decision. Command:
-  `uv run python -m jevmanic.cli words lookahead cavern=1 llm=haiku`.
+  `uv run python -m jevmanic.cli --cavern 1 --llm haiku`.
 - **A reasoning model as the planner, and jev as the player.** A clean
   subagent (a reasoning model) got only the map, the legend, the guardian
   limits, and the game mechanics. It gave a key order for caverns 1 to 4 with
   reasons, for example "the top floor can only be reached from the far left,
   and E is on the only way up". For Central Cavern it gave E A C D B, the
   known good order. For The Cold Room it gave the most frequent order of our
-  complete runs. We used only its key order (switch `key-order`), and jev
+  complete runs. We used only its key order (option `--key-order`), and jev
   made each move decision. Complete runs of 10, caverns 1 to 4: 7, 6, 9, 0.
   The default gives 8 to 10, 4 to 6, 10, 0. The runs need fewer decisions
   (The Cold Room 76, not 95 to 122; The Menagerie 54, not 66), but no more
@@ -731,14 +719,16 @@ result came from the search, not from jev.
 - **10 runs are not sufficient to compare two configurations that are near.**
   The same configuration (the code sets the order E A C D B in Central
   Cavern) gave 10 of 10 in one measurement and 7 of 10 in the next one.
+  A second example: after the clean of the code, Central Cavern gave 6 of 10,
+  and then 19 of 20 with the same code.
   Thus a difference such as 7 of 10 against 10 of 10 can be chance. This
   makes some conclusions in this document weaker, for example "the second
   key decision is the cause". Large differences (10 of 10 against 1 of 10)
   are real.
-- **A separate key decision with the map (hybrid) gave no gain in play.**
-  Switch `hybrid-keys`: jev gets the key decision, with the map, at the start
-  and when Willy collects a key, and the run is then in movement mode.
-  `key-every=25` repeats the key decision after 25 decisions. Caverns 1 to 4,
+- **A separate key decision with the map gave no gain in play.** Jev gets
+  the key decision, with the map, at the start and when Willy collects a
+  key, and the run is then in movement mode. `--key-every 25` repeats the key
+  decision after 25 decisions. This is now the default. Caverns 1 to 4,
   complete runs of 10: 7, 0, 7, 0 with no repeat, and 9, 2, 6, 0 with the
   repeat (the normal configuration: 10, 4 to 6, 10, 0). The key decisions
   are good, but the runs fail in movement mode, where the better key order
@@ -771,14 +761,17 @@ result came from the search, not from jev.
   the places where Willy died in earlier runs).
 - **Cavern 4.** Each run ends in a trap in the top left corner, because the
   code selects a single tile as "the way up".
-- **Rules mode is not a strict prompt yet.** The state still has the mark
-  `least_visited_option`, which the code selects.
+- **An error in the saved game states, now corrected.** The dead end check
+  and the start states of the caverns used the same emulator slots. A live
+  run wrote over the start state of caverns 1 to 5. This had an effect only
+  when one process played more than one run (the viewer, and
+  `--until-complete`). The measurements were not affected, because each
+  measured run has a new emulator. A test now checks the slots.
 
 ## Limits
 
-- The code reads vertical guardians, Eugene, and the switches. The facts
-  about vertical guardians are off by default, because they made the results
-  worse. We did not measure the switch facts. The column and the rows of
+- The code reads vertical guardians, Eugene, and the switches. The state has no
+  facts about vertical guardians, because they made the results worse. We did not measure the switch facts. The column and the rows of
   Eugene are an assumption.
 - The Kong Beast, the Skylabs, and the light beam of cavern 19 have no facts
   in the state. The look-ahead still removes a move that they make deadly,
@@ -794,10 +787,11 @@ result came from the search, not from jev.
 | `emulator/` | ZX Spectrum emulator (C++) and the pybind11 binding `env.cpp` |
 | `roms/ManicMiner.z80` | game snapshot |
 | `jevmanic/game.py` | start of a cavern, memory reads, macros, look-ahead, dead end check |
-| `jevmanic/describe.py` | state encoders |
+| `jevmanic/describe.py` | the state: the map, the key facts, and the move facts |
 | `jevmanic/brain.py` | questions and the jev calls |
 | `jevmanic/llm_brain.py` | an LLM as the decision maker, for comparison |
-| `jevmanic/runner.py` | live run, log file, replay |
+| `jevmanic/runner.py` | the settings, live run, log file, replay |
+| `jevmanic/options.py` | the run options of the terminal and the measurement |
 | `jevmanic/server.py`, `jevmanic/web/` | viewer |
 | `jevmanic/cli.py` | live run in the terminal |
 | `experiments/` | measurement, diagnosis, and tests of how well jev reads a state |
