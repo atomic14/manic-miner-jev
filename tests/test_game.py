@@ -158,6 +158,18 @@ def test_the_state_and_the_progress_measure_use_the_same_way():
         assert ("left" if reference[0] < snap.willy_x else "right") == way["side"]
 
 
+def test_on_a_crumbling_floor_the_way_down_is_the_safe_fall_nearest_to_the_target():
+    top = replace(Game().snapshot(), willy_y=3, keys=[])  # Central Cavern, all keys collected
+    # Only column 19 is safe: a nasty is below columns 20 and 21.
+    assert describe._way_down(replace(top, willy_x=19), "right", 29)["side"] == "Willy stands on it"
+    assert describe._progress_reference(replace(top, willy_x=19), None)[0] == (19, 3)
+    assert describe._way_down(replace(top, willy_x=18), "right", 29)["cell"] == (19, 3)
+    # The Menagerie: the long crumbling floor, and the last key below its right end.
+    floor = replace(Game(cavern=2).snapshot(), willy_x=29, willy_y=3, keys=[(30, 6)])
+    assert describe._way_down(floor, "right", 30)["side"] == "Willy stands on it"
+    assert describe._way_down(replace(floor, willy_x=28), "right", 30)["cell"] == (29, 3)
+
+
 def test_a_way_down_is_not_a_drop_that_kills_willy():
     snap = Game(cavern=5).snapshot()  # the start platform of Processing Plant is 5 rows above the floor
     assert not describe._fall_is_safe(snap, 13, snap.willy_y + 2)

@@ -208,22 +208,35 @@ def _fall_is_safe(snap: Snapshot, x: int, floor_row: int) -> bool:
     return min(drops) <= MAX_SAFE_FALL_ROWS
 
 
-def _way_down(snap: Snapshot, preferred_side: str = ""):
+def _way_down(snap: Snapshot, preferred_side: str = "", target_x: int | None = None):
     """The nearest safe place on the floor of Willy where he can go down.
 
     That place is an edge of the floor or a crumbling floor. A crumbling
     floor breaks when Willy stands on it, and then Willy falls. A place is
     safe only if no nasty is in the fall path. The code prefers a place on
     the side of the target.
+
+    A long crumbling floor is a way down at each cell. If Willy stands on
+    one, the way down is the safe place on that floor that is nearest to the
+    target (The Menagerie: the place above the last key).
     """
     floor_row = snap.willy_y + 2
 
     def opening(x):
         return _tile(snap, x, floor_row) in (TILE_EMPTY, TILE_CRUMBLING)
 
-    on_crumbling = TILE_CRUMBLING in (_tile(snap, snap.willy_x + dx, floor_row) for dx in (0, 1))
-    if on_crumbling and _fall_is_safe(snap, snap.willy_x, floor_row):
-        return {"what": "crumbling floor", "side": "Willy stands on it"}
+    def falls_at(x):
+        # Willy falls only when the floor is gone below his 2 columns.
+        return opening(x) and opening(x + 1)
+
+    here = snap.willy_x
+    if falls_at(here) and _fall_is_safe(snap, here, floor_row):
+        nearer = _safe_fall_nearer_to_target(snap, falls_at, target_x)
+        if nearer is None:
+            return {"what": "crumbling floor", "side": "Willy stands on it", "cell": (here, snap.willy_y)}
+        side = "right" if nearer > here else "left"
+        return {"what": "crumbling floor", "side": side, "horizontal_cells": abs(nearer - here),
+                "cell": (nearer, snap.willy_y)}
     best = None
     for direction, side in ((-1, "left"), (+1, "right")):
         # `x` is the column of Willy if he stands at the place.
@@ -234,8 +247,7 @@ def _way_down(snap: Snapshot, preferred_side: str = ""):
                 break
             if TILE_NASTY in body:
                 continue  # Willy cannot stand here
-            # Willy falls only when the floor is gone below his 2 columns.
-            if opening(x) and opening(x + 1) and _fall_is_safe(snap, x, floor_row):
+            if falls_at(x) and _fall_is_safe(snap, x, floor_row):
                 under = {_tile(snap, x, floor_row), _tile(snap, x + 1, floor_row)}
                 what = "crumbling floor" if TILE_CRUMBLING in under else "edge of the floor"
                 found = {"what": what, "side": side, "horizontal_cells": i, "cell": (x, snap.willy_y)}
@@ -248,8 +260,28 @@ def _way_down(snap: Snapshot, preferred_side: str = ""):
                 break
     if best is None:
         return "none on this level"
-    if on_crumbling:
+    if falls_at(here):
         best["warning"] = "a nasty or a guardian is below Willy: do not wait here"
+    return best
+
+
+def _safe_fall_nearer_to_target(snap: Snapshot, falls_at, target_x):
+    """The column on the crumbling floor of Willy, nearer to the target, where a fall is safe."""
+    if target_x is None or target_x == snap.willy_x:
+        return None
+    floor_row = snap.willy_y + 2
+    direction = 1 if target_x > snap.willy_x else -1
+    best = None
+    x = snap.willy_x + direction
+    while falls_at(x) and abs(target_x - x) < abs(target_x - (x - direction)):
+        body = [_tile(snap, c, r) for c in (x, x + 1) for r in (snap.willy_y, snap.willy_y + 1)]
+        if TILE_WALL in body or TILE_NASTY in body:
+            break
+        if _fall_is_safe(snap, x, floor_row):
+            best = x
+        if TILE_CRUMBLING not in (_tile(snap, x, floor_row), _tile(snap, x + 1, floor_row)):
+            break  # the floor is gone here: Willy falls and cannot walk across
+        x += direction
     return best
 
 
@@ -434,8 +466,8 @@ def _progress_reference(snap: Snapshot, target):
     height = _relative(snap, tx, ty, width)["height"]
     side = _preferred_side(snap, tx, ty, width)
     if height == "lower":
-        way = _way_down(snap, side)
-        if isinstance(way, dict) and "cell" in way:
+        way = _way_down(snap, side, tx)
+        if isinstance(way, dict):
             return way["cell"], "distance to the way down"
     if height == "higher":
         way = _way_up(snap, side)
@@ -568,7 +600,7 @@ def words(snap: Snapshot, target=None) -> dict:
     goal = target_cell(snap, target)
     side = _preferred_side(snap, *goal, 1 if snap.keys else 2)
     if target_words.get("height") == "lower":
-        target_words["way_down"] = _public(_way_down(snap, side))
+        target_words["way_down"] = _public(_way_down(snap, side, goal[0]))
     elif target_words.get("height") == "higher":
         target_words["way_up"] = _public(_way_up(snap, side))
     return {

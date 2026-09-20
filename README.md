@@ -65,6 +65,10 @@ two key decisions are good (D, E). The third decision is key C in 9 of 10
 runs: the key in the shaft, which Willy cannot come back from. The option
 `--facts-only-keys` gives the old key decision.
 
+After a correction of the `way_down` fact (see "What we learned"), Central
+Cavern is complete in **40 of 40** runs (two measurements of 20 runs), and
+The Menagerie in 17 of 20.
+
 Jev completes 4 caverns in 8 or more of 10 runs (1, 3, 9, 18), and 2 caverns
 in approximately half of the runs (2, 11). It completed caverns 4 and 7 one
 time each. 12 caverns have no complete run.
@@ -510,7 +514,7 @@ The state of decision 5 of the same run:
 | Field | Meaning |
 | --- | --- |
 | `willy` | the direction that Willy looks in, and the tile below him |
-| `target` | the key or switch that jev selected, or the portal. When the target is on a higher floor, it has a `way_up`: the nearest place where a jump gets to a higher platform. When the target is on a lower floor, it has a `way_down`: the nearest safe edge or crumbling floor. |
+| `target` | the key or switch that jev selected, or the portal. When the target is on a higher floor, it has a `way_up`: the nearest place where a jump gets to a higher platform. When the target is on a lower floor, it has a `way_down`: the nearest safe edge or crumbling floor. If Willy stands on a crumbling floor, it is the safe fall place on that floor that is nearest to the target. |
 | `to_the_left`, `to_the_right` | the first thing in the path of Willy on his level: wall, nasty, edge, or nothing, with the distance in cells |
 | `guardians` | the position of each horizontal guardian relative to Willy, and its direction. For a guardian on the level of Willy: is Willy in its patrol area, and where the patrol area ends. (Facts about vertical guardians exist behind a switch. They are off, because they made the results worse.) |
 | `air` | plenty, low, or critical |
@@ -733,18 +737,19 @@ result came from the search, not from jev.
   repeat (the normal configuration: 10, 4 to 6, 10, 0). The key decisions
   are good, but the runs fail in movement mode, where the better key order
   shows weak move facts.
-- **One correction for one place harmed a different cavern.** After the last
-  key of Central Cavern, Willy stands on the crumbling floor that is his way
-  down, and `progress` says that a walk toward the portal is nearer. Jev
-  walks away and the run fails. We changed the measure for this case ("to
-  stay is nearer"). The Menagerie, which has many crumbling floors, went from
-  10 of 10 to 1 of 10. We removed the change. The error in Central Cavern is
-  still there: it is the cause of 4 of the 5 failed runs in the last 30.
-  A second test with 20 runs gave the same result (Central Cavern 19 of 20,
-  The Menagerie 0 of 20). The cause: in The Menagerie, Willy must walk along
-  a long crumbling floor to the place above the last key. The floor is a
-  way down at each cell, thus "to leave the way down is farther" makes Willy
-  fall too early.
+- **A correction must be true in each cavern.** After the last key of
+  Central Cavern, Willy stands on the crumbling floor that is his way down,
+  and `progress` said that a walk toward the portal is nearer. Jev gave the
+  two walks almost the same probability (0.45 and 0.44). The walk to the
+  right ends in a place with no way out. This was the cause of 4 of 5 failed
+  runs. The first correction ("to leave the way down is farther") gave
+  Central Cavern 19 of 20, but The Menagerie went to 0 of 20: there, Willy
+  must walk along a long crumbling floor to the place above the last key,
+  and each cell of that floor is a way down. The correction that is true in
+  the two caverns: if Willy stands on a crumbling floor, the way down is the
+  safe fall place on that floor that is nearest to the target. `way_down`
+  and `progress` use that place. Result: Central Cavern 20 of 20 and 20 of
+  20, The Menagerie 17 of 20, The Cold Room 2 of 10 (no change).
 - **The target order is the open problem.** In The Cold Room, the full
   difference between rules mode (9 of 10) and free mode (4 to 6 of 10) is
   the order of the keys. We measured two prompt changes for it, 10 runs each:
