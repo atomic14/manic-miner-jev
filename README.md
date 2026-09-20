@@ -770,6 +770,14 @@ result came from the search, not from jev.
   `floor_below_key`. The key orders did not change (Central Cavern E D B in
   20 of 20 runs, The Cold Room D E C in 17 of 20), and the results were 20,
   2, and 16 of 20. We removed it from the key decision.
+- **A guardian fact for each move made the results worse.** All deaths with
+  a short dead end check are at the conveyor of Central Cavern, behind the
+  guardian. We gave each move the fact `guardian_after` (where the guardian
+  on the level of Willy is after the move, and if it moves toward him).
+  Central Cavern, 20 runs: 4 and not 7 with the check off, 14 and not 17
+  with 2 moves. The Menagerie with the default check: 7 of 20, not 17 to 19.
+  We removed it. This is one more case of "more text in the state takes
+  weight away from the important facts".
 - **The target order is the open problem.** In The Cold Room, the full
   difference between rules mode (9 of 10) and free mode (4 to 6 of 10) is
   the order of the keys. We measured two prompt changes for it, 10 runs each:

@@ -1,0 +1,269 @@
+{
+  "label": "guardian-after-depth-0",
+  "settings": {
+    "rules_mode": false,
+    "map_key_decision": true,
+    "key_decision_every": 25,
+    "survival_depth": 0,
+    "forced_key_order": "",
+    "random_moves": false
+  },
+  "caverns": [
+    {
+      "cavern": 1,
+      "name": "Central Cavern",
+      "runs": 20,
+      "complete": 4,
+      "mean_keys": 1.8,
+      "mean_decisions_complete": 122,
+      "tokens_per_call": 1402,
+      "low_confidence_rate": 0.53,
+      "mean_cost_usd": 0.004,
+      "other_outcomes": {
+        "Willy died": 16
+      }
+    }
+  ],
+  "runs": [
+    {
+      "cavern": 0,
+      "file": "guardian-after-depth-0/20260920-121506-cavern-01-central-cavern-free.jsonl",
+      "outcome": "Willy died",
+      "keys": 1,
+      "decisions": 55,
+      "tokens": 72585,
+      "cost_usd": 0.003049,
+      "mean_latency_ms": 297,
+      "low_confidence": 28,
+      "jev_calls": 51
+    },
+    {
+      "cavern": 0,
+      "file": "guardian-after-depth-0/20260920-121506-cavern-01-central-cavern-free-2.jsonl",
+      "outcome": "Willy died",
+      "keys": 1,
+      "decisions": 58,
+      "tokens": 76501,
+      "cost_usd": 0.003213,
+      "mean_latency_ms": 300,
+      "low_confidence": 28,
+      "jev_calls": 54
+    },
+    {
+      "cavern": 0,
+      "file": "guardian-after-depth-0/20260920-121506-cavern-01-central-cavern-free-3.jsonl",
+      "outcome": "Willy died",
+      "keys": 1,
+      "decisions": 64,
+      "tokens": 84178,
+      "cost_usd": 0.003535,
+      "mean_latency_ms": 308,
+      "low_confidence": 32,
+      "jev_calls": 60
+    },
+    {
+      "cavern": 0,
+      "file": "guardian-after-depth-0/20260920-121506-cavern-01-central-cavern-free-4.jsonl",
+      "outcome": "Willy died",
+      "keys": 1,
+      "decisions": 58,
+      "tokens": 76304,
+      "cost_usd": 0.003205,
+      "mean_latency_ms": 312,
+      "low_confidence": 32,
+      "jev_calls": 54
+    },
+    {
+      "cavern": 0,
+      "file": "guardian-after-depth-0/20260920-121506-cavern-01-central-cavern-free-5.jsonl",
+      "outcome": "Willy died",
+      "keys": 1,
+      "decisions": 70,
+      "tokens": 92327,
+      "cost_usd": 0.003878,
+      "mean_latency_ms": 303,
+      "low_confidence": 41,
+      "jev_calls": 66
+    },
+    {
+      "cavern": 0,
+      "file": "guardian-after-depth-0/20260920-121523-cavern-01-central-cavern-free.jsonl",
+      "outcome": "Willy died",
+      "keys": 1,
+      "decisions": 72,
+      "tokens": 94805,
+      "cost_usd": 0.003982,
+      "mean_latency_ms": 300,
+      "low_confidence": 40,
+      "jev_calls": 68
+    },
+    {
+      "cavern": 0,
+      "file": "guardian-after-depth-0/20260920-121524-cavern-01-central-cavern-free.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 113,
+      "tokens": 150162,
+      "cost_usd": 0.006307,
+      "mean_latency_ms": 302,
+      "low_confidence": 45,
+      "jev_calls": 108
+    },
+    {
+      "cavern": 0,
+      "file": "guardian-after-depth-0/20260920-121524-cavern-01-central-cavern-free-2.jsonl",
+      "outcome": "Willy died",
+      "keys": 1,
+      "decisions": 62,
+      "tokens": 81595,
+      "cost_usd": 0.003427,
+      "mean_latency_ms": 312,
+      "low_confidence": 33,
+      "jev_calls": 58
+    },
+    {
+      "cavern": 0,
+      "file": "guardian-after-depth-0/20260920-121526-cavern-01-central-cavern-free.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 132,
+      "tokens": 168798,
+      "cost_usd": 0.00709,
+      "mean_latency_ms": 300,
+      "low_confidence": 57,
+      "jev_calls": 122
+    },
+    {
+      "cavern": 0,
+      "file": "guardian-after-depth-0/20260920-121528-cavern-01-central-cavern-free.jsonl",
+      "outcome": "Willy died",
+      "keys": 1,
+      "decisions": 57,
+      "tokens": 75586,
+      "cost_usd": 0.003175,
+      "mean_latency_ms": 285,
+      "low_confidence": 29,
+      "jev_calls": 53
+    },
+    {
+      "cavern": 0,
+      "file": "guardian-after-depth-0/20260920-121544-cavern-01-central-cavern-free.jsonl",
+      "outcome": "Willy died",
+      "keys": 1,
+      "decisions": 69,
+      "tokens": 90908,
+      "cost_usd": 0.003818,
+      "mean_latency_ms": 311,
+      "low_confidence": 42,
+      "jev_calls": 65
+    },
+    {
+      "cavern": 0,
+      "file": "guardian-after-depth-0/20260920-121545-cavern-01-central-cavern-free.jsonl",
+      "outcome": "Willy died",
+      "keys": 1,
+      "decisions": 23,
+      "tokens": 29000,
+      "cost_usd": 0.001218,
+      "mean_latency_ms": 302,
+      "low_confidence": 9,
+      "jev_calls": 20
+    },
+    {
+      "cavern": 0,
+      "file": "guardian-after-depth-0/20260920-121545-cavern-01-central-cavern-free-2.jsonl",
+      "outcome": "Willy died",
+      "keys": 1,
+      "decisions": 64,
+      "tokens": 83054,
+      "cost_usd": 0.003488,
+      "mean_latency_ms": 299,
+      "low_confidence": 31,
+      "jev_calls": 59
+    },
+    {
+      "cavern": 0,
+      "file": "guardian-after-depth-0/20260920-121551-cavern-01-central-cavern-free.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 123,
+      "tokens": 159547,
+      "cost_usd": 0.006701,
+      "mean_latency_ms": 291,
+      "low_confidence": 55,
+      "jev_calls": 115
+    },
+    {
+      "cavern": 0,
+      "file": "guardian-after-depth-0/20260920-121559-cavern-01-central-cavern-free.jsonl",
+      "outcome": "Willy died",
+      "keys": 1,
+      "decisions": 58,
+      "tokens": 76304,
+      "cost_usd": 0.003205,
+      "mean_latency_ms": 303,
+      "low_confidence": 33,
+      "jev_calls": 54
+    },
+    {
+      "cavern": 0,
+      "file": "guardian-after-depth-0/20260920-121604-cavern-01-central-cavern-free.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 122,
+      "tokens": 159780,
+      "cost_usd": 0.006711,
+      "mean_latency_ms": 288,
+      "low_confidence": 57,
+      "jev_calls": 115
+    },
+    {
+      "cavern": 0,
+      "file": "guardian-after-depth-0/20260920-121605-cavern-01-central-cavern-free.jsonl",
+      "outcome": "Willy died",
+      "keys": 1,
+      "decisions": 64,
+      "tokens": 84542,
+      "cost_usd": 0.003551,
+      "mean_latency_ms": 283,
+      "low_confidence": 35,
+      "jev_calls": 60
+    },
+    {
+      "cavern": 0,
+      "file": "guardian-after-depth-0/20260920-121606-cavern-01-central-cavern-free.jsonl",
+      "outcome": "Willy died",
+      "keys": 1,
+      "decisions": 62,
+      "tokens": 81595,
+      "cost_usd": 0.003427,
+      "mean_latency_ms": 317,
+      "low_confidence": 30,
+      "jev_calls": 58
+    },
+    {
+      "cavern": 0,
+      "file": "guardian-after-depth-0/20260920-121617-cavern-01-central-cavern-free.jsonl",
+      "outcome": "Willy died",
+      "keys": 1,
+      "decisions": 64,
+      "tokens": 84229,
+      "cost_usd": 0.003538,
+      "mean_latency_ms": 293,
+      "low_confidence": 35,
+      "jev_calls": 60
+    },
+    {
+      "cavern": 0,
+      "file": "guardian-after-depth-0/20260920-121624-cavern-01-central-cavern-free.jsonl",
+      "outcome": "Willy died",
+      "keys": 1,
+      "decisions": 56,
+      "tokens": 73686,
+      "cost_usd": 0.003095,
+      "mean_latency_ms": 296,
+      "low_confidence": 27,
+      "jev_calls": 52
+    }
+  ]
+}
