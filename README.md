@@ -230,7 +230,15 @@ jev and the game are, and how to read the page.
 - Click a bar in the timeline to examine an earlier decision, with its
   possible moves.
 
-The page shows, for each decision:
+The page has a second tab, the **key decision lab**. It asks jev the key
+question for a situation that you set up: select a cavern, click a key to
+mark it as collected, and click any other place to put Willy there. The
+request is the same as in a live run (one jev call, approximately $0.0001).
+The page shows the probabilities, the exact state with the map, and the next
+key of the optimum order for comparison. Limits: the cavern is in its start
+condition, and jev has no memory of earlier decisions.
+
+The first tab shows, for each decision:
 
 - the key or switch that jev selected as the target, with a yellow box in
   the game
@@ -889,6 +897,8 @@ result came from the search, not from jev.
 | `jevmanic/runner.py` | the settings, live run, log file, replay |
 | `jevmanic/options.py` | the run options of the terminal and the measurement |
 | `jevmanic/server.py`, `jevmanic/web/` | viewer |
+| `jevmanic/lab.py` | the key decision lab of the viewer |
+| `jevmanic/key_orders.py` | the optimum key order of each cavern |
 | `jevmanic/cli.py` | live run in the terminal |
 | `experiments/` | measurement, diagnosis, and tests of how well jev reads a state |
 | `experiments/results/` | the summaries of the measurements in this document |

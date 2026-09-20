@@ -17,10 +17,11 @@ from pathlib import Path
 
 import uvicorn
 from dotenv import load_dotenv
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect
-from fastapi.responses import FileResponse
+from fastapi import Body, FastAPI, WebSocket, WebSocketDisconnect
+from fastapi.responses import FileResponse, Response
 from PIL import Image
 
+from . import lab
 from .brain import Brain
 from .game import SURVIVAL_DEPTH, Game
 from .key_orders import OPTIMUM_KEY_ORDER
@@ -35,6 +36,52 @@ app = FastAPI()
 @app.get("/")
 def index():
     return FileResponse(WEB_DIR / "index.html")
+
+
+# -- The key decision lab ------------------------------------------------------------------
+# One game and one jev client for the lab. A lock keeps two requests apart.
+_lab: dict = {}
+
+
+def _lab_parts():
+    if not _lab:
+        _lab.update(game=Game(), brain=Brain(), lock=asyncio.Lock())
+    return _lab["game"], _lab["brain"], _lab["lock"]
+
+
+@app.get("/api/lab/cavern/{cavern}")
+async def lab_cavern(cavern: int):
+    game, _, lock = _lab_parts()
+    async with lock:
+        return lab.cavern_info(game, max(0, min(19, cavern)))
+
+
+@app.get("/api/lab/screen/{cavern}.png")
+async def lab_screen(cavern: int):
+    game, _, lock = _lab_parts()
+    async with lock:
+        game.select_cavern(max(0, min(19, cavern)))
+        return Response(_png(game), media_type="image/png")
+
+
+@app.post("/api/lab/place")
+async def lab_place(msg: dict = Body(...)):
+    """The place where Willy can stand that is nearest to a click."""
+    game, _, lock = _lab_parts()
+    async with lock:
+        snap = lab.situation(game, max(0, min(19, int(msg.get("cavern", 0)))), msg.get("willy"), "")
+        return {"willy": [snap.willy_x, snap.willy_y]}
+
+
+@app.post("/api/lab/ask")
+async def lab_ask(msg: dict = Body(...)):
+    game, brain, lock = _lab_parts()
+    async with lock:
+        try:
+            return await lab.ask(game, brain, max(0, min(19, int(msg.get("cavern", 0)))), msg.get("willy"),
+                                 str(msg.get("collected", "")), bool(msg.get("with_map", True)))
+        except Exception as error:  # show the error on the page
+            return {"error": f"{type(error).__name__}: {error}"}
 
 
 def _png(game: Game) -> bytes:

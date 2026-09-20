@@ -254,6 +254,22 @@ def test_each_cavern_has_an_optimum_key_order_with_all_its_keys():
         assert sorted(OPTIMUM_KEY_ORDER[cavern]) == sorted(letters), cavern
 
 
+def test_the_key_decision_lab_makes_the_request_of_a_live_run():
+    from jevmanic import lab
+
+    game = Game()
+    # Central Cavern: key E is collected, and a click near the conveyor puts Willy on it.
+    snap = lab.situation(game, 0, [27, 8], "E")
+    assert (snap.willy_x, snap.willy_y) == (27, 7)
+    assert [snap.key_letters[k] for k in snap.keys] == ["A", "B", "C", "D"]
+    state, question = lab.request_for(snap)
+    assert list(state["keys"]) == ["key_A", "key_B", "key_C", "key_D"]
+    assert "E" not in "".join(state["map"]) and "W" in state["map"][7]
+    assert question["key"].instructions == brain.MAP_KEY_INSTRUCTIONS + brain.KEY_MEMORY_MEANING
+    # A click in empty space goes to the nearest place where Willy can stand.
+    assert lab.standing_place(game.snapshot(), 29, 1) == (29, 3)
+
+
 def test_llm_answer_parser_and_prompt():
     options = ["walk_left", "walk_right", "jump_left", "jump_right", "jump_up", "wait"]
     assert parse_choice("jump_left", options) == "jump_left"

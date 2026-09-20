@@ -91,12 +91,28 @@
   #statusline.good { color: var(--good); } #statusline.bad { color: var(--bad); }
   #pinned { border: 1px solid var(--warn); border-radius: 10px; padding: 0 8px; font-size: 11px; text-transform: none; letter-spacing: 0; }
   #pinned:empty { display: none; }
+  /* Tabs */
+  .tabs { display: flex; gap: 4px; margin-left: 12px; }
+  .tabs button { border-radius: 6px 6px 0 0; border-bottom: none; padding: 6px 14px; color: var(--dim); }
+  .tabs button.on { color: var(--text); border-color: var(--accent); background: #10222a; font-weight: 600; }
+  /* The key decision lab */
+  #lab-screen { cursor: crosshair; }
+  .lab-keys { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0; }
+  .lab-keys button.collected { text-decoration: line-through; opacity: 0.55; }
+  .lab-keys button b { color: var(--warn); }
+  #lab-result .big { font-size: 18px; font-weight: 700; color: var(--warn); }
+  .match { color: var(--good); } .nomatch { color: var(--bad); }
 </style>
 </head>
 <body>
 <header>
   <h1><span>jev</span> plays Manic Miner</h1>
+  <nav class="tabs">
+    <button id="tabbtn-play" class="on">Watch jev play</button>
+    <button id="tabbtn-lab">Key decision lab</button>
+  </nav>
 </header>
+<div id="tab-play">
 <div class="intro">
   <p><b>jev</b> is a small decision model from TypeSafe. It does not write text: it gets a description of a situation
      and a question, and it selects one answer. On this page it plays <b>Manic Miner</b> (ZX Spectrum, 1983).
@@ -240,6 +256,57 @@
     </div>
   </section>
 </main>
+</div>
+
+<div id="tab-lab" hidden>
+<div class="intro">
+  <p><b>The key decision lab.</b> In a game, jev selects the key that Willy goes to next. Here you set up a situation
+     and ask jev that same question: select a cavern, mark the keys that Willy has, and put Willy at a place.
+     The request is the same as in a live run.</p>
+  <p class="hint">Each question is one jev call (approximately $0.0001). It needs <code>TYPESAFE_API_KEY</code> in the
+     <code>.env</code> file. Limits: the cavern is in its start condition (no crumbling floor is used), and jev has no
+     memory of earlier decisions.</p>
+</div>
+<main>
+  <section>
+    <div class="panel">
+      <h2><span>Situation</span><small id="lab-summary"></small></h2>
+      <div class="row" style="margin:0 0 8px">
+        <label for="lab-cavern">Cavern</label>
+        <select id="lab-cavern"></select>
+        <button id="lab-reset" title="Put Willy back at the start, with no key collected">Reset</button>
+      </div>
+      <p class="hint"><b>Click a key</b> to mark it as collected (click again to put it back).
+         <b>Click any other place</b> to put Willy there: he goes to the nearest place where he can stand.</p>
+      <canvas id="lab-screen" width="768" height="384"></canvas>
+      <div class="lab-keys" id="lab-keys"></div>
+      <div class="controls">
+        <button class="primary" id="lab-ask">Ask jev: which key next?</button>
+        <label title="On (normal): the key request has a text map of the cavern. Off: it has facts about each key only."><input type="checkbox" id="lab-map" checked> give jev the map</label>
+        <span class="hint" id="lab-busy" style="margin:0"></span>
+      </div>
+    </div>
+  </section>
+  <section>
+    <div class="panel" id="lab-result">
+      <h2><span>Answer of jev</span><small id="lab-meta"></small></h2>
+      <p class="hint">Each bar is the probability that jev gave to a key. The line below compares the answer with the
+         optimum key order of this cavern.</p>
+      <div id="lab-answer" class="hint">No question yet. Set up a situation and press the button.</div>
+      <div id="lab-bars"></div>
+      <div id="lab-compare" style="margin-top:8px"></div>
+    </div>
+    <div class="panel">
+      <h2>State sent to jev <small>exact JSON of this request</small></h2>
+      <p class="hint">The map in this state has Willy (W) at your place, and only the keys that are left.</p>
+      <pre id="lab-state">–</pre>
+    </div>
+    <div class="panel">
+      <details><summary>The question and the instructions of the key request</summary><pre id="lab-question"></pre></details>
+    </div>
+  </section>
+</main>
+</div>
 <script>
 const $ = id => document.getElementById(id);
 const MACROS = ["walk_left", "walk_right", "jump_left", "jump_right", "jump_up", "wait"];
@@ -584,6 +651,115 @@ document.addEventListener("keydown", e => {
   else if (e.code === "ArrowRight") { e.preventDefault(); $("step").click(); }
 });
 connect();
+
+// -- Tabs -----------------------------------------------------------------------------------
+function showTab(name) {
+  $("tab-play").hidden = name !== "play"; $("tab-lab").hidden = name !== "lab";
+  $("tabbtn-play").classList.toggle("on", name === "play"); $("tabbtn-lab").classList.toggle("on", name === "lab");
+  if (name === "lab" && !lab.info) labLoad(0);
+}
+$("tabbtn-play").onclick = () => showTab("play");
+$("tabbtn-lab").onclick = () => showTab("lab");
+
+// -- The key decision lab -------------------------------------------------------------------
+const lab = {info: null, bitmap: null, willy: null, collected: new Set()};
+const labCtx = $("lab-screen").getContext("2d");
+
+async function labLoad(cavern) {
+  if (!$("lab-cavern").options.length) $("lab-cavern").innerHTML = $("cavern").innerHTML;
+  $("lab-cavern").value = cavern;
+  lab.info = await (await fetch(`/api/lab/cavern/${cavern}`)).json();
+  lab.bitmap = await createImageBitmap(await (await fetch(`/api/lab/screen/${cavern}.png`)).blob());
+  lab.willy = lab.info.willy.slice(); lab.collected = new Set();
+  labClearAnswer(); labDraw();
+}
+
+function labDraw() {
+  const c = labCtx, info = lab.info;
+  c.setTransform(SCALE, 0, 0, SCALE, 0, 0); c.imageSmoothingEnabled = false;
+  c.drawImage(lab.bitmap, 0, 0);  // the canvas shows the 16 cavern rows only
+  // Willy at the place of the person: remove him from the start place, and draw him at the new place.
+  const [sx, sy] = info.willy, [wx, wy] = lab.willy;
+  const figure = willyFigure(lab.bitmap, sx * 8, sy * 8, null);
+  if (wx !== sx || wy !== sy) { c.fillStyle = "#000"; c.fillRect(sx * 8, sy * 8, 16, 16); }
+  c.drawImage(figure, wx * 8, wy * 8);
+  c.strokeStyle = "#fff"; c.lineWidth = 0.5; c.strokeRect(wx * 8 - 1, wy * 8 - 1, 18, 18);
+  // A letter at each key. A collected key is dark, with a cross.
+  c.font = "bold 7px ui-monospace, Menlo, monospace"; c.textAlign = "center";
+  for (const k of info.keys) {
+    const [x, y] = k.cell, got = lab.collected.has(k.letter);
+    if (got) {
+      c.fillStyle = "rgba(0,0,0,0.8)"; c.fillRect(x * 8, y * 8, 8, 8);
+      c.strokeStyle = color("bad"); c.lineWidth = 1;
+      c.beginPath(); c.moveTo(x * 8 + 1, y * 8 + 1); c.lineTo(x * 8 + 7, y * 8 + 7);
+      c.moveTo(x * 8 + 7, y * 8 + 1); c.lineTo(x * 8 + 1, y * 8 + 7); c.stroke();
+    }
+    const ly = y === 0 ? y * 8 + 15 : y * 8 - 1;  // below the key on the top row
+    c.fillStyle = "rgba(0,0,0,0.8)"; c.fillRect(x * 8 - 1, ly - 6, 10, 7);
+    c.fillStyle = got ? color("wait") : color("warn"); c.fillText(k.letter, x * 8 + 4, ly);
+  }
+  if (lab.answerCell) { c.strokeStyle = color("warn"); c.lineWidth = 1; c.strokeRect(lab.answerCell[0] * 8 - 1.5, lab.answerCell[1] * 8 - 1.5, 11, 11); }
+  $("lab-keys").innerHTML = info.keys.map(k =>
+    `<button data-key="${k.letter}" class="${lab.collected.has(k.letter) ? "collected" : ""}"><b>${k.letter}</b> ${lab.collected.has(k.letter) ? "collected" : "not collected"}</button>`).join("");
+  $("lab-keys").querySelectorAll("button").forEach(b => b.onclick = () => labToggle(b.dataset.key));
+  const left = info.keys.filter(k => !lab.collected.has(k.letter)).map(k => k.letter).join(", ") || "none";
+  $("lab-summary").textContent = `Willy at column ${wx}, row ${wy} · keys left: ${left}`;
+}
+
+function labClearAnswer() {
+  lab.answerCell = null;
+  $("lab-answer").textContent = "No question yet. Set up a situation and press the button.";
+  $("lab-answer").className = "hint";
+  $("lab-bars").innerHTML = ""; $("lab-compare").innerHTML = ""; $("lab-meta").textContent = "";
+  $("lab-state").textContent = "–"; $("lab-question").textContent = "";
+}
+function labToggle(letter) {
+  lab.collected.has(letter) ? lab.collected.delete(letter) : lab.collected.add(letter);
+  labClearAnswer(); labDraw();
+}
+
+$("lab-screen").onclick = async e => {
+  if (!lab.info) return;
+  const r = $("lab-screen").getBoundingClientRect();
+  const x = Math.floor((e.clientX - r.left) / r.width * 32), y = Math.floor((e.clientY - r.top) / r.height * 16);
+  // A click on a key, or next to it, marks the key.
+  const key = lab.info.keys.find(k => Math.abs(k.cell[0] - x) <= 1 && Math.abs(k.cell[1] - y) <= 1);
+  if (key) { labToggle(key.letter); return; }
+  const reply = await (await fetch("/api/lab/place", {method: "POST", headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({cavern: lab.info.cavern, willy: [x, y]})})).json();
+  lab.willy = reply.willy; labClearAnswer(); labDraw();
+};
+$("lab-cavern").onchange = () => labLoad(Number($("lab-cavern").value));
+$("lab-reset").onclick = () => labLoad(lab.info.cavern);
+
+$("lab-ask").onclick = async () => {
+  $("lab-ask").disabled = true; $("lab-busy").textContent = "jev makes the decision…";
+  const reply = await (await fetch("/api/lab/ask", {method: "POST", headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({cavern: lab.info.cavern, willy: lab.willy, collected: [...lab.collected].join(""),
+                          with_map: $("lab-map").checked})})).json();
+  $("lab-ask").disabled = false; $("lab-busy").textContent = "";
+  const answer = $("lab-answer"); answer.className = "";
+  if (reply.error) {
+    answer.className = "outcome-bad";
+    answer.textContent = "Error: " + reply.error + " — the lab needs TYPESAFE_API_KEY in the .env file, and credit on the account.";
+    return;
+  }
+  if (reply.state) $("lab-state").textContent = JSON.stringify(reply.state, null, 2);
+  if (reply.question) $("lab-question").textContent = JSON.stringify(reply.question, null, 2);
+  if (reply.no_call) { answer.textContent = reply.no_call; return; }
+  const letter = reply.choice.replace("key_", "");
+  answer.innerHTML = `jev selects <span class="big">${reply.choice}</span> · confidence ${reply.confidence.toFixed(2)}`;
+  $("lab-meta").textContent = `${reply.latency_ms} ms · ${reply.input_tokens} tokens · $${(reply.input_tokens * USD_PER_TOKEN).toFixed(5)} · ${reply.model}`;
+  $("lab-bars").innerHTML = Object.keys(reply.probabilities).sort().map(k =>
+    bar(k, reply.probabilities[k] ?? 0, "var(--warn)", k === reply.choice)).join("");
+  // The next key of the optimum order: the first letter of the order that is not collected.
+  const next = [...lab.info.optimum_order].find(l => !lab.collected.has(l));
+  $("lab-compare").innerHTML = `Optimum key order of this cavern: <b>${lab.info.optimum_order}</b>. The next key in that order is <b>${next}</b>: ` +
+    (next === letter ? `<span class="match">jev agrees.</span>` : `<span class="nomatch">jev selects a different key.</span>`) +
+    `<p class="hint" style="margin-top:4px">The optimum order is for a run that follows it from the start. A different key can also be a good answer for your situation.</p>`;
+  const cell = lab.info.keys.find(k => k.letter === letter);
+  lab.answerCell = cell ? cell.cell : null; labDraw();
+};
 </script>
 </body>
 </html>
