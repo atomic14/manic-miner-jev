@@ -739,7 +739,12 @@ result came from the search, not from jev.
   walks away and the run fails. We changed the measure for this case ("to
   stay is nearer"). The Menagerie, which has many crumbling floors, went from
   10 of 10 to 1 of 10. We removed the change. The error in Central Cavern is
-  still there.
+  still there: it is the cause of 4 of the 5 failed runs in the last 30.
+  A second test with 20 runs gave the same result (Central Cavern 19 of 20,
+  The Menagerie 0 of 20). The cause: in The Menagerie, Willy must walk along
+  a long crumbling floor to the place above the last key. The floor is a
+  way down at each cell, thus "to leave the way down is farther" makes Willy
+  fall too early.
 - **The target order is the open problem.** In The Cold Room, the full
   difference between rules mode (9 of 10) and free mode (4 to 6 of 10) is
   the order of the keys. We measured two prompt changes for it, 10 runs each:
