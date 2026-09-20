@@ -78,6 +78,31 @@ def test_the_look_ahead_does_not_write_over_the_start_of_a_cavern():
     assert game.snapshot() == start
 
 
+def test_willy_stands_still_on_a_conveyor_after_a_drop_with_the_hold():
+    from jevmanic.game import JOY_LEFT, JOY_RIGHT
+
+    def drop_onto_the_conveyor(game):
+        # Central Cavern: to the top of the wall that is above the conveyor.
+        route = (  # from a recorded run
+            ["jump_right"] * 2 + ["walk_left"] * 1 + ["jump_right"] * 1 + ["walk_right"] * 5 + ["jump_right"] * 1 + ["walk_right"] * 2 + ["jump_right"] * 3 + ["jump_left"] * 1 + ["wait"] * 2 + ["jump_left"] * 1 + ["wait"] * 1
+        )
+        for name in route:
+            game.run_macro(name)
+        assert game.snapshot().willy_y == 6  # on top of the wall
+        while game.snapshot().willy_y != 7 and not game.is_dead():
+            game.run_macro("walk_left")
+        x = game.snapshot().willy_x
+        game.run_macro("wait")
+        return x - game.snapshot().willy_x
+
+    assert JOY_LEFT != JOY_RIGHT
+    game = Game()
+    assert drop_onto_the_conveyor(game) == 0  # the wait holds against the conveyor
+    game = Game()
+    game.hold_against_conveyor = False  # the macros of the old log files
+    assert drop_onto_the_conveyor(game) == 1  # the conveyor carries Willy
+
+
 # -- The state ----------------------------------------------------------------------------
 
 

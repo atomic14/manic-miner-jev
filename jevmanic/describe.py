@@ -516,7 +516,7 @@ def moves_state(snap: Snapshot, outcomes: dict, target, visited, tried=frozenset
     # A wait is valid only if something can change while Willy waits.
     guardian_near = any(g["height"] == "same level" for g in _guardians(snap))
     guardian_blocks = any(o.dead and o.cause in ("guardian", DEAD_END_CAUSE) for o in outcomes.values())
-    wait_can_help = guardian_near or guardian_blocks or _standing_on(snap).startswith("crumbling floor")
+    wait_can_help = guardian_near or guardian_blocks or _standing_on(snap).startswith(("crumbling floor", "conveyor"))
 
     def is_useful(name, o):
         has_effect = o.dx or o.dy or o.keys_collected or o.complete

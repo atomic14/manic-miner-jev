@@ -197,6 +197,8 @@ class Game:
             loaded = self.emu.load_z80(str(snapshot_path))
         if not loaded:
             raise RuntimeError(f"cannot load {snapshot_path}")
+        # False replays a log file from before this behaviour (see _against_conveyor).
+        self.hold_against_conveyor = True
         self._boot()
         self.emu.save_state(START_SLOT)
         self.tick_count = 0
@@ -453,6 +455,28 @@ class Game:
         looks_left = bool(self.emu.peek(ADDR_WILLY_DIR) & 1)
         return looks_left == bool(joystick & JOY_LEFT)
 
+    def _against_conveyor(self, falling: bool) -> int:
+        """The joystick direction against the conveyor that Willy stands on or falls to. If none, 0.
+
+        A conveyor carries Willy along. He stands still on it only if the
+        opposite direction is held when he lands on it, and for as long as
+        it is held. After one tick with no key, the conveyor has him, and
+        he cannot stop again.
+        """
+        if not self.hold_against_conveyor:
+            return 0
+        x, y = self._cell(self._word(ADDR_WILLY_ATTR))
+        conveyor = self.emu.peek(ADDR_TILE_CONVEYOR)
+        solid = {self.emu.peek(a) for a in (ADDR_TILE_FLOOR, ADDR_TILE_CRUMBLING, ADDR_TILE_WALL)}
+        for column in (x, x + 1):
+            for row in range(y + 2, ROWS if falling else y + 3):
+                tile = self.emu.peek(EMPTY_ATTR_BUFFER + row * COLS + column)
+                if tile == conveyor:
+                    return JOY_LEFT if self.emu.peek(ADDR_CONVEYOR_DIR) else JOY_RIGHT
+                if tile in solid:
+                    break
+        return 0
+
     def macro_ticks(self, name: str):
         """Run one macro, then wait until Willy is on the ground.
 
@@ -487,14 +511,18 @@ class Game:
                 if moved and self.emu.peek(ADDR_WILLY_FRAME) == 0:
                     break
         else:
+            # A wait on a conveyor holds against it: "do not move".
+            joystick = self._against_conveyor(falling=False)
             for _ in range(macro.ticks):
                 if self._finished():
                     break
-                self._tick(0)
+                self._tick(joystick)
                 yield
         # Keep the direction during a jump. The game ignores it in the air,
         # but it is necessary if Willy lands and the jump is not complete.
-        hold = direction if macro.is_jump else 0
+        # A fall onto a conveyor holds against it, thus Willy stands still when
+        # he lands. A direction has no effect in the air.
+        hold = direction if macro.is_jump else self._against_conveyor(falling=True)
         for _ in range(MAX_SETTLE_TICKS):
             if self._finished() or not self.is_airborne():
                 break

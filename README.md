@@ -288,6 +288,13 @@ The 6 macros are `walk_left`, `walk_right` (1 cell), `jump_left`,
 `jump_right`, `jump_up`, and `wait`. A macro ends when Willy is on the ground
 and in line with the cell grid.
 
+A conveyor carries Willy along. In the game, he stands still on it only if
+the opposite direction is held when he drops onto it, and for as long as it
+is held. After a jump in the direction of the conveyor, or after one tick
+with no key, the conveyor has him and he cannot stop again. The macros use
+this: a fall onto a conveyor holds against it, and `wait` on a conveyor holds
+against it ("do not move"). A walk in the direction of the conveyor rides it.
+
 There is a second, less frequent request: jev selects the **target** (a key,
 or a switch in the two caverns that have switches). The code sends it at the
 start, after each collected key, and again after 25 decisions.
@@ -306,7 +313,7 @@ Jev gets only the moves that are valid. A move is not valid in three cases:
    a move. It is the part of the design that is nearest to a search.
 3. The move has no effect: Willy stays in the same place. `wait` is valid
    only when something can change (a guardian is near, or Willy is on a
-   crumbling floor).
+   crumbling floor or on a conveyor).
 
 If no valid move is left, jev gets the best moves that remain, in this
 sequence: moves with no effect, then dead end moves (with a warning), and
@@ -778,6 +785,16 @@ result came from the search, not from jev.
   with 2 moves. The Menagerie with the default check: 7 of 20, not 17 to 19.
   We removed it. This is one more case of "more text in the state takes
   weight away from the important facts".
+- **The conveyor hold: true to the game, but no gain that we can measure.**
+  Before this change, Willy was always carried on a conveyor, and `wait` was
+  a ride. Central Cavern, 20 runs: 4 and not 7 with the dead end check off,
+  20 and not 17 with 2 moves, 20 of 20 with the default. The Menagerie: 15
+  of 20. At the deadly place of Central Cavern (the conveyor behind the
+  guardian), Willy gets onto the conveyor with a jump, and then no key can
+  stop him. Jev can select a drop there (`walk_left`, then Willy stands
+  still), but it selects `jump_left` with 0.54 to 0.57, because the state
+  gives no cause to prefer the walk. The dead end check of 2 to 4 moves does
+  real work at this place, and we found no fact that replaces it.
 - **The target order is the open problem.** In The Cold Room, the full
   difference between rules mode (9 of 10) and free mode (4 to 6 of 10) is
   the order of the keys. We measured two prompt changes for it, 10 runs each:
@@ -838,6 +855,8 @@ result came from the search, not from jev.
 | `demo/` | recorded complete runs, in git |
 | `runs/` | log files of your runs (JSON Lines), not in git |
 
+The header of a log file has the macro version (`macros: 2` = with the
+conveyor hold). A log file with no version replays with the old macros.
 A log file has one header line, then one line for each jev request (a
 "target" record or a "decision" record with its state and answers), then one
 end line.

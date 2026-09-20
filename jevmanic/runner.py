@@ -33,6 +33,7 @@ DEMO_DIR = Path(__file__).resolve().parent.parent / "demo"
 USD_PER_TOKEN = 0.042 / 1_000_000  # jev-1.13 price for input tokens
 
 MAX_DECISIONS = 400
+MACROS_VERSION = 2  # 2: a fall onto a conveyor and a wait on it hold against the conveyor
 # End the run if Willy visits no new position and collects no key in this
 # number of decisions. This prevents cost for a run that goes nowhere.
 STUCK_DECISIONS = 30
@@ -341,6 +342,7 @@ class _LiveRun:
 async def play_live(game: Game, brain, cavern: int = 0, settings: Settings | None = None, folder: str = ""):
     """Play one live game. `folder` is a folder below `runs/` for the log file."""
     settings = settings or Settings()
+    game.hold_against_conveyor = True
     game.select_cavern(cavern)
     run = _LiveRun(game, brain, settings)
     maker = f"claude {brain.model}" if getattr(brain, "model", None) else "jev"
@@ -355,6 +357,7 @@ async def play_live(game: Game, brain, cavern: int = 0, settings: Settings | Non
     header = {
         "type": "header",
         "mode": "live",
+        "macros": MACROS_VERSION,
         "file": str(path.relative_to(RUNS_DIR)),
         "settings": asdict(settings),
         "decision_maker": maker,
@@ -417,6 +420,8 @@ async def play_replay(game: Game, file: str):
             raise ValueError(f"not a run file: {file}")
     records = [json.loads(line) for line in path.read_text().splitlines()]
     header = {**records[0], "mode": "replay"}
+    # Version 2: a fall onto a conveyor and a wait on it hold against the conveyor.
+    game.hold_against_conveyor = header.get("macros", 1) >= 2
     game.select_cavern(header.get("cavern", 0))
     keys_at_start = len(game.snapshot().keys)
     yield "event", header
