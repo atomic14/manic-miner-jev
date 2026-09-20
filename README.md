@@ -63,7 +63,24 @@ time each. 12 caverns have no complete run.
 "The older table" is the first measurement of all caverns (200 runs), before
 the corrections of the prompt text and of the valid moves. The changes after
 that table helped caverns 1, 3, 4, 11, 18, and 20. They made caverns 5, 6, 7,
-and 8 worse (fewer keys). We do not know yet which change did that.
+and 8 worse (fewer keys).
+
+We found the cause for cavern 6 after this table: the state gave the way down
+on one side, and the `progress` measure used a way down on the other side,
+and the measure changed sides each time Willy moved one cell. Willy went left
+and right between two columns in each run. With one preferred side for the
+two, cavern 6 collects 2.4 keys, and not 0.0. It is still 0 of 10 complete.
+The way down now also refuses a fall of 5 rows or more, which kills Willy.
+That second correction gave no measurable change (2.6 keys).
+
+The causes that we found in the other caverns, not corrected yet:
+
+- Cavern 8: Willy falls into the small place between two walls where the
+  closed portal is. He is alive, but no move has an effect, and the only valid
+  move is `wait`. The dead end check asks only "can Willy stay alive?".
+- Cavern 17: Willy moves between the two columns of the start platform. The
+  only way forward is `walk_right`, which is "nearer", and jev selects
+  `walk_left` with a confidence of 0.31.
 
 One complete run costs approximately $0.004 to $0.010. The summaries of all
 measurements are in `experiments/results/`.

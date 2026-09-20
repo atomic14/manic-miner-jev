@@ -186,24 +186,33 @@ def patrol_covers(g, column: int, row: int) -> bool:
     return g.min_x <= column <= g.max_x + 1 and g.y <= row <= g.y + 1
 
 
+MAX_SAFE_FALL_ROWS = 4  # Willy dies when he lands after a fall of 5 rows or more
+
+
 def _fall_is_safe(snap: Snapshot, x: int, floor_row: int) -> bool:
     """Is the fall safe if Willy stands at column x and the floor goes away?
 
     Willy is 2 cells wide. The fall is not safe if a nasty or the patrol of
-    a guardian is below one of his 2 columns, before the first solid tile.
+    a guardian is below one of his 2 columns, before the first solid tile. It
+    is also not safe if the fall is too long: Willy lands on the first solid
+    tile below one of his 2 columns.
     """
+    drops = []
     for column in (x, x + 1):
+        landing = ROWS
         for y in range(floor_row + 1, ROWS):
             tile = _tile(snap, column, y)
             if tile == TILE_NASTY:
                 return False
             if tile != TILE_EMPTY:
+                landing = y
                 break
             # The patrol of a guardian. A guardian is 2 cells wide and 2 cells high.
             for g in snap.guardians:
                 if patrol_covers(g, column, y):
                     return False
-    return True
+        drops.append(landing - floor_row)
+    return min(drops) <= MAX_SAFE_FALL_ROWS
 
 
 def _way_down(snap: Snapshot, preferred_side: str = ""):
