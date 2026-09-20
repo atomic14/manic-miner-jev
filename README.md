@@ -24,9 +24,9 @@ This gives two modes:
   example "a crumbling floor breaks a little each time Willy stands on it").
   They do not say "select X when Y".
 - **Rules mode** (for comparison only). The instructions are a numbered list
-  of rules of the form "select X when Y", and the state marks the option with
-  the smallest number of visits. Jev executes a procedure that we wrote. Most
-  of the success of this mode comes from that procedure, not from jev.
+  of rules of the form "select X when Y". The state is the same as in free
+  mode. Jev executes a procedure that we wrote. Most of the success of this
+  mode comes from that procedure, not from jev.
 
 ## Result
 
@@ -62,8 +62,8 @@ the new default on 5 caverns (10 runs each): Central Cavern 9 of 10, The
 Menagerie 9 of 10, cavern 12 from 0.0 to 1.6 keys, cavern 8 no change, and
 The Cold Room **1 of 10** (before: 4 to 6 of 10). In The Cold Room, the first
 two key decisions are good (D, E). The third decision is key C in 9 of 10
-runs: the key in the shaft, which Willy cannot come back from. The switch
-`facts-only-keys` of the measurement tool gives the old key decision.
+runs: the key in the shaft, which Willy cannot come back from. The option
+`--facts-only-keys` gives the old key decision.
 
 Jev completes 4 caverns in 8 or more of 10 runs (1, 3, 9, 18), and 2 caverns
 in approximately half of the runs (2, 11). It completed caverns 4 and 7 one
