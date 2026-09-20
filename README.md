@@ -571,6 +571,14 @@ macros have the same result (Willy is in the air).
   | 8 | - | - | 9 |
   | 12 (the present value) | 10 | 4 | 10 |
 
+  A second measurement of Central Cavern with the present code, 20 runs
+  each: 7 of 20 with the check off, 9 with 1 move, 17 with 2 moves, and 20
+  with 4 moves. All 26 deaths are at one place: Willy lands on the conveyor
+  behind the guardian, the conveyor carries him along, and the guardian
+  turns. With the check off, Willy is still alive at the end of each move
+  that jev gets, because the look-ahead of 1 move removes each move that
+  kills him directly.
+
   A check of 1 move gives almost no gain. 2 moves are sufficient for Central
   Cavern and The Cold Room. The Menagerie needs 6 moves.
 

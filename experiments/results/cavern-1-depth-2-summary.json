@@ -1,0 +1,270 @@
+{
+  "label": "cavern-1-depth-2",
+  "settings": {
+    "rules_mode": false,
+    "map_key_decision": true,
+    "key_decision_every": 25,
+    "survival_depth": 2,
+    "forced_key_order": "",
+    "random_moves": false
+  },
+  "caverns": [
+    {
+      "cavern": 1,
+      "name": "Central Cavern",
+      "runs": 20,
+      "complete": 17,
+      "mean_keys": 4.5,
+      "mean_decisions_complete": 102,
+      "tokens_per_call": 1342,
+      "low_confidence_rate": 0.46,
+      "mean_cost_usd": 0.005,
+      "other_outcomes": {
+        "Willy died": 2,
+        "stuck: no progress": 1
+      }
+    }
+  ],
+  "runs": [
+    {
+      "cavern": 0,
+      "file": "cavern-1-depth-2/20260920-120431-cavern-01-central-cavern-free.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 76,
+      "tokens": 94579,
+      "cost_usd": 0.003972,
+      "mean_latency_ms": 296,
+      "low_confidence": 19,
+      "jev_calls": 70
+    },
+    {
+      "cavern": 0,
+      "file": "cavern-1-depth-2/20260920-120431-cavern-01-central-cavern-free-2.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 73,
+      "tokens": 89354,
+      "cost_usd": 0.003753,
+      "mean_latency_ms": 297,
+      "low_confidence": 23,
+      "jev_calls": 66
+    },
+    {
+      "cavern": 0,
+      "file": "cavern-1-depth-2/20260920-120431-cavern-01-central-cavern-free-3.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 121,
+      "tokens": 146043,
+      "cost_usd": 0.006134,
+      "mean_latency_ms": 303,
+      "low_confidence": 53,
+      "jev_calls": 109
+    },
+    {
+      "cavern": 0,
+      "file": "cavern-1-depth-2/20260920-120431-cavern-01-central-cavern-free-4.jsonl",
+      "outcome": "Willy died",
+      "keys": 1,
+      "decisions": 75,
+      "tokens": 83251,
+      "cost_usd": 0.003497,
+      "mean_latency_ms": 290,
+      "low_confidence": 41,
+      "jev_calls": 62
+    },
+    {
+      "cavern": 0,
+      "file": "cavern-1-depth-2/20260920-120431-cavern-01-central-cavern-free-5.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 77,
+      "tokens": 94423,
+      "cost_usd": 0.003966,
+      "mean_latency_ms": 298,
+      "low_confidence": 20,
+      "jev_calls": 70
+    },
+    {
+      "cavern": 0,
+      "file": "cavern-1-depth-2/20260920-120451-cavern-01-central-cavern-free.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 82,
+      "tokens": 103332,
+      "cost_usd": 0.00434,
+      "mean_latency_ms": 296,
+      "low_confidence": 26,
+      "jev_calls": 77
+    },
+    {
+      "cavern": 0,
+      "file": "cavern-1-depth-2/20260920-120453-cavern-01-central-cavern-free.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 125,
+      "tokens": 148729,
+      "cost_usd": 0.006247,
+      "mean_latency_ms": 307,
+      "low_confidence": 58,
+      "jev_calls": 111
+    },
+    {
+      "cavern": 0,
+      "file": "cavern-1-depth-2/20260920-120454-cavern-01-central-cavern-free.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 123,
+      "tokens": 148435,
+      "cost_usd": 0.006234,
+      "mean_latency_ms": 297,
+      "low_confidence": 50,
+      "jev_calls": 111
+    },
+    {
+      "cavern": 0,
+      "file": "cavern-1-depth-2/20260920-120454-cavern-01-central-cavern-free-2.jsonl",
+      "outcome": "Willy died",
+      "keys": 1,
+      "decisions": 93,
+      "tokens": 106706,
+      "cost_usd": 0.004482,
+      "mean_latency_ms": 302,
+      "low_confidence": 56,
+      "jev_calls": 79
+    },
+    {
+      "cavern": 0,
+      "file": "cavern-1-depth-2/20260920-120507-cavern-01-central-cavern-free.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 116,
+      "tokens": 141409,
+      "cost_usd": 0.005939,
+      "mean_latency_ms": 309,
+      "low_confidence": 56,
+      "jev_calls": 105
+    },
+    {
+      "cavern": 0,
+      "file": "cavern-1-depth-2/20260920-120516-cavern-01-central-cavern-free.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 103,
+      "tokens": 122078,
+      "cost_usd": 0.005127,
+      "mean_latency_ms": 301,
+      "low_confidence": 38,
+      "jev_calls": 91
+    },
+    {
+      "cavern": 0,
+      "file": "cavern-1-depth-2/20260920-120520-cavern-01-central-cavern-free.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 86,
+      "tokens": 103772,
+      "cost_usd": 0.004358,
+      "mean_latency_ms": 291,
+      "low_confidence": 31,
+      "jev_calls": 78
+    },
+    {
+      "cavern": 0,
+      "file": "cavern-1-depth-2/20260920-120530-cavern-01-central-cavern-free.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 130,
+      "tokens": 159136,
+      "cost_usd": 0.006684,
+      "mean_latency_ms": 305,
+      "low_confidence": 66,
+      "jev_calls": 119
+    },
+    {
+      "cavern": 0,
+      "file": "cavern-1-depth-2/20260920-120530-cavern-01-central-cavern-free-2.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 4,
+      "decisions": 74,
+      "tokens": 88918,
+      "cost_usd": 0.003735,
+      "mean_latency_ms": 290,
+      "low_confidence": 37,
+      "jev_calls": 69
+    },
+    {
+      "cavern": 0,
+      "file": "cavern-1-depth-2/20260920-120543-cavern-01-central-cavern-free.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 112,
+      "tokens": 135023,
+      "cost_usd": 0.005671,
+      "mean_latency_ms": 292,
+      "low_confidence": 42,
+      "jev_calls": 100
+    },
+    {
+      "cavern": 0,
+      "file": "cavern-1-depth-2/20260920-120545-cavern-01-central-cavern-free.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 136,
+      "tokens": 166967,
+      "cost_usd": 0.007013,
+      "mean_latency_ms": 299,
+      "low_confidence": 71,
+      "jev_calls": 124
+    },
+    {
+      "cavern": 0,
+      "file": "cavern-1-depth-2/20260920-120546-cavern-01-central-cavern-free.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 103,
+      "tokens": 122087,
+      "cost_usd": 0.005128,
+      "mean_latency_ms": 292,
+      "low_confidence": 32,
+      "jev_calls": 91
+    },
+    {
+      "cavern": 0,
+      "file": "cavern-1-depth-2/20260920-120552-cavern-01-central-cavern-free.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 118,
+      "tokens": 147042,
+      "cost_usd": 0.006176,
+      "mean_latency_ms": 290,
+      "low_confidence": 67,
+      "jev_calls": 109
+    },
+    {
+      "cavern": 0,
+      "file": "cavern-1-depth-2/20260920-120609-cavern-01-central-cavern-free.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 77,
+      "tokens": 94423,
+      "cost_usd": 0.003966,
+      "mean_latency_ms": 292,
+      "low_confidence": 22,
+      "jev_calls": 70
+    },
+    {
+      "cavern": 0,
+      "file": "cavern-1-depth-2/20260920-120615-cavern-01-central-cavern-free.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 77,
+      "tokens": 94423,
+      "cost_usd": 0.003966,
+      "mean_latency_ms": 282,
+      "low_confidence": 20,
+      "jev_calls": 70
+    }
+  ]
+}
