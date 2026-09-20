@@ -19,13 +19,14 @@ import random
 import re
 import time
 from collections import Counter
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, replace
 from datetime import datetime
 from pathlib import Path
 
 from . import describe
 from .brain import key_question, move_question, questions_as_json
 from .game import MACROS, SURVIVAL_DEPTH, Game
+from .key_orders import OPTIMUM, OPTIMUM_KEY_ORDER
 
 RUNS_DIR = Path(__file__).resolve().parent.parent / "runs"
 # Recorded runs that are in git. Use them for a demonstration without jev calls.
@@ -347,6 +348,8 @@ async def play_live(game: Game, brain, cavern: int = 0, settings: Settings | Non
     path of Willy for each macro. The paths do not go to jev or to the log file.
     """
     settings = settings or Settings()
+    if settings.forced_key_order == OPTIMUM:
+        settings = replace(settings, forced_key_order=OPTIMUM_KEY_ORDER[cavern])
     game.hold_against_conveyor = True
     game.select_cavern(cavern)
     run = _LiveRun(game, brain, settings)

@@ -244,6 +244,16 @@ def test_default_settings():
     assert len(fields(Settings)) == 6  # a new setting needs a reason and a measurement
 
 
+def test_each_cavern_has_an_optimum_key_order_with_all_its_keys():
+    from jevmanic.key_orders import OPTIMUM_KEY_ORDER
+
+    game = Game()
+    for cavern in range(20):
+        game.select_cavern(cavern)
+        letters = game.snapshot().key_letters.values()
+        assert sorted(OPTIMUM_KEY_ORDER[cavern]) == sorted(letters), cavern
+
+
 def test_llm_answer_parser_and_prompt():
     options = ["walk_left", "walk_right", "jump_left", "jump_right", "jump_up", "wait"]
     assert parse_choice("jump_left", options) == "jump_left"

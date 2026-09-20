@@ -23,6 +23,7 @@ from PIL import Image
 
 from .brain import Brain
 from .game import SURVIVAL_DEPTH, Game
+from .key_orders import OPTIMUM_KEY_ORDER
 from .runner import Settings, list_run_groups, list_runs, play_live, play_replay
 
 WEB_DIR = Path(__file__).resolve().parent / "web"
@@ -112,6 +113,8 @@ class Session:
                 rules_mode=bool(msg.get("rules_mode", False)),
                 map_key_decision=bool(msg.get("map_key_decision", True)),
                 survival_depth=max(0, min(20, int(msg.get("dead_end_depth", SURVIVAL_DEPTH)))),
+                # The code sets the key order, and there is no key request. "" = jev selects the keys.
+                forced_key_order="".join(c for c in str(msg.get("key_order", "")).upper() if c in "ABCDE"),
             )
             cavern = max(0, min(19, int(msg.get("cavern", 0))))
             self.task = asyncio.create_task(self.run(play_live(self.game, self.brain, cavern, settings, show_paths=True)))
@@ -141,6 +144,7 @@ async def websocket(ws: WebSocket):
             **_runs_message(),
             "type": "hello",
             "caverns": session.game.cavern_names(),
+            "key_orders": OPTIMUM_KEY_ORDER,
         }
     )
     await ws.send_bytes(_png(session.game))

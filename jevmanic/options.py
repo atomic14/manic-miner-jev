@@ -16,7 +16,8 @@ def add_run_options(parser: argparse.ArgumentParser):
     parser.add_argument("--depth", type=int, default=SURVIVAL_DEPTH, metavar="N",
                         help="the number of moves that the dead end check looks ahead, 0 = off (default 4)")
     parser.add_argument("--key-order", default="", metavar="LETTERS",
-                        help="a test: the code sets the key order, for example EACDB (no key request)")
+                        help="the code sets the key order, and there is no key request: letters, for example "
+                             "EACDB, or `optimum` for the optimum order of the cavern")
     parser.add_argument("--random-moves", action="store_true",
                         help="a base for comparison: a random choice from the valid moves (no jev call)")
 

@@ -20,9 +20,10 @@
   h1 span { color: var(--accent); }
   .group { display: flex; gap: 6px; align-items: center; }
   .group label { color: var(--dim); font-size: 12px; }
-  button, select { background: var(--panel); color: var(--text); border: 1px solid var(--line);
+  button, select, input[type=text] { background: var(--panel); color: var(--text); border: 1px solid var(--line);
                    border-radius: 5px; padding: 5px 10px; font: inherit; cursor: pointer; }
   button:hover { border-color: var(--accent); }
+  input[type=text] { cursor: text; text-transform: uppercase; width: 5.5em; } input:disabled { opacity: 0.45; }
   button.primary { background: var(--accent); color: #001; border-color: var(--accent); font-weight: 600; }
   select { max-width: 330px; }
   #cavern { max-width: 230px; }
@@ -77,6 +78,9 @@
     <label for="cavern">Cavern</label>
     <select id="cavern"></select>
     <label title="On (normal): the key decision gets the map of the cavern. Off: the key decision gets the facts only."><input type="checkbox" id="mapkeys" checked> map for the key decision</label>
+    <label for="keymode" title="jev selects: jev makes each key decision. Fixed order: the code sets the key order, there is no key request, and jev makes only the move decisions.">keys</label>
+    <select id="keymode"><option value="jev" selected>jev selects</option><option value="fixed">fixed order</option></select>
+    <input type="text" id="keyorder" size="6" maxlength="5" disabled title="The key order as key letters, for example EACDB. It starts with the optimum order of the selected cavern.">
     <label for="depth" title="The look-ahead finds the true result of each single move. The dead end check then looks this number of moves further ahead: a move is not offered to jev if no sequence of that length keeps Willy alive. 0 = only the result of each single move.">dead end check</label>
     <select id="depth" title="Number of moves that the dead end check looks ahead">
       <option value="0">off</option><option value="1">1 move</option><option value="2">2 moves</option>
@@ -167,6 +171,7 @@ const ctx = $("screen").getContext("2d");
 
 let allRuns = [], runGroups = [];
 let ws, decisions = [], targets = [], pinned = null, lastFrame = null, paused = false, header = null;
+let keyOrders = {};  // the optimum key order of each cavern
 let pendingPaths = null;  // the paths of the possible moves for the next decision
 
 $("legend").innerHTML = MACROS.map(m => `<span><i style="background:${color(m)}"></i>${m}</span>`).join("") +
@@ -267,6 +272,8 @@ function liveTargetCell() {
 function handle(msg) {
   if (msg.type === "hello") {
     $("cavern").innerHTML = msg.caverns.map((name, i) => `<option value="${i}">${i + 1}. ${name}</option>`).join("");
+    keyOrders = msg.key_orders || {};
+    $("keyorder").value = keyOrders[$("cavern").value] || "";
     showRuns(msg.runs, msg.groups);
   } else if (msg.type === "runs") { showRuns(msg.runs, msg.groups);
   } else if (msg.type === "header") {
@@ -280,7 +287,8 @@ function handle(msg) {
     const maker = msg.decision_maker && msg.decision_maker !== "jev" ? msg.decision_maker :
       st.random_moves ? "random moves" : (st.rules_mode || st.free_move === false) ? "rules mode" : "free mode";
     const depth = st.survival_depth ?? 12;
-    $("outcome").textContent = `${msg.cavern_name || "Central Cavern"} · ${maker} · dead end check ${depth} moves · ${msg.file}`;
+    const keys = st.forced_key_order ? ` · fixed key order ${st.forced_key_order}` : "";
+    $("outcome").textContent = `${msg.cavern_name || "Central Cavern"} · ${maker} · dead end check ${depth} moves${keys} · ${msg.file}`;
     $("outcome").className = "";
     updateStats();
   } else if (msg.type === "target") {
@@ -421,7 +429,8 @@ function updateStats() {
 $("start").onclick = () => {
   setPaused(false);
   send({cmd: "start", cavern: Number($("cavern").value), rules_mode: $("rulesmode").checked,
-        map_key_decision: $("mapkeys").checked, dead_end_depth: Number($("depth").value)});
+        map_key_decision: $("mapkeys").checked, dead_end_depth: Number($("depth").value),
+        key_order: $("keymode").value === "fixed" ? $("keyorder").value : ""});
 };
 $("replay").onclick = () => { if ($("runs").value) { setPaused(false); send({cmd: "replay", file: $("runs").value}); } };
 $("stop").onclick = () => send({cmd: "stop"});
@@ -433,7 +442,15 @@ $("ghosts").onchange = () => {
 };
 $("rungroup").onchange = showRunList;
 $("completeonly").onchange = showRunList;
-$("rulesmode").onchange = () => { $("mapkeys").disabled = $("rulesmode").checked; };
+function updateKeyControls() {
+  const fixed = $("keymode").value === "fixed";
+  $("keyorder").disabled = !fixed;
+  $("mapkeys").disabled = fixed || $("rulesmode").checked;  // no key request, or the facts only
+}
+$("rulesmode").onchange = updateKeyControls;
+$("keymode").onchange = updateKeyControls;
+// A different cavern has different keys: start again from its optimum order.
+$("cavern").onchange = () => { $("keyorder").value = keyOrders[$("cavern").value] || ""; };
 $("speed").onchange = () => send({cmd: "speed", value: $("speed").value});
 function setPaused(value, tell = true) {
   paused = value; $("pause").textContent = paused ? "Resume" : "Pause";

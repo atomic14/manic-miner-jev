@@ -273,7 +273,7 @@ gives:
 | `--facts-only-keys` | the key decision gets the facts only, and no map |
 | `--key-every N` | repeat the key decision after N decisions (default 25, 0 = no repeat) |
 | `--depth N` | the moves that the dead end check looks ahead (default 12, 0 = off) |
-| `--key-order LETTERS` | a test: the code sets the key order, and there is no key request |
+| `--key-order LETTERS` | the code sets the key order, and there is no key request. `optimum` gives the optimum order of the cavern (`jevmanic/key_orders.py`). |
 | `--random-moves` | a base for comparison: a random choice from the valid moves |
 
 Earlier measurements used switches that are now removed, because the
@@ -823,6 +823,20 @@ result came from the search, not from jev.
   still), but it selects `jump_left` with 0.54 to 0.57, because the state
   gives no cause to prefer the walk. The dead end check of 2 to 4 moves does
   real work at this place, and we found no fact that replaces it.
+- **The key decision before each move: no gain, and 2 times the cost.**
+  `--key-every 1`, 20 runs each, caverns 1, 2, 3: 20, 0, 17 (the base: 19,
+  2, 12). Jev kept the target in 97 % of 5640 key requests, and the key
+  orders did not change.
+- **The word "optimum" in the key question: no gain.** "Select the optimum
+  key or switch for Willy to get next": 20, 4, 13. We put the text back.
+- **The optimum key order helps one cavern and harms a different one.** The
+  code sets the order (`--key-order optimum`), and jev makes each move
+  decision. 20 runs each: Central Cavern 20 (80 decisions, not 100), The
+  Cold Room **12** (the base: 2 to 4), The Menagerie **3** (the base: 12 to
+  17, all other runs "stuck: no progress"). In The Cold Room, the optimum
+  order has the one-way key C last, and jev selects it third. In The
+  Menagerie, the optimum order is a route that the move facts do not
+  support.
 - **The target order is the open problem.** In The Cold Room, the full
   difference between rules mode (9 of 10) and free mode (4 to 6 of 10) is
   the order of the keys. We measured two prompt changes for it, 10 runs each:
