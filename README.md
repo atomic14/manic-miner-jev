@@ -899,6 +899,15 @@ result came from the search, not from jev.
     caverns 1, 3, 4, 9, and 18. No cavern is complete. Laya follows
     `progress`, but it cannot weigh it against the loop facts, thus Willy
     walks the same path again and again.
+  - **The other checkpoints are not better.** The checkpoint that we use
+    (`laya-typed-decisions`) is a ModernBERT-large encoder that was trained
+    for four business tasks. The general checkpoint (`laya`) and the
+    multilingual one select a "nearer" move in 198 and 130 of 226 decisions
+    (the one that we use: 212). `RLAgent` in the package is only a second
+    name for `Agent`, and the package has no training code. The model is an
+    encoder that matches the words of the question with the words of the
+    options. It does not weigh two facts. A model of this type needs training
+    on this task to do more.
   - **The Snake demo of Laya works in a different way.** Its code finds the
     best move with a planner and writes "Safe. Best route to food." into the
     text of that option. The model matches the word "best". That is against
