@@ -164,6 +164,19 @@ live runs for each cavern and each mode:
 | 4 Abandoned Uranium Workings (fair test) | 0 of 10, 3.0 keys | 0 of 10, 1.3 keys |
 | 16 The Sixteenth Cavern (fair test) | 0 of 10, 1.7 keys | 0 of 10, 1.0 keys |
 
+The table above is from older code, in which rules mode got no map for the
+key decision. The instructions are now the only difference between the two
+modes. With the present code (dead end check of 4 moves), 20 runs each:
+
+| Cavern | Free instructions | Rules instructions |
+| --- | --- | --- |
+| 1 Central Cavern (rules written with it) | 19 to 20 | 20 |
+| 2 The Cold Room (rules written with it) | 2 to 4 | **19** |
+| 3 The Menagerie (fair test) | 12 to 17 | **2** |
+
+The result is the same as before, and it is now a clean comparison of two
+texts. In The Cold Room, rule 1 of the key text puts the one-way key last.
+
 The rules are better on the caverns that we wrote them with, and worse on the
 other caverns. They fit caverns 1 and 2 too well. Free mode is thus the normal
 configuration. Rules are a legitimate form of prompt optimisation, but each
