@@ -1,0 +1,171 @@
+{
+  "label": "laya-loop-new",
+  "settings": {
+    "instructions": "promptC",
+    "map_key_decision": true,
+    "key_decision_every": 25,
+    "survival_depth": 4,
+    "forced_key_order": "OPTIMUM",
+    "random_moves": false
+  },
+  "caverns": [
+    {
+      "cavern": 1,
+      "name": "Central Cavern",
+      "runs": 1,
+      "complete": 0,
+      "mean_keys": 0,
+      "mean_decisions_complete": null,
+      "tokens_per_call": 399,
+      "low_confidence_rate": 1.0,
+      "mean_cost_usd": 0.0,
+      "other_outcomes": {
+        "stuck: no progress": 1
+      }
+    },
+    {
+      "cavern": 2,
+      "name": "The Cold Room",
+      "runs": 1,
+      "complete": 0,
+      "mean_keys": 4,
+      "mean_decisions_complete": null,
+      "tokens_per_call": 417,
+      "low_confidence_rate": 1.0,
+      "mean_cost_usd": 0.0,
+      "other_outcomes": {
+        "stuck: no progress": 1
+      }
+    },
+    {
+      "cavern": 3,
+      "name": "The Menagerie",
+      "runs": 1,
+      "complete": 0,
+      "mean_keys": 0,
+      "mean_decisions_complete": null,
+      "tokens_per_call": 439,
+      "low_confidence_rate": 1.0,
+      "mean_cost_usd": 0.0,
+      "other_outcomes": {
+        "Willy died": 1
+      }
+    },
+    {
+      "cavern": 4,
+      "name": "Abandoned Uranium Workings",
+      "runs": 1,
+      "complete": 0,
+      "mean_keys": 0,
+      "mean_decisions_complete": null,
+      "tokens_per_call": 409,
+      "low_confidence_rate": 1.0,
+      "mean_cost_usd": 0.0,
+      "other_outcomes": {
+        "stuck: no progress": 1
+      }
+    },
+    {
+      "cavern": 9,
+      "name": "Wacky Amoebatrons",
+      "runs": 1,
+      "complete": 0,
+      "mean_keys": 0,
+      "mean_decisions_complete": null,
+      "tokens_per_call": 357,
+      "low_confidence_rate": 0.99,
+      "mean_cost_usd": 0.0,
+      "other_outcomes": {
+        "stuck: no progress": 1
+      }
+    },
+    {
+      "cavern": 18,
+      "name": "Amoebatrons' Revenge",
+      "runs": 1,
+      "complete": 0,
+      "mean_keys": 0,
+      "mean_decisions_complete": null,
+      "tokens_per_call": 387,
+      "low_confidence_rate": 1.0,
+      "mean_cost_usd": 0.0,
+      "other_outcomes": {
+        "stuck: no progress": 1
+      }
+    }
+  ],
+  "runs": [
+    {
+      "cavern": 0,
+      "file": "laya-loop-new/20260921-160451-cavern-01-central-cavern-laya.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 0,
+      "decisions": 82,
+      "tokens": 28308,
+      "cost_usd": 0.0,
+      "mean_latency_ms": 49,
+      "low_confidence": 71,
+      "jev_calls": 71
+    },
+    {
+      "cavern": 1,
+      "file": "laya-loop-new/20260921-160455-cavern-02-the-cold-room-laya.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 4,
+      "decisions": 204,
+      "tokens": 79740,
+      "cost_usd": 0.0,
+      "mean_latency_ms": 49,
+      "low_confidence": 191,
+      "jev_calls": 191
+    },
+    {
+      "cavern": 2,
+      "file": "laya-loop-new/20260921-160508-cavern-03-the-menagerie-laya.jsonl",
+      "outcome": "Willy died",
+      "keys": 0,
+      "decisions": 13,
+      "tokens": 2196,
+      "cost_usd": 0.0,
+      "mean_latency_ms": 48,
+      "low_confidence": 5,
+      "jev_calls": 5
+    },
+    {
+      "cavern": 3,
+      "file": "laya-loop-new/20260921-160508-cavern-04-abandoned-uranium-workings-laya.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 0,
+      "decisions": 64,
+      "tokens": 25380,
+      "cost_usd": 0.0,
+      "mean_latency_ms": 48,
+      "low_confidence": 62,
+      "jev_calls": 62
+    },
+    {
+      "cavern": 8,
+      "file": "laya-loop-new/20260921-160512-cavern-09-wacky-amoebatrons-laya.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 0,
+      "decisions": 121,
+      "tokens": 41748,
+      "cost_usd": 0.0,
+      "mean_latency_ms": 47,
+      "low_confidence": 116,
+      "jev_calls": 117
+    },
+    {
+      "cavern": 17,
+      "file": "laya-loop-new/20260921-160519-cavern-18-amoebatrons-revenge-laya.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 0,
+      "decisions": 68,
+      "tokens": 24384,
+      "cost_usd": 0.0,
+      "mean_latency_ms": 48,
+      "low_confidence": 63,
+      "jev_calls": 63
+    }
+  ]
+}

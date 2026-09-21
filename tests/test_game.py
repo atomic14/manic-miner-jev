@@ -215,7 +215,7 @@ def test_a_way_down_is_not_a_drop_that_kills_willy():
 
 
 def test_each_instruction_set_has_its_texts_in_files():
-    assert brain.instruction_sets() == ["promptA", "promptB"]  # the default set is first
+    assert brain.instruction_sets()[:2] == ["promptA", "promptB"]  # the default set is first
     for name in brain.instruction_sets():
         for which in ("move.txt", "key.txt", "key_facts_only.txt"):
             assert (brain.INSTRUCTIONS_DIR / name / which).read_text().strip(), (name, which)
@@ -223,7 +223,7 @@ def test_each_instruction_set_has_its_texts_in_files():
     assert brain.move_question(instructions="promptB")["move"].instructions == brain.move_instructions("promptB")
     names = ["key_A", "key_B"]
     memory = " ".join((brain.INSTRUCTIONS_DIR / "key_memory.txt").read_text().split())
-    for name in brain.instruction_sets():
+    for name in ("promptA", "promptB"):
         with_map = brain.key_question(names, name)["key"].instructions
         facts_only = brain.key_question(names, name, with_map=False)["key"].instructions
         # The text must name the map: if not, jev does not use it.
@@ -297,6 +297,20 @@ def test_the_key_decision_lab_makes_the_request_of_a_live_run():
     assert list(custom["key"].criteria) == list(question["key"].criteria)
     # A click in empty space goes to the nearest place where Willy can stand.
     assert lab.standing_place(game.snapshot(), 29, 1) == (29, 3)
+
+
+def test_the_text_that_laya_gets_has_one_short_sentence_for_each_option():
+    from jevmanic.laya_brain import option_sentences, state_as_text
+
+    moves = {"walk_left": {"progress": "farther", "place": "visited before", "tried_from_here": "no"},
+             "jump_right": {"progress": "nearer", "place": "new place", "tried_from_here": "no"},
+             "jump_up": {"progress": "nearer", "place": "new place", "tried_from_here": "no", "collects_key": True}}
+    assert option_sentences({"moves": moves}) == {
+        "walk_left": "walk_left is farther.", "jump_right": "jump_right is nearer and new.",
+        "jump_up": "jump_up is nearer and collects a key."}
+    assert state_as_text({"moves": moves}, ["jump_up", "walk_left"]) == "jump_up is nearer and collects a key. walk_left is farther."
+    # No move is safe: the state has a text in the place of the moves.
+    assert state_as_text({"moves": "none: no move is safe"}, ["wait"]) == "wait is not safe."
 
 
 def test_llm_answer_parser_and_prompt():

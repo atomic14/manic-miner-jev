@@ -868,22 +868,41 @@ result came from the search, not from jev.
   order has the one-way key C last, and jev selects it third. In The
   Menagerie, the optimum order is a route that the move facts do not
   support.
-- **Laya in the place of jev: a first test, with no result yet.**
-  [Laya](https://github.com/mizorewww/laya-mlx) is a typed decision model
-  (421M parameters) that runs on an Apple Silicon computer with MLX. Its
-  request has the same form as a jev request, thus it gets the same
-  instructions, options, and state (`--laya`, install with
-  `uv sync --extra laya`). One decision takes approximately 50 ms, with no
+- **Laya in the place of jev: it follows the facts, but it completes no
+  cavern.** [Laya](https://github.com/mizorewww/laya-mlx) is a typed decision
+  model (421M parameters) that runs on an Apple Silicon computer with MLX.
+  Its request has the same form as a jev request (`--laya`, install with
+  `uv sync --extra laya`). One request takes approximately 50 ms, with no
   network call and no cost. The answers are deterministic, thus 10 runs are
-  one run. With promptA and the present state: 0 of 30 runs, no key in
-  caverns 1 and 2, and Willy walks left and right at the start. The
-  probabilities are almost equal (0.32, 0.24, 0.24, 0.20). The cause is the
-  size of the input. Laya gives 256 tokens to the instructions and the
-  options together, and it cuts the end of the instructions with no message:
-  the 6 move options use 130 tokens, and promptA has 402 tokens, thus Laya
-  gets only the first 120 tokens of promptA. The full input has 1024 tokens
-  at most. The move state (443 tokens) fits. The key state with the map (874
-  tokens) does not. `LayaBrain.cut_report()` gives what was cut.
+  one run.
+  - **The same request as jev (promptA, the JSON state): 0 of 30 runs, and no
+    key.** The probabilities are almost equal. Laya gives 256 tokens to the
+    instructions and the options together, and it cuts the rest with no
+    message: the 6 move options use 130 tokens, and promptA has 402 tokens.
+    The full input has 1024 tokens at most. `LayaBrain.cut_report()` gives
+    what was cut.
+  - **What Laya can read.** We measured this on the 261 recorded decisions
+    of three complete jev runs ("does Laya select a move whose `progress` is
+    nearer?"). Nested JSON: 26 to 41 of 62. One short sentence for each
+    option ("walk_right is nearer."): 56 of 62. A longer instruction, a
+    condition ("if there is none, select…"), or a second fact in each
+    sentence made it worse. Laya prefers the first option: the mean of the
+    probabilities for 6 different option orders removes this (215 of 226,
+    and jev has 85 %). One yes or no question for each move was worse.
+  - **The form that we use for Laya** (`jevmanic/laya_brain.py`, with
+    `--instructions promptC --key-order optimum`): the text "jump_right is
+    nearer and new." for each move, the option names with no text, the
+    instruction "Select the move that is nearer. A move that collects a key
+    is the best.", and the mean of 6 orders. The key decision does not work
+    (Laya selects the first key), thus the code sets the key order.
+  - **Result in real games:** The Cold Room 4 of 5 keys, and no key in
+    caverns 1, 3, 4, 9, and 18. No cavern is complete. Laya follows
+    `progress`, but it cannot weigh it against the loop facts, thus Willy
+    walks the same path again and again.
+  - **The Snake demo of Laya works in a different way.** Its code finds the
+    best move with a planner and writes "Safe. Best route to food." into the
+    text of that option. The model matches the word "best". That is against
+    the rule of this project, thus we did not do it.
 - **The target order is the open problem.** In The Cold Room, the full
   difference between promptB (9 of 10) and promptA (4 to 6 of 10) is
   the order of the keys. We measured two prompt changes for it, 10 runs each:

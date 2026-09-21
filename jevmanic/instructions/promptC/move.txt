@@ -1,0 +1,1 @@
+Select the move that is nearer. A move that collects a key is the best.
