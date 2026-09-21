@@ -34,6 +34,8 @@ def parse():
     parser.add_argument("--runs", type=int, default=10, help="live games for each cavern (default 10)")
     parser.add_argument("--label", default="measure", help="the name of the folder below runs/")
     parser.add_argument("--parallel", type=int, default=5, help="games that run at the same time (default 5)")
+    parser.add_argument("--laya", action="store_true", help="Laya makes the decisions: a typed decision model "
+                        "that runs on this computer (for comparison, needs `uv sync --extra laya`)")
     add_run_options(parser)
     args = parser.parse_args()
     try:
@@ -123,10 +125,17 @@ async def main():
     args = parse()
     settings = settings_from(args)
     print(f"label={args.label} caverns={[c + 1 for c in args.cavern_list]} runs={args.runs} {settings}")
-    brain = Brain()
+    if args.laya:
+        from jevmanic.laya_brain import LayaBrain  # an optional dependency
+
+        brain = LayaBrain()
+    else:
+        brain = Brain()
     limit = asyncio.Semaphore(args.parallel)
     jobs = [one_run(brain, limit, c, settings, args.label) for c in args.cavern_list for _ in range(args.runs)]
     results = await asyncio.gather(*jobs)
+    if args.laya:
+        print(brain.cut_report())
     await brain.close()
     rows = table(results, Game().cavern_names())
     summary = {"label": args.label, "settings": asdict(settings), "caverns": rows, "runs": results}

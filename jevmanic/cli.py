@@ -53,17 +53,26 @@ async def main():
                         help=f"play again until a run is complete ({MAX_ATTEMPTS} runs at most)")
     parser.add_argument("--llm", metavar="MODEL", help="an LLM makes the decisions through the "
                         "`claude` command line tool, for example haiku (for comparison, slow)")
+    parser.add_argument("--laya", action="store_true", help="Laya makes the decisions: a typed decision model "
+                        "that runs on this computer (for comparison, needs `uv sync --extra laya`)")
     add_run_options(parser)
     args = parser.parse_args()
     if not 1 <= args.cavern <= 20:
         parser.error("the cavern number must be 1 to 20")
     load_dotenv(".env")
     game = Game()
-    brain = LLMBrain(args.llm) if args.llm else Brain()
-    folder = f"llm-{args.llm}" if args.llm else ""
+    if args.laya:
+        from .laya_brain import LayaBrain  # an optional dependency
+
+        brain, folder = LayaBrain(), "laya"
+    else:
+        brain = LLMBrain(args.llm) if args.llm else Brain()
+        folder = f"llm-{args.llm}" if args.llm else ""
     for _ in range(MAX_ATTEMPTS if args.until_complete else 1):
         if await play_once(game, brain, args.cavern - 1, settings_from(args), folder) == "cavern complete":
             break
+    if args.laya:
+        print(brain.cut_report())
     await brain.close()
 
 

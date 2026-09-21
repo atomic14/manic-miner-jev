@@ -868,6 +868,22 @@ result came from the search, not from jev.
   order has the one-way key C last, and jev selects it third. In The
   Menagerie, the optimum order is a route that the move facts do not
   support.
+- **Laya in the place of jev: a first test, with no result yet.**
+  [Laya](https://github.com/mizorewww/laya-mlx) is a typed decision model
+  (421M parameters) that runs on an Apple Silicon computer with MLX. Its
+  request has the same form as a jev request, thus it gets the same
+  instructions, options, and state (`--laya`, install with
+  `uv sync --extra laya`). One decision takes approximately 50 ms, with no
+  network call and no cost. The answers are deterministic, thus 10 runs are
+  one run. With promptA and the present state: 0 of 30 runs, no key in
+  caverns 1 and 2, and Willy walks left and right at the start. The
+  probabilities are almost equal (0.32, 0.24, 0.24, 0.20). The cause is the
+  size of the input. Laya gives 256 tokens to the instructions and the
+  options together, and it cuts the end of the instructions with no message:
+  the 6 move options use 130 tokens, and promptA has 402 tokens, thus Laya
+  gets only the first 120 tokens of promptA. The full input has 1024 tokens
+  at most. The move state (443 tokens) fits. The key state with the map (874
+  tokens) does not. `LayaBrain.cut_report()` gives what was cut.
 - **The target order is the open problem.** In The Cold Room, the full
   difference between promptB (9 of 10) and promptA (4 to 6 of 10) is
   the order of the keys. We measured two prompt changes for it, 10 runs each:
@@ -919,6 +935,7 @@ result came from the search, not from jev.
 | `jevmanic/brain.py` | questions and the jev calls |
 | `jevmanic/instructions/` | the instruction texts: `promptA/`, `promptB/`, and your own folders |
 | `jevmanic/llm_brain.py` | an LLM as the decision maker, for comparison |
+| `jevmanic/laya_brain.py` | Laya, a local typed decision model, as the decision maker, for comparison |
 | `jevmanic/runner.py` | the settings, live run, log file, replay |
 | `jevmanic/options.py` | the run options of the terminal and the measurement |
 | `jevmanic/server.py`, `jevmanic/web/` | viewer |

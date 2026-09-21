@@ -358,11 +358,12 @@ async def play_live(game: Game, brain, cavern: int = 0, settings: Settings | Non
     game.hold_against_conveyor = True
     game.select_cavern(cavern)
     run = _LiveRun(game, brain, settings)
-    maker = f"claude {brain.model}" if getattr(brain, "model", None) else "jev"
+    # A decision maker that is not jev gives its name (`maker`) and the word for the file name (`mode`).
+    maker = getattr(brain, "maker", "jev")
     if settings.random_moves:
         mode = "random"
     elif maker != "jev":
-        mode = "llm"
+        mode = brain.mode
     else:
         mode = settings.instructions
     cavern_name = game.snapshot().cavern_name
@@ -418,7 +419,7 @@ async def play_live(game: Game, brain, cavern: int = 0, settings: Settings | Non
             "input_tokens": run.tokens,
             # An LLM decision maker counts its own cost. For jev, the cost comes
             # from the input tokens.
-            "cost_usd": round(getattr(brain, "total_cost", None) or run.tokens * USD_PER_TOKEN, 6),
+            "cost_usd": round(brain.total_cost if hasattr(brain, "total_cost") else run.tokens * USD_PER_TOKEN, 6),
         }
         write(end)
         yield "event", end

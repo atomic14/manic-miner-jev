@@ -51,6 +51,7 @@ def parse_choice(text: str, options: list[str]):
 class LLMBrain:
     def __init__(self, model: str = "haiku"):
         self.model = model
+        self.maker, self.mode = f"claude {model}", "llm"
         self.total_cost = 0.0
         self.invalid_answers = 0
         self._cwd = tempfile.mkdtemp(prefix="jevmanic-llm-")
