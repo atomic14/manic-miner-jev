@@ -22,7 +22,7 @@ from fastapi.responses import FileResponse, Response
 from PIL import Image
 
 from . import lab
-from .brain import Brain
+from .brain import DEFAULT_INSTRUCTIONS, Brain, instruction_sets, key_instructions
 from .game import SURVIVAL_DEPTH, Game
 from .key_orders import OPTIMUM_KEY_ORDER
 from .runner import Settings, list_run_groups, list_runs, play_live, play_replay
@@ -64,6 +64,13 @@ async def lab_screen(cavern: int):
         return Response(_png(game), media_type="image/png")
 
 
+@app.get("/api/lab/instructions")
+async def lab_instructions(name: str = DEFAULT_INSTRUCTIONS, with_map: bool = True):
+    """The key instruction text of one set, as jev gets it."""
+    name = name if name in instruction_sets() else DEFAULT_INSTRUCTIONS
+    return {"text": key_instructions(name, with_map)}
+
+
 @app.post("/api/lab/place")
 async def lab_place(msg: dict = Body(...)):
     """The place where Willy can stand that is nearest to a click."""
@@ -76,10 +83,13 @@ async def lab_place(msg: dict = Body(...)):
 @app.post("/api/lab/ask")
 async def lab_ask(msg: dict = Body(...)):
     game, brain, lock = _lab_parts()
+    instructions = str(msg.get("instructions", DEFAULT_INSTRUCTIONS))
     async with lock:
         try:
             return await lab.ask(game, brain, max(0, min(19, int(msg.get("cavern", 0)))), msg.get("willy"),
-                                 str(msg.get("collected", "")), bool(msg.get("with_map", True)))
+                                 str(msg.get("collected", "")), bool(msg.get("with_map", True)),
+                                 instructions if instructions in instruction_sets() else DEFAULT_INSTRUCTIONS,
+                                 str(msg.get("custom_text", ""))[:6000])
         except Exception as error:  # show the error on the page
             return {"error": f"{type(error).__name__}: {error}"}
 
@@ -156,8 +166,9 @@ class Session:
         cmd = msg.get("cmd")
         if cmd == "start":
             await self.stop()
+            instructions = str(msg.get("instructions", DEFAULT_INSTRUCTIONS))
             settings = Settings(
-                rules_mode=bool(msg.get("rules_mode", False)),
+                instructions=instructions if instructions in instruction_sets() else DEFAULT_INSTRUCTIONS,
                 map_key_decision=bool(msg.get("map_key_decision", True)),
                 survival_depth=max(0, min(20, int(msg.get("dead_end_depth", SURVIVAL_DEPTH)))),
                 # The code sets the key order, and there is no key request. "" = jev selects the keys.
@@ -192,6 +203,7 @@ async def websocket(ws: WebSocket):
             "type": "hello",
             "caverns": session.game.cavern_names(),
             "key_orders": OPTIMUM_KEY_ORDER,
+            "instruction_sets": instruction_sets(),
         }
     )
     await ws.send_bytes(_png(session.game))

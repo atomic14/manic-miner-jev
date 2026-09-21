@@ -12,7 +12,7 @@ the first key request of a run.
 from dataclasses import replace
 
 from . import describe
-from .brain import key_question, questions_as_json
+from .brain import DEFAULT_INSTRUCTIONS, key_question, questions_as_json
 from .game import (
     COLS,
     ROWS,
@@ -78,25 +78,32 @@ def situation(game: Game, cavern: int, willy, collected: str) -> Snapshot:
     return replace(snap, willy_x=x, willy_y=y, keys=keys)
 
 
-def request_for(snap: Snapshot, with_map: bool = True):
-    """The state and the question of the key request, the same as in a live run."""
+def request_for(snap: Snapshot, with_map: bool = True, instructions: str = DEFAULT_INSTRUCTIONS,
+                custom_text: str = ""):
+    """The state and the question of the key request, the same as in a live run.
+
+    `custom_text` replaces the instruction text: a person can try a text with no file.
+    """
     names = {cell: f"key_{snap.key_letters[cell]}" for cell in snap.keys}
     names.update({cell: f"switch_{i + 1}" for i, cell in enumerate(snap.switches)})
     memory = {"current": None, "used": {}, "gave_up": {}}
     state = describe.keys_state(snap, names, memory)
     if with_map:
         state = {**describe.cavern_map(snap), **state}
-    question = key_question(list(names.values()), rules_mode=False, with_map=with_map)
+    question = key_question(list(names.values()), instructions, with_map)
+    if custom_text.strip():
+        question["key"].instructions = " ".join(custom_text.split())  # one paragraph, as from a file
     return state, question
 
 
-async def ask(game: Game, brain, cavern: int, willy, collected: str, with_map: bool = True) -> dict:
+async def ask(game: Game, brain, cavern: int, willy, collected: str, with_map: bool = True,
+              instructions: str = DEFAULT_INSTRUCTIONS, custom_text: str = "") -> dict:
     snap = situation(game, cavern, willy, collected)
     out = {"willy": [snap.willy_x, snap.willy_y], "keys_left": [snap.key_letters[k] for k in snap.keys]}
     goals = len(snap.keys) + len(snap.switches)
     if goals == 0:
         return {**out, "no_call": "No key is left. The target is the exit portal, and there is no key request."}
-    state, question = request_for(snap, with_map)
+    state, question = request_for(snap, with_map, instructions, custom_text)
     out.update(state=state, question=questions_as_json(question))
     if goals == 1:
         return {**out, "no_call": "Only one key is left. A live run makes no jev call for this."}

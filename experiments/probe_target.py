@@ -28,7 +28,7 @@ def main():
         state = describe.keys_state(snap, names)
         criteria = {n: f"The key that `keys.{n}` describes." for n in names.values()}
         print(f"\n{snap.cavern_name}")
-        for label, instructions in (("rules", brain.RULES_KEY_INSTRUCTIONS), ("free", FREE_INSTRUCTIONS)):
+        for label, instructions in (("rules", brain.key_instructions("rules", with_map=False)), ("free", FREE_INSTRUCTIONS)):
             answer = client.system_one(state, {"t": Choice(instructions=instructions, criteria=criteria)}).choices["t"]
             probs = " ".join(f"{k}={v:.2f}" for k, v in sorted(answer.probabilities.items()))
             print(f"  {label:6} -> {answer.choice} (confidence {answer.confidence:.2f})  {probs}")

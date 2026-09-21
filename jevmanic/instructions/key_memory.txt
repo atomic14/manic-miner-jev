@@ -1,0 +1,4 @@
+`current_target` marks the key that Willy goes to now. Willy can keep it or
+change it. `decisions_used_for_it` tells how many decisions Willy used for
+this key before. `gave_up_on_it` tells how many times Willy made no progress
+toward this key.

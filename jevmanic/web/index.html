@@ -102,6 +102,9 @@
   .lab-keys button b { color: var(--warn); }
   #lab-result .big { font-size: 18px; font-weight: 700; color: var(--warn); }
   .match { color: var(--good); } .nomatch { color: var(--bad); }
+  textarea { width: 100%; min-height: 190px; background: #0b0d12; color: var(--text); border: 1px solid var(--line);
+             border-radius: 5px; padding: 8px; font: 12.5px/1.45 ui-monospace, Menlo, monospace; resize: vertical; }
+  textarea.edited { border-color: var(--warn); }
 </style>
 </head>
 <body>
@@ -175,8 +178,11 @@
            Willy cannot stay alive for this number of moves. A larger number is more help from the code.</p>
       </div>
       <div>
-        <label><input type="checkbox" id="rulesmode"> Rules mode (for comparison only)</label>
-        <p class="hint">Off (normal): jev gets the goal and the facts, and it decides. On: jev gets a list of rules that we wrote.</p>
+        <label for="instructions">Instructions for jev</label>
+        <select id="instructions"></select>
+        <p class="hint">"free" (normal): jev gets the goal, the meaning of each fact, and knowledge of the game, and it decides.
+           "rules" (for comparison): jev gets a list of rules that we wrote. The instructions are the only difference: jev gets the
+           same facts. Each set is a folder of text files in <code>jevmanic/instructions/</code>.</p>
       </div>
     </details>
   </div>
@@ -283,7 +289,19 @@
       <div class="controls">
         <button class="primary" id="lab-ask">Ask jev: which key next?</button>
         <label title="On (normal): the key request has a text map of the cavern. Off: it has facts about each key only."><input type="checkbox" id="lab-map" checked> give jev the map</label>
+        <label for="lab-instructions">instructions</label>
+        <select id="lab-instructions" title="The set of instruction texts for the key question"></select>
         <span class="hint" id="lab-busy" style="margin:0"></span>
+      </div>
+    </div>
+    <div class="panel">
+      <h2><span>Instructions for jev</span><small id="lab-text-status"></small></h2>
+      <p class="hint">This is the text that jev gets with the state. It starts with the text of the selected set. <b>You can change it
+         here</b> to see how the answer changes. Your change is for this page only: it is not saved. jev reads the words as they are,
+         thus do not use markup.</p>
+      <textarea id="lab-text" spellcheck="false"></textarea>
+      <div class="controls" style="margin-top:6px">
+        <button id="lab-text-reset" disabled>Put back the text of the set</button>
       </div>
     </div>
   </section>
@@ -442,6 +460,9 @@ function handle(msg) {
   if (msg.type === "hello") {
     $("cavern").innerHTML = msg.caverns.map((name, i) => `<option value="${i}">${i + 1}. ${name}</option>`).join("");
     keyOrders = msg.key_orders || {};
+    const sets = msg.instruction_sets || ["free"];
+    $("instructions").innerHTML = sets.map(s => `<option value="${s}">${s}</option>`).join("");
+    $("lab-instructions").innerHTML = $("instructions").innerHTML;
     $("keyorder").value = keyOrders[$("cavern").value] || "";
     showRuns(msg.runs, msg.groups);
   } else if (msg.type === "runs") { showRuns(msg.runs, msg.groups);
@@ -455,7 +476,8 @@ function handle(msg) {
     $("questions").textContent = JSON.stringify(msg.questions, null, 2);
     const st = msg.settings || {};
     const maker = msg.decision_maker && msg.decision_maker !== "jev" ? msg.decision_maker :
-      st.random_moves ? "random moves" : (st.rules_mode || st.free_move === false) ? "rules mode" : "free mode";
+      st.random_moves ? "random moves" : st.instructions ? st.instructions + " mode" :
+      (st.rules_mode || st.free_move === false) ? "rules mode" : "free mode";
     const depth = st.survival_depth ?? 12;
     const keys = st.forced_key_order ? ` · fixed key order ${st.forced_key_order}` : "";
     $("outcome").textContent = `${msg.cavern_name || "Central Cavern"} · ${maker} · dead end check ${depth} moves${keys} · ${msg.file}`;
@@ -614,7 +636,7 @@ $("start").onclick = () => {
     return;
   }
   setPaused(false);
-  send({cmd: "start", cavern: Number($("cavern").value), rules_mode: $("rulesmode").checked,
+  send({cmd: "start", cavern: Number($("cavern").value), instructions: $("instructions").value,
         map_key_decision: $("mapkeys").checked, dead_end_depth: Number($("depth").value),
         key_order: $("keymode").value === "fixed" ? $("keyorder").value : ""});
 };
@@ -631,9 +653,8 @@ $("completeonly").onchange = showRunList;
 function updateKeyControls() {
   const fixed = $("keymode").value === "fixed";
   $("keyorder").disabled = !fixed;
-  $("mapkeys").disabled = fixed || $("rulesmode").checked;  // no key request, or the facts only
+  $("mapkeys").disabled = fixed;  // no key request
 }
-$("rulesmode").onchange = updateKeyControls;
 $("keymode").onchange = updateKeyControls;
 // A different cavern has different keys: start again from its optimum order.
 $("cavern").onchange = () => { $("keyorder").value = keyOrders[$("cavern").value] || ""; };
@@ -656,13 +677,31 @@ connect();
 function showTab(name) {
   $("tab-play").hidden = name !== "play"; $("tab-lab").hidden = name !== "lab";
   $("tabbtn-play").classList.toggle("on", name === "play"); $("tabbtn-lab").classList.toggle("on", name === "lab");
-  if (name === "lab" && !lab.info) labLoad(0);
+  if (name === "lab" && !lab.info) { labLoad(0); labLoadText(); }
 }
 $("tabbtn-play").onclick = () => showTab("play");
 $("tabbtn-lab").onclick = () => showTab("lab");
 
 // -- The key decision lab -------------------------------------------------------------------
-const lab = {info: null, bitmap: null, willy: null, collected: new Set()};
+const lab = {info: null, bitmap: null, willy: null, collected: new Set(), cannedText: ""};
+
+// The instruction text of the selected set. A change by the person stays until the set or the map box changes.
+async function labLoadText() {
+  const url = `/api/lab/instructions?name=${encodeURIComponent($("lab-instructions").value || "free")}&with_map=${$("lab-map").checked}`;
+  lab.cannedText = (await (await fetch(url)).json()).text;
+  $("lab-text").value = lab.cannedText; labTextStatus();
+}
+function labTextStatus() {
+  const edited = $("lab-text").value.trim() !== lab.cannedText.trim();
+  $("lab-text").classList.toggle("edited", edited);
+  $("lab-text-reset").disabled = !edited;
+  const words = $("lab-text").value.trim().split(/\s+/).filter(Boolean).length;
+  $("lab-text-status").textContent = (edited ? "your text · " : `the text of the set "${$("lab-instructions").value}" · `) + `${words} words`;
+}
+$("lab-text").oninput = labTextStatus;
+$("lab-text-reset").onclick = labLoadText;
+$("lab-instructions").onchange = () => { labLoadText(); labClearAnswer(); };
+$("lab-map").onchange = () => { labLoadText(); labClearAnswer(); };
 const labCtx = $("lab-screen").getContext("2d");
 
 async function labLoad(cavern) {
@@ -736,7 +775,8 @@ $("lab-ask").onclick = async () => {
   $("lab-ask").disabled = true; $("lab-busy").textContent = "jev makes the decision…";
   const reply = await (await fetch("/api/lab/ask", {method: "POST", headers: {"Content-Type": "application/json"},
     body: JSON.stringify({cavern: lab.info.cavern, willy: lab.willy, collected: [...lab.collected].join(""),
-                          with_map: $("lab-map").checked})})).json();
+                          with_map: $("lab-map").checked, instructions: $("lab-instructions").value,
+                          custom_text: $("lab-text").value.trim() !== lab.cannedText.trim() ? $("lab-text").value : ""})})).json();
   $("lab-ask").disabled = false; $("lab-busy").textContent = "";
   const answer = $("lab-answer"); answer.className = "";
   if (reply.error) {

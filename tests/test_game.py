@@ -214,33 +214,58 @@ def test_a_way_down_is_not_a_drop_that_kills_willy():
 # -- The questions ------------------------------------------------------------------------
 
 
-def test_each_mode_uses_its_text():
-    assert brain.move_question()["move"].instructions == brain.FREE_MOVE_INSTRUCTIONS
-    assert brain.move_question(rules_mode=True)["move"].instructions == brain.RULES_MOVE_INSTRUCTIONS
+def test_each_instruction_set_has_its_texts_in_files():
+    assert brain.instruction_sets() == ["free", "rules"]  # the default set is first
+    for name in brain.instruction_sets():
+        for which in ("move.txt", "key.txt", "key_facts_only.txt"):
+            assert (brain.INSTRUCTIONS_DIR / name / which).read_text().strip(), (name, which)
+    assert brain.move_question()["move"].instructions == brain.move_instructions("free")
+    assert brain.move_question(instructions="rules")["move"].instructions == brain.move_instructions("rules")
     names = ["key_A", "key_B"]
-    memory = brain.KEY_MEMORY_MEANING
-    assert brain.key_question(names)["key"].instructions == brain.MAP_KEY_INSTRUCTIONS + memory
-    assert brain.key_question(names, with_map=False)["key"].instructions == brain.FACTS_KEY_INSTRUCTIONS + memory
-    assert brain.key_question(names, rules_mode=True)["key"].instructions == brain.RULES_KEY_INSTRUCTIONS + memory
+    memory = " ".join((brain.INSTRUCTIONS_DIR / "key_memory.txt").read_text().split())
+    for name in brain.instruction_sets():
+        with_map = brain.key_question(names, name)["key"].instructions
+        facts_only = brain.key_question(names, name, with_map=False)["key"].instructions
+        # The text must name the map: if not, jev does not use it.
+        assert "map" in with_map and "map" not in facts_only
+        assert with_map.endswith(memory) and facts_only.endswith(memory)
+        assert "\n" not in with_map and "  " not in with_map  # one paragraph
     # The move question offers only the valid moves.
     assert list(brain.move_question(["walk_left", "wait"])["move"].criteria) == ["walk_left", "wait"]
 
 
-def test_the_free_mode_text_gives_the_goal_and_no_rules():
-    text = brain.FREE_MOVE_INSTRUCTIONS
+def test_the_free_text_gives_the_goal_and_no_rules():
+    text = brain.move_instructions("free")
     assert "collect all keys" in text and "`collects_key`" in text
     assert "Rule 1" not in text
-    # Rules mode is a strict prompt: it has no mark that the code selects.
-    assert "Rule 1" in brain.RULES_MOVE_INSTRUCTIONS
-    assert "least_visited" not in brain.RULES_MOVE_INSTRUCTIONS
+    # The rules text is a strict prompt: it has no mark that the code selects.
+    assert "Rule 1" in brain.move_instructions("rules")
+    assert "least_visited" not in brain.move_instructions("rules")
+
+
+def test_the_instructions_are_the_only_difference_between_two_sets(tmp_path, monkeypatch):
+    """The same game with the two sets: the same state, the same options, and the same key schedule."""
+    from jevmanic.runner import _LiveRun
+
+    game = Game()
+    runs = {name: _LiveRun(game, None, Settings(instructions=name)) for name in brain.instruction_sets()}
+    assert all(run.settings.uses_map for run in runs.values())
+    snap = game.snapshot()
+    goals = snap.keys + snap.switches
+    for n in (0, 1, 24, 25, 26):
+        due = set()
+        for run in runs.values():
+            run.target, run.goals_at_request, run.n_at_request = snap.keys[0], len(goals), 0
+            due.add(run._key_decision_is_due(snap, goals, n))
+        assert len(due) == 1, n
 
 
 def test_default_settings():
     settings = Settings()
-    assert not settings.rules_mode and settings.map_key_decision and settings.uses_map
+    assert settings.instructions == "free" and settings.map_key_decision and settings.uses_map
     assert settings.key_decision_every == 25 and settings.survival_depth == 4
     assert settings.forced_key_order == "" and not settings.random_moves
-    assert not Settings(rules_mode=True).uses_map  # rules mode uses the key facts and no map
+    assert Settings(instructions="rules").uses_map  # each set gets the same state
     assert len(fields(Settings)) == 6  # a new setting needs a reason and a measurement
 
 
@@ -265,7 +290,11 @@ def test_the_key_decision_lab_makes_the_request_of_a_live_run():
     state, question = lab.request_for(snap)
     assert list(state["keys"]) == ["key_A", "key_B", "key_C", "key_D"]
     assert "E" not in "".join(state["map"]) and "W" in state["map"][7]
-    assert question["key"].instructions == brain.MAP_KEY_INSTRUCTIONS + brain.KEY_MEMORY_MEANING
+    assert question["key"].instructions == brain.key_instructions("free", with_map=True)
+    # A person can try a different instruction text: it replaces the text of the set.
+    _, custom = lab.request_for(snap, custom_text="Select the key\n that is the nearest.  ")
+    assert custom["key"].instructions == "Select the key that is the nearest."
+    assert list(custom["key"].criteria) == list(question["key"].criteria)
     # A click in empty space goes to the nearest place where Willy can stand.
     assert lab.standing_place(game.snapshot(), 29, 1) == (29, 3)
 
@@ -280,7 +309,7 @@ def test_llm_answer_parser_and_prompt():
     question = brain.move_question(["walk_left", "wait"])["move"]
     prompt = build_prompt({"air": "plenty"}, question)
     # The LLM gets the same instructions and the same options as jev.
-    assert brain.FREE_MOVE_INSTRUCTIONS in prompt and "- walk_left:" in prompt
+    assert brain.move_instructions("free") in prompt and "- walk_left:" in prompt
     assert "jump_up" not in prompt.split("OPTIONS")[1].split("STATE")[0]
 
 

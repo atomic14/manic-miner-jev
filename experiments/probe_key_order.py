@@ -30,7 +30,7 @@ from typesafe_sdk import Choice, TypeSafeClient
 from jevmanic import brain, describe
 from jevmanic.game import Game
 
-MAP_INSTRUCTIONS = brain.MAP_KEY_INSTRUCTIONS  # the text of the real key decision
+MAP_INSTRUCTIONS = brain.key_instructions(with_map=True)  # the text of the real key decision
 
 
 def complete_runs():
@@ -121,7 +121,7 @@ def main():
             swap = dict(zip(sorted(left), sorted(left, reverse=True)))
             swapped = replace(snap, key_letters={k: swap[letters[k]] for k in snap.keys})
             inputs = {
-                "facts": (describe.keys_state(snap, names), brain.FACTS_KEY_INSTRUCTIONS, None),
+                "facts": (describe.keys_state(snap, names), brain.key_instructions(with_map=False), None),
                 "map": (full_map, MAP_INSTRUCTIONS, None),
                 "map+facts": ({**full_map, **describe.keys_state(snap, names)}, MAP_INSTRUCTIONS, None),
                 "map, other letters": (describe.cavern_map(swapped), MAP_INSTRUCTIONS, swap),

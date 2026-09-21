@@ -2,13 +2,15 @@
 
 import argparse
 
+from .brain import DEFAULT_INSTRUCTIONS, instruction_sets
 from .game import SURVIVAL_DEPTH
 from .runner import Settings
 
 
 def add_run_options(parser: argparse.ArgumentParser):
-    parser.add_argument("--rules", action="store_true",
-                        help="rules mode: the texts are lists of rules that we wrote (for comparison)")
+    parser.add_argument("--instructions", default=DEFAULT_INSTRUCTIONS, choices=instruction_sets(), metavar="NAME",
+                        help="the set of instruction texts, a folder in jevmanic/instructions/: "
+                             + ", ".join(instruction_sets()) + " (default free). `rules` is for comparison")
     parser.add_argument("--facts-only-keys", action="store_true",
                         help="the key decision gets the facts only, and no map of the cavern")
     parser.add_argument("--key-every", type=int, default=25, metavar="N",
@@ -24,7 +26,7 @@ def add_run_options(parser: argparse.ArgumentParser):
 
 def settings_from(args: argparse.Namespace) -> Settings:
     return Settings(
-        rules_mode=args.rules,
+        instructions=args.instructions,
         map_key_decision=not args.facts_only_keys,
         key_decision_every=args.key_every,
         survival_depth=args.depth,

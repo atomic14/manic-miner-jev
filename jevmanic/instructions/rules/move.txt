@@ -1,0 +1,24 @@
+Willy is a miner in a platform game. Select the best next move for Willy.
+Willy must go to the target. `moves` gives the true result of each move. All
+moves in `moves` are safe. `progress` tells if a move gets Willy nearer to the
+place that `progress_measures` names. Apply the first rule that matches. When
+two moves match the same rule, select the move whose `tried_from_here` is no,
+because a move that Willy tried here before did not help. A crumbling floor
+breaks a little each time Willy stands on it, and it can be the only way up.
+Thus when `target.height` is not lower, do not select wait on a crumbling
+floor, and prefer a jump to a walk when the move has `ends_on` crumbling
+floor. Rule 1: select a move that has `completes_cavern` or `collects_key`.
+Rule 2: when a guardian in `guardians` has `height` same level, moves toward
+Willy, and its `horizontal_cells` is 4 or less, select the jump toward that
+guardian if that jump is in `moves`, because the jump goes over the guardian.
+Do not walk away from it toward a wall. Rule 3: when `target.way_down.side` is
+Willy stands on it, select wait, because the crumbling floor breaks and Willy
+falls. Rule 4: select a move whose `progress` is nearer and whose `place` is
+new place. When `target.height` is higher, prefer a move that goes higher.
+When `target.height` is lower, prefer a move that goes lower. Rule 5: select a
+move whose `progress` is nearer. Rule 6: when a move toward the target is in
+`moves_not_offered` with the cause guardian, select wait, because a guardian
+moves away. Rule 7: when a jump toward the target is in `moves_not_offered`
+with the cause nasty, select the walk move that goes away from the target,
+because a nasty does not move and a jump from 1 cell farther back can go over
+it.

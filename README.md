@@ -17,15 +17,22 @@ snapshot.
 the game. The code does not tell jev what to select. But the code does not
 offer a decision that we know is not valid.
 
-This gives two modes:
+This gives two modes. **A mode is a set of instruction texts, and the
+instructions are the only difference**: jev gets the same state, the same
+options, and the same schedule of requests in the two modes. For a person who
+knows LLMs: two different system prompts. The texts are plain text files in
+`jevmanic/instructions/<name>/` (`move.txt`, `key.txt`, and
+`key_facts_only.txt`). To try a new text, copy a folder, change the files,
+and run with `--instructions <name>`. The files have no markup: the jev
+documentation says that instructions are a string or JSON, and that jev reads
+the words as they are.
 
 - **Free mode** (the normal configuration). The instructions have three
   parts: the goal, the meaning of each fact, and knowledge of the game (for
   example "a crumbling floor breaks a little each time Willy stands on it").
   They do not say "select X when Y".
 - **Rules mode** (for comparison only). The instructions are a numbered list
-  of rules of the form "select X when Y". The state is the same as in free
-  mode. Jev executes a procedure that we wrote. Most of the success of this
+  of rules of the form "select X when Y". Jev executes a procedure that we wrote. Most of the success of this
   mode comes from that procedure, not from jev.
 
 ## Result
@@ -235,7 +242,9 @@ question for a situation that you set up: select a cavern, click a key to
 mark it as collected, and click any other place to put Willy there. The
 request is the same as in a live run (one jev call, approximately $0.0001).
 The page shows the probabilities, the exact state with the map, and the next
-key of the optimum order for comparison. Limits: the cavern is in its start
+key of the optimum order for comparison. You can select the instruction set,
+and you can change the instruction text in a text box to see how the answer
+changes (the change is not saved). Limits: the cavern is in its start
 condition, and jev has no memory of earlier decisions.
 
 The first tab shows, for each decision:
@@ -252,7 +261,7 @@ The first tab shows, for each decision:
 ```sh
 uv run python -m jevmanic.cli --cavern 2
 uv run python -m jevmanic.cli --cavern 2 --until-complete
-uv run python -m jevmanic.cli --cavern 2 --rules          # comparison only
+uv run python -m jevmanic.cli --cavern 2 --instructions rules   # comparison only
 uv run python -m jevmanic.cli --help                      # all options
 ```
 
@@ -264,7 +273,7 @@ until a run is complete (10 runs at most). Each live run writes a log file in
 
 ```sh
 uv run python -m experiments.measure --caverns 1,2 --runs 10 --label my-test
-uv run python -m experiments.measure --caverns 1,2 --runs 10 --label rules --rules
+uv run python -m experiments.measure --caverns 1,2 --runs 10 --label rules --instructions rules
 uv run python -m experiments.diagnose runs/my-test/<file>.jsonl
 ```
 
@@ -276,7 +285,7 @@ gives:
 
 | Option | Effect |
 | --- | --- |
-| `--rules` | rules mode (comparison) |
+| `--instructions NAME` | the set of instruction texts: `free` (default) or `rules` (comparison) |
 | `--facts-only-keys` | the key decision gets the facts only, and no map |
 | `--key-every N` | repeat the key decision after N decisions (default 25, 0 = no repeat) |
 | `--depth N` | the moves that the dead end check looks ahead (default 12, 0 = off) |
@@ -358,7 +367,7 @@ positions relative to Willy, in words and small numbers.
 
 All examples below are from the recorded run
 `demo/cavern-02-the-cold-room-free-mode.jsonl`. The exact text of all
-questions is in `jevmanic/brain.py`. The code that makes the state is in
+instructions is in `jevmanic/instructions/`. The code that makes the state is in
 `jevmanic/describe.py`. The viewer shows the exact state and questions of
 each request.
 
@@ -893,6 +902,7 @@ result came from the search, not from jev.
 | `jevmanic/game.py` | start of a cavern, memory reads, macros, look-ahead, dead end check |
 | `jevmanic/describe.py` | the state: the map, the key facts, and the move facts |
 | `jevmanic/brain.py` | questions and the jev calls |
+| `jevmanic/instructions/` | the instruction texts, one folder for each mode |
 | `jevmanic/llm_brain.py` | an LLM as the decision maker, for comparison |
 | `jevmanic/runner.py` | the settings, live run, log file, replay |
 | `jevmanic/options.py` | the run options of the terminal and the measurement |

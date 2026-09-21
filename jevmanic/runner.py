@@ -24,7 +24,7 @@ from datetime import datetime
 from pathlib import Path
 
 from . import describe
-from .brain import key_question, move_question, questions_as_json
+from .brain import DEFAULT_INSTRUCTIONS, key_question, move_question, questions_as_json
 from .game import MACROS, SURVIVAL_DEPTH, Game
 from .key_orders import OPTIMUM, OPTIMUM_KEY_ORDER
 
@@ -49,10 +49,11 @@ FLOOR_CHANGE_MIN_GAP = 4
 class Settings:
     """The configuration of a live run. The defaults are the normal configuration."""
 
-    # False = free mode: the decisions come from jev. True = rules mode: the
-    # texts are lists of rules that we wrote (for comparison). The state is
-    # the same in the two modes. Rules mode uses the key facts and no map.
-    rules_mode: bool = False
+    # The set of instruction texts: a folder in `jevmanic/instructions/`.
+    # "free" (the default): the decisions come from jev. "rules": the texts are
+    # lists of rules that we wrote (for comparison). The instructions are the
+    # only difference: the state and the schedule of the requests are the same.
+    instructions: str = DEFAULT_INSTRUCTIONS
     # The key decision uses the map of the cavern. Jev gets it at the start,
     # when Willy collects a key, and again after `key_decision_every`
     # decisions (0 = no repeat). False = the key decision with the facts only.
@@ -66,7 +67,7 @@ class Settings:
 
     @property
     def uses_map(self) -> bool:
-        return self.map_key_decision and not self.rules_mode
+        return self.map_key_decision
 
 
 # -- The list of recorded runs ---------------------------------------------------------
@@ -120,7 +121,9 @@ def run_mode(header: dict) -> str:
         return maker
     if settings.get("random_moves"):
         return "random moves"
-    if "rules_mode" in settings:
+    if "instructions" in settings:
+        return f"{settings['instructions']} mode"
+    if "rules_mode" in settings:  # a log file from before the instruction files
         return "rules mode" if settings["rules_mode"] else "free mode"
     return "free mode" if settings.get("free_move") else "rules mode"
 
@@ -270,7 +273,7 @@ class _LiveRun:
             if self.settings.uses_map:
                 state = {**describe.cavern_map(snap), **state}
             names = [self.names[k] for k in goals]
-            question = key_question(names, self.settings.rules_mode, self.settings.uses_map)
+            question = key_question(names, self.settings.instructions, self.settings.uses_map)
             answer = await self.brain.ask(state, question, "key")
             self.tokens += answer.input_tokens
             previous = self.target
@@ -320,7 +323,7 @@ class _LiveRun:
             record.update(macro=random.choice(offered), probabilities={m: share for m in offered},
                           confidence=0.0, latency_ms=0, input_tokens=0, model="random", state=state)
         else:
-            question = move_question(offered, self.settings.rules_mode)
+            question = move_question(offered, self.settings.instructions)
             answer = await self.brain.ask(state, question, "move")
             self.tokens += answer.input_tokens
             data = answer.to_json()
@@ -359,7 +362,7 @@ async def play_live(game: Game, brain, cavern: int = 0, settings: Settings | Non
     elif maker != "jev":
         mode = "llm"
     else:
-        mode = "rules" if settings.rules_mode else "free"
+        mode = settings.instructions
     cavern_name = game.snapshot().cavern_name
     path = _log_path(folder, cavern, cavern_name, mode)
     header = {
@@ -371,9 +374,9 @@ async def play_live(game: Game, brain, cavern: int = 0, settings: Settings | Non
         "decision_maker": maker,
         "cavern": cavern,
         "cavern_name": cavern_name,
-        "questions": questions_as_json(move_question(rules_mode=settings.rules_mode)),
+        "questions": questions_as_json(move_question(instructions=settings.instructions)),
         "target_questions": questions_as_json(
-            key_question(list(run.names.values()), settings.rules_mode, settings.uses_map)
+            key_question(list(run.names.values()), settings.instructions, settings.uses_map)
         ),
         "started": time.time(),
     }

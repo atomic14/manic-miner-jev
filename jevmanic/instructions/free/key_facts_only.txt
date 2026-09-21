@@ -1,0 +1,4 @@
+Willy is a miner in a platform game. He must collect all keys. Willy can climb
+only 2 rows with one jump. `keys` gives facts about each key or switch
+relative to Willy. Select the key or switch that is the best for Willy to get
+next.
