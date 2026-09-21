@@ -10,7 +10,7 @@ from .runner import Settings
 def add_run_options(parser: argparse.ArgumentParser):
     parser.add_argument("--instructions", default=DEFAULT_INSTRUCTIONS, choices=instruction_sets(), metavar="NAME",
                         help="the set of instruction texts, a folder in jevmanic/instructions/: "
-                             + ", ".join(instruction_sets()) + " (default free). `rules` is for comparison")
+                             + ", ".join(instruction_sets()) + f" (default {DEFAULT_INSTRUCTIONS}). promptB is for comparison")
     parser.add_argument("--facts-only-keys", action="store_true",
                         help="the key decision gets the facts only, and no map of the cavern")
     parser.add_argument("--key-every", type=int, default=25, metavar="N",

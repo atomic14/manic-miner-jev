@@ -180,8 +180,8 @@
       <div>
         <label for="instructions">Instructions for jev</label>
         <select id="instructions"></select>
-        <p class="hint">"free" (normal): jev gets the goal, the meaning of each fact, and knowledge of the game, and it decides.
-           "rules" (for comparison): jev gets a list of rules that we wrote. The instructions are the only difference: jev gets the
+        <p class="hint">"promptA" (normal): jev gets the goal, the meaning of each fact, and knowledge of the game, and it decides.
+           "promptB" (for comparison): jev gets a list of rules that we wrote. The instructions are the only difference: jev gets the
            same facts. Each set is a folder of text files in <code>jevmanic/instructions/</code>.</p>
       </div>
     </details>
@@ -460,7 +460,7 @@ function handle(msg) {
   if (msg.type === "hello") {
     $("cavern").innerHTML = msg.caverns.map((name, i) => `<option value="${i}">${i + 1}. ${name}</option>`).join("");
     keyOrders = msg.key_orders || {};
-    const sets = msg.instruction_sets || ["free"];
+    const sets = msg.instruction_sets || ["promptA"];
     $("instructions").innerHTML = sets.map(s => `<option value="${s}">${s}</option>`).join("");
     $("lab-instructions").innerHTML = $("instructions").innerHTML;
     $("keyorder").value = keyOrders[$("cavern").value] || "";
@@ -476,8 +476,8 @@ function handle(msg) {
     $("questions").textContent = JSON.stringify(msg.questions, null, 2);
     const st = msg.settings || {};
     const maker = msg.decision_maker && msg.decision_maker !== "jev" ? msg.decision_maker :
-      st.random_moves ? "random moves" : st.instructions ? st.instructions + " mode" :
-      (st.rules_mode || st.free_move === false) ? "rules mode" : "free mode";
+      st.random_moves ? "random moves" : st.instructions ? ({free: "promptA", rules: "promptB"}[st.instructions] || st.instructions) :
+      (st.rules_mode || st.free_move === false) ? "promptB" : "promptA";
     const depth = st.survival_depth ?? 12;
     const keys = st.forced_key_order ? ` · fixed key order ${st.forced_key_order}` : "";
     $("outcome").textContent = `${msg.cavern_name || "Central Cavern"} · ${maker} · dead end check ${depth} moves${keys} · ${msg.file}`;
@@ -687,7 +687,7 @@ const lab = {info: null, bitmap: null, willy: null, collected: new Set(), canned
 
 // The instruction text of the selected set. A change by the person stays until the set or the map box changes.
 async function labLoadText() {
-  const url = `/api/lab/instructions?name=${encodeURIComponent($("lab-instructions").value || "free")}&with_map=${$("lab-map").checked}`;
+  const url = `/api/lab/instructions?name=${encodeURIComponent($("lab-instructions").value || "promptA")}&with_map=${$("lab-map").checked}`;
   lab.cannedText = (await (await fetch(url)).json()).text;
   $("lab-text").value = lab.cannedText; labTextStatus();
 }

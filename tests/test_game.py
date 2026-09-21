@@ -215,12 +215,12 @@ def test_a_way_down_is_not_a_drop_that_kills_willy():
 
 
 def test_each_instruction_set_has_its_texts_in_files():
-    assert brain.instruction_sets() == ["free", "rules"]  # the default set is first
+    assert brain.instruction_sets() == ["promptA", "promptB"]  # the default set is first
     for name in brain.instruction_sets():
         for which in ("move.txt", "key.txt", "key_facts_only.txt"):
             assert (brain.INSTRUCTIONS_DIR / name / which).read_text().strip(), (name, which)
-    assert brain.move_question()["move"].instructions == brain.move_instructions("free")
-    assert brain.move_question(instructions="rules")["move"].instructions == brain.move_instructions("rules")
+    assert brain.move_question()["move"].instructions == brain.move_instructions("promptA")
+    assert brain.move_question(instructions="promptB")["move"].instructions == brain.move_instructions("promptB")
     names = ["key_A", "key_B"]
     memory = " ".join((brain.INSTRUCTIONS_DIR / "key_memory.txt").read_text().split())
     for name in brain.instruction_sets():
@@ -234,13 +234,13 @@ def test_each_instruction_set_has_its_texts_in_files():
     assert list(brain.move_question(["walk_left", "wait"])["move"].criteria) == ["walk_left", "wait"]
 
 
-def test_the_free_text_gives_the_goal_and_no_rules():
-    text = brain.move_instructions("free")
+def test_prompt_a_gives_the_goal_and_no_rules():
+    text = brain.move_instructions("promptA")
     assert "collect all keys" in text and "`collects_key`" in text
     assert "Rule 1" not in text
     # The rules text is a strict prompt: it has no mark that the code selects.
-    assert "Rule 1" in brain.move_instructions("rules")
-    assert "least_visited" not in brain.move_instructions("rules")
+    assert "Rule 1" in brain.move_instructions("promptB")
+    assert "least_visited" not in brain.move_instructions("promptB")
 
 
 def test_the_instructions_are_the_only_difference_between_two_sets(tmp_path, monkeypatch):
@@ -262,10 +262,10 @@ def test_the_instructions_are_the_only_difference_between_two_sets(tmp_path, mon
 
 def test_default_settings():
     settings = Settings()
-    assert settings.instructions == "free" and settings.map_key_decision and settings.uses_map
+    assert settings.instructions == "promptA" and settings.map_key_decision and settings.uses_map
     assert settings.key_decision_every == 25 and settings.survival_depth == 4
     assert settings.forced_key_order == "" and not settings.random_moves
-    assert Settings(instructions="rules").uses_map  # each set gets the same state
+    assert Settings(instructions="promptB").uses_map  # each set gets the same state
     assert len(fields(Settings)) == 6  # a new setting needs a reason and a measurement
 
 
@@ -290,7 +290,7 @@ def test_the_key_decision_lab_makes_the_request_of_a_live_run():
     state, question = lab.request_for(snap)
     assert list(state["keys"]) == ["key_A", "key_B", "key_C", "key_D"]
     assert "E" not in "".join(state["map"]) and "W" in state["map"][7]
-    assert question["key"].instructions == brain.key_instructions("free", with_map=True)
+    assert question["key"].instructions == brain.key_instructions("promptA", with_map=True)
     # A person can try a different instruction text: it replaces the text of the set.
     _, custom = lab.request_for(snap, custom_text="Select the key\n that is the nearest.  ")
     assert custom["key"].instructions == "Select the key that is the nearest."
@@ -309,7 +309,7 @@ def test_llm_answer_parser_and_prompt():
     question = brain.move_question(["walk_left", "wait"])["move"]
     prompt = build_prompt({"air": "plenty"}, question)
     # The LLM gets the same instructions and the same options as jev.
-    assert brain.move_instructions("free") in prompt and "- walk_left:" in prompt
+    assert brain.move_instructions("promptA") in prompt and "- walk_left:" in prompt
     assert "jump_up" not in prompt.split("OPTIONS")[1].split("STATE")[0]
 
 

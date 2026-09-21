@@ -34,6 +34,8 @@ DEMO_DIR = Path(__file__).resolve().parent.parent / "demo"
 USD_PER_TOKEN = 0.042 / 1_000_000  # jev-1.13 price for input tokens
 
 MAX_DECISIONS = 400
+# The earlier names of the two instruction sets, in the log files of that time.
+OLD_SET_NAMES = {"free": "promptA", "rules": "promptB"}
 MACROS_VERSION = 2  # 2: a fall onto a conveyor and a wait on it hold against the conveyor
 # End the run if Willy visits no new position and collects no key in this
 # number of decisions. This prevents cost for a run that goes nowhere.
@@ -50,8 +52,8 @@ class Settings:
     """The configuration of a live run. The defaults are the normal configuration."""
 
     # The set of instruction texts: a folder in `jevmanic/instructions/`.
-    # "free" (the default): the decisions come from jev. "rules": the texts are
-    # lists of rules that we wrote (for comparison). The instructions are the
+    # "promptA" (the default): the decisions come from jev. "promptB": the texts
+    # are lists of rules that we wrote (for comparison). The instructions are the
     # only difference: the state and the schedule of the requests are the same.
     instructions: str = DEFAULT_INSTRUCTIONS
     # The key decision uses the map of the cavern. Jev gets it at the start,
@@ -122,10 +124,10 @@ def run_mode(header: dict) -> str:
     if settings.get("random_moves"):
         return "random moves"
     if "instructions" in settings:
-        return f"{settings['instructions']} mode"
+        return OLD_SET_NAMES.get(settings["instructions"], settings["instructions"])
     if "rules_mode" in settings:  # a log file from before the instruction files
-        return "rules mode" if settings["rules_mode"] else "free mode"
-    return "free mode" if settings.get("free_move") else "rules mode"
+        return "promptB" if settings["rules_mode"] else "promptA"
+    return "promptA" if settings.get("free_move") else "promptB"
 
 
 def list_run_groups(runs: list[dict]) -> list[dict]:

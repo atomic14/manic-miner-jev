@@ -17,9 +17,11 @@ snapshot.
 the game. The code does not tell jev what to select. But the code does not
 offer a decision that we know is not valid.
 
-This gives two modes. **A mode is a set of instruction texts, and the
+This gives two sets of instructions, **promptA** and **promptB**. **The
 instructions are the only difference**: jev gets the same state, the same
-options, and the same schedule of requests in the two modes. For a person who
+options, and the same schedule of requests with the two sets. (The earlier
+names were "free mode" for promptA and "rules mode" for promptB. Older log
+files and measurement labels use those names.) For a person who
 knows LLMs: two different system prompts. The texts are plain text files in
 `jevmanic/instructions/<name>/` (`move.txt`, `key.txt`, and
 `key_facts_only.txt`). To try a new text, copy a folder, change the files,
@@ -27,17 +29,18 @@ and run with `--instructions <name>`. The files have no markup: the jev
 documentation says that instructions are a string or JSON, and that jev reads
 the words as they are.
 
-- **Free mode** (the normal configuration). The instructions have three
+- **PromptA** (the normal configuration). The instructions have three
   parts: the goal, the meaning of each fact, and knowledge of the game (for
   example "a crumbling floor breaks a little each time Willy stands on it").
   They do not say "select X when Y".
-- **Rules mode** (for comparison only). The instructions are a numbered list
-  of rules of the form "select X when Y". Jev executes a procedure that we wrote. Most of the success of this
-  mode comes from that procedure, not from jev.
+- **PromptB** (for comparison only). The instructions are a numbered list
+  of rules of the form "select X when Y". Jev executes a procedure that we
+  wrote. Most of the success of promptB comes from that procedure, not from
+  jev.
 
 ## Result
 
-Free mode with the present default configuration. 10 live runs for each
+PromptA with the present default configuration. 10 live runs for each
 cavern. A run is complete when Willy has all keys and goes into the portal.
 
 | Cavern | Complete runs | Mean keys | The older table |
@@ -149,14 +152,14 @@ of jev do. In 3 caverns jev is not better than the random player: cavern 5
 keys, no complete run). An earlier measurement with 30 random runs for each
 of caverns 1, 2, and 3 gave 0, 1, and 0 complete runs.
 
-### Rules mode compared with free mode
+### PromptB compared with promptA
 
-We wrote the rules of rules mode with caverns 1 and 2. Caverns 3, 4, and 16
+We wrote the rules of promptB with caverns 1 and 2. Caverns 3, 4, and 16
 are a fair test: they have horizontal guardians only, and we did not write a
-rule with them. The two modes ran at the same time with the same code. 10
-live runs for each cavern and each mode:
+rule with them. The two prompts ran at the same time with the same code. 10
+live runs for each cavern and each prompt:
 
-| Cavern | Free mode | Rules mode |
+| Cavern | PromptA | PromptB |
 | --- | --- | --- |
 | 1 Central Cavern (rules written with it) | 10 of 10 | 10 of 10 |
 | 2 The Cold Room (rules written with it) | 6 of 10 | 9 of 10 |
@@ -164,11 +167,11 @@ live runs for each cavern and each mode:
 | 4 Abandoned Uranium Workings (fair test) | 0 of 10, 3.0 keys | 0 of 10, 1.3 keys |
 | 16 The Sixteenth Cavern (fair test) | 0 of 10, 1.7 keys | 0 of 10, 1.0 keys |
 
-The table above is from older code, in which rules mode got no map for the
+The table above is from older code, in which promptB got no map for the
 key decision. The instructions are now the only difference between the two
 modes. With the present code (dead end check of 4 moves), 20 runs each:
 
-| Cavern | Free instructions | Rules instructions |
+| Cavern | promptA | promptB |
 | --- | --- | --- |
 | 1 Central Cavern (rules written with it) | 19 to 20 | 20 |
 | 2 The Cold Room (rules written with it) | 2 to 4 | **19** |
@@ -178,7 +181,7 @@ The result is the same as before, and it is now a clean comparison of two
 texts. In The Cold Room, rule 1 of the key text puts the one-way key last.
 
 The rules are better on the caverns that we wrote them with, and worse on the
-other caverns. They fit caverns 1 and 2 too well. Free mode is thus the normal
+other caverns. They fit caverns 1 and 2 too well. PromptA is thus the normal
 configuration. Rules are a legitimate form of prompt optimisation, but each
 rule must be general, and we must measure it on caverns that we did not use
 to write it.
@@ -235,7 +238,7 @@ jev and the game are, and how to read the page.
   press **Start live run**. **Settings** has the options, each with a short
   text: who selects the next key (jev, or a fixed order that starts with the
   optimum order of the cavern), the map for the key decision, the depth of
-  the dead end check (the default is 4 moves), and rules mode.
+  the dead end check (the default is 4 moves), and promptB.
 - **Pause**, **Step**, **Stop**, and **Speed** are above the game screen, in
   a replay and in a live run. A line of text tells what occurs now and what
   you can do next. The keys: Space = pause or resume, right arrow = step. The
@@ -274,7 +277,7 @@ The first tab shows, for each decision:
 ```sh
 uv run python -m jevmanic.cli --cavern 2
 uv run python -m jevmanic.cli --cavern 2 --until-complete
-uv run python -m jevmanic.cli --cavern 2 --instructions rules   # comparison only
+uv run python -m jevmanic.cli --cavern 2 --instructions promptB   # comparison only
 uv run python -m jevmanic.cli --help                      # all options
 ```
 
@@ -286,7 +289,7 @@ until a run is complete (10 runs at most). Each live run writes a log file in
 
 ```sh
 uv run python -m experiments.measure --caverns 1,2 --runs 10 --label my-test
-uv run python -m experiments.measure --caverns 1,2 --runs 10 --label rules --instructions rules
+uv run python -m experiments.measure --caverns 1,2 --runs 10 --label rules --instructions promptB
 uv run python -m experiments.diagnose runs/my-test/<file>.jsonl
 ```
 
@@ -298,7 +301,7 @@ gives:
 
 | Option | Effect |
 | --- | --- |
-| `--instructions NAME` | the set of instruction texts: `free` (default) or `rules` (comparison) |
+| `--instructions NAME` | the set of instruction texts: `promptA` (default) or `promptB` (comparison) |
 | `--facts-only-keys` | the key decision gets the facts only, and no map |
 | `--key-every N` | repeat the key decision after N decisions (default 25, 0 = no repeat) |
 | `--depth N` | the moves that the dead end check looks ahead (default 12, 0 = off) |
@@ -379,7 +382,7 @@ coordinates, with counts, and with large states. Thus the state gives
 positions relative to Willy, in words and small numbers.
 
 All examples below are from the recorded run
-`demo/cavern-02-the-cold-room-free-mode.jsonl`. The exact text of all
+`demo/cavern-02-the-cold-room-promptA.jsonl`. The exact text of all
 instructions is in `jevmanic/instructions/`. The code that makes the state is in
 `jevmanic/describe.py`. The viewer shows the exact state and questions of
 each request.
@@ -607,7 +610,7 @@ macros have the same result (Willy is in the air).
   must collect keys, and did not say what `collects_key` means. With the goal
   and the meaning in the text, and with no rule about what to select, the
   cavern went from 3 of 10 to 10 of 10 complete runs. The decisions per run
-  (74) are near the result of our procedure in rules mode (70).
+  (74) are near the result of our procedure in promptB (70).
 - **The dead end check gives much help.** Complete runs of 10, with the
   present configuration:
 
@@ -696,8 +699,7 @@ macros have the same result (Willy is in the air).
 - One move request uses approximately 1400 input tokens and takes
   approximately 300 ms from our computer.
 
-Designs that we measured and removed, because they were not better than free
-mode on caverns 1 to 4: one Noul question for each move (1 of 12 complete),
+Designs that we measured and removed, because they were not better than promptA on caverns 1 to 4: one Noul question for each move (1 of 12 complete),
 and a question in which jev selects the next platform from the map (1 of 18).
 We also removed a "route mode": the code searched sequences of up to 32
 macros to find the platforms that Willy can get to, jev selected one, and the
@@ -867,14 +869,14 @@ result came from the search, not from jev.
   Menagerie, the optimum order is a route that the move facts do not
   support.
 - **The target order is the open problem.** In The Cold Room, the full
-  difference between rules mode (9 of 10) and free mode (4 to 6 of 10) is
+  difference between promptB (9 of 10) and promptA (4 to 6 of 10) is
   the order of the keys. We measured two prompt changes for it, 10 runs each:
 
   | Change to the target text | Cavern 1 | Cavern 2 | Cavern 3 | Cavern 4 | Cavern 16 |
   | --- | --- | --- | --- | --- | --- |
   | None (the normal text) | 10 | 4 to 6 | 10 | 0, 4.0 keys | 0, 1.7 keys |
   | + the meaning of `one_way_trip` | 8 | 0 | 10 | - | - |
-  | The three target rules of rules mode | 7 | 8 | 9 | 0, 0 keys | 0, 2.0 keys |
+  | The three target rules of promptB | 7 | 8 | 9 | 0, 0 keys | 0, 2.0 keys |
 
   The sentence about `one_way_trip` did its task (jev did not select the
   shaft key too early), but then a different order problem ended the runs:
@@ -915,7 +917,7 @@ result came from the search, not from jev.
 | `jevmanic/game.py` | start of a cavern, memory reads, macros, look-ahead, dead end check |
 | `jevmanic/describe.py` | the state: the map, the key facts, and the move facts |
 | `jevmanic/brain.py` | questions and the jev calls |
-| `jevmanic/instructions/` | the instruction texts, one folder for each mode |
+| `jevmanic/instructions/` | the instruction texts: `promptA/`, `promptB/`, and your own folders |
 | `jevmanic/llm_brain.py` | an LLM as the decision maker, for comparison |
 | `jevmanic/runner.py` | the settings, live run, log file, replay |
 | `jevmanic/options.py` | the run options of the terminal and the measurement |

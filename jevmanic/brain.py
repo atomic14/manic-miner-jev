@@ -9,11 +9,13 @@ There are two types of request:
 The instruction texts are plain text files in `jevmanic/instructions/`. One
 folder is one set of instructions:
 
-    free   (the default) The text gives the goal, the meaning of each fact,
-           and knowledge of the game. It does not say which option to select.
-           The decisions come from jev.
-    rules  (for comparison) The text is a numbered list of rules of the form
-           "select X when Y". Jev executes a procedure that we wrote.
+    promptA  (the default) The text gives the goal, the meaning of each
+             fact, and knowledge of the game. It does not say which option to
+             select. The decisions come from jev. Its earlier name was "free
+             mode".
+    promptB  (for comparison) The text is a numbered list of rules of the
+             form "select X when Y". Jev executes a procedure that we wrote.
+             Its earlier name was "rules mode".
 
 The instructions are the only difference between two sets: the state, the
 options, and the schedule of the requests are the same. To try a new text,
@@ -38,7 +40,7 @@ from typesafe_sdk import AsyncTypeSafeClient, Choice
 from .game import MACROS
 
 INSTRUCTIONS_DIR = Path(__file__).resolve().parent / "instructions"
-DEFAULT_INSTRUCTIONS = "free"
+DEFAULT_INSTRUCTIONS = "promptA"
 
 
 def instruction_sets() -> list[str]:
