@@ -34,6 +34,10 @@ def parse():
     parser.add_argument("--runs", type=int, default=10, help="live games for each cavern (default 10)")
     parser.add_argument("--label", default="measure", help="the name of the folder below runs/")
     parser.add_argument("--parallel", type=int, default=5, help="games that run at the same time (default 5)")
+    parser.add_argument("--local", nargs="?", const="default", metavar="MODEL",
+                        help="a local LLM makes the decisions: the code reads the answer from its logits, as jevfire "
+                             "and SemIf do (for comparison, needs `uv sync --extra local`). MODEL is an mlx-community "
+                             "model name; the default is Qwen3-4B in 4-bit form")
     parser.add_argument("--laya", action="store_true", help="Laya makes the decisions: a typed decision model "
                         "that runs on this computer (for comparison, needs `uv sync --extra laya`)")
     add_run_options(parser)
@@ -125,7 +129,11 @@ async def main():
     args = parse()
     settings = settings_from(args)
     print(f"label={args.label} caverns={[c + 1 for c in args.cavern_list]} runs={args.runs} {settings}")
-    if args.laya:
+    if args.local:
+        from jevmanic.local_brain import DEFAULT_MODEL, LocalBrain  # an optional dependency
+
+        brain = LocalBrain(DEFAULT_MODEL if args.local == "default" else args.local)
+    elif args.laya:
         from jevmanic.laya_brain import LayaBrain  # an optional dependency
 
         brain = LayaBrain()

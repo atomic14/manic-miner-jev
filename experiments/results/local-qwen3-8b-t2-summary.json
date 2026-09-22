@@ -1,0 +1,131 @@
+{
+  "label": "local-qwen3-8b-t2",
+  "settings": {
+    "instructions": "promptA",
+    "map_key_decision": true,
+    "key_decision_every": 25,
+    "survival_depth": 4,
+    "forced_key_order": "",
+    "random_moves": false
+  },
+  "caverns": [
+    {
+      "cavern": 1,
+      "name": "Central Cavern",
+      "runs": 2,
+      "complete": 0,
+      "mean_keys": 3.5,
+      "mean_decisions_complete": null,
+      "tokens_per_call": 989,
+      "low_confidence_rate": 0.74,
+      "mean_cost_usd": 0.0,
+      "other_outcomes": {
+        "stuck: no progress": 2
+      }
+    },
+    {
+      "cavern": 2,
+      "name": "The Cold Room",
+      "runs": 2,
+      "complete": 0,
+      "mean_keys": 1.5,
+      "mean_decisions_complete": null,
+      "tokens_per_call": 1126,
+      "low_confidence_rate": 0.71,
+      "mean_cost_usd": 0.0,
+      "other_outcomes": {
+        "stuck: no progress": 1,
+        "Willy died": 1
+      }
+    },
+    {
+      "cavern": 3,
+      "name": "The Menagerie",
+      "runs": 2,
+      "complete": 0,
+      "mean_keys": 2,
+      "mean_decisions_complete": null,
+      "tokens_per_call": 1128,
+      "low_confidence_rate": 0.65,
+      "mean_cost_usd": 0.0,
+      "other_outcomes": {
+        "Willy died": 1,
+        "stuck: no progress": 1
+      }
+    }
+  ],
+  "runs": [
+    {
+      "cavern": 0,
+      "file": "local-qwen3-8b-t2/20260922-233209-cavern-01-central-cavern-local.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 2,
+      "decisions": 106,
+      "tokens": 100558,
+      "cost_usd": 0.0,
+      "mean_latency_ms": 642,
+      "low_confidence": 74,
+      "jev_calls": 100
+    },
+    {
+      "cavern": 0,
+      "file": "local-qwen3-8b-t2/20260922-233319-cavern-01-central-cavern-local.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 5,
+      "decisions": 106,
+      "tokens": 92379,
+      "cost_usd": 0.0,
+      "mean_latency_ms": 608,
+      "low_confidence": 71,
+      "jev_calls": 95
+    },
+    {
+      "cavern": 1,
+      "file": "local-qwen3-8b-t2/20260922-233421-cavern-02-the-cold-room-local.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 1,
+      "decisions": 75,
+      "tokens": 73482,
+      "cost_usd": 0.0,
+      "mean_latency_ms": 746,
+      "low_confidence": 52,
+      "jev_calls": 66
+    },
+    {
+      "cavern": 1,
+      "file": "local-qwen3-8b-t2/20260922-233515-cavern-02-the-cold-room-local.jsonl",
+      "outcome": "Willy died",
+      "keys": 2,
+      "decisions": 50,
+      "tokens": 52639,
+      "cost_usd": 0.0,
+      "mean_latency_ms": 733,
+      "low_confidence": 28,
+      "jev_calls": 46
+    },
+    {
+      "cavern": 2,
+      "file": "local-qwen3-8b-t2/20260922-233552-cavern-03-the-menagerie-local.jsonl",
+      "outcome": "Willy died",
+      "keys": 1,
+      "decisions": 24,
+      "tokens": 16187,
+      "cost_usd": 0.0,
+      "mean_latency_ms": 924,
+      "low_confidence": 12,
+      "jev_calls": 13
+    },
+    {
+      "cavern": 2,
+      "file": "local-qwen3-8b-t2/20260922-233606-cavern-03-the-menagerie-local.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 3,
+      "decisions": 133,
+      "tokens": 123735,
+      "cost_usd": 0.0,
+      "mean_latency_ms": 984,
+      "low_confidence": 68,
+      "jev_calls": 111
+    }
+  ]
+}

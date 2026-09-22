@@ -17,6 +17,9 @@ dependencies = [
 laya = [
     "laya-mlx>=0.1.0",
 ]
+local = [
+    "mlx-lm>=0.31.3",
+]
 
 [dependency-groups]
 dev = [

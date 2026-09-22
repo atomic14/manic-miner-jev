@@ -53,6 +53,10 @@ async def main():
                         help=f"play again until a run is complete ({MAX_ATTEMPTS} runs at most)")
     parser.add_argument("--llm", metavar="MODEL", help="an LLM makes the decisions through the "
                         "`claude` command line tool, for example haiku (for comparison, slow)")
+    parser.add_argument("--local", nargs="?", const="default", metavar="MODEL",
+                        help="a local LLM makes the decisions: the code reads the answer from its logits, as jevfire "
+                             "and SemIf do (for comparison, needs `uv sync --extra local`). MODEL is an mlx-community "
+                             "model name; the default is Qwen3-4B in 4-bit form")
     parser.add_argument("--laya", action="store_true", help="Laya makes the decisions: a typed decision model "
                         "that runs on this computer (for comparison, needs `uv sync --extra laya`)")
     add_run_options(parser)
@@ -61,7 +65,11 @@ async def main():
         parser.error("the cavern number must be 1 to 20")
     load_dotenv(".env")
     game = Game()
-    if args.laya:
+    if args.local:
+        from .local_brain import DEFAULT_MODEL, LocalBrain  # an optional dependency
+
+        brain, folder = LocalBrain(DEFAULT_MODEL if args.local == "default" else args.local), "local"
+    elif args.laya:
         from .laya_brain import LayaBrain  # an optional dependency
 
         brain, folder = LayaBrain(), "laya"

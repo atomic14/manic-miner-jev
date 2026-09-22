@@ -912,6 +912,31 @@ result came from the search, not from jev.
     best move with a planner and writes "Safe. Best route to food." into the
     text of that option. The model matches the word "best". That is against
     the rule of this project, thus we did not do it.
+- **A local LLM with the answer read from its logits: the same request as
+  jev, and one complete cavern.** Two open projects,
+  [jevfire](https://github.com/kikoncuo/jevfire) and
+  [SemIf](https://github.com/TheoLeeCJ/SemIf), reproduce the jev interface
+  with an open LLM: the model gets the state and the question in one chat
+  prompt, each option has a one-letter label, and the code reads the
+  probability of each label at the first output position. One forward pass
+  is one decision, with no text generation. `jevmanic/local_brain.py` does
+  this with `mlx-lm` on this computer (`--local`, install with
+  `uv sync --extra local`). The model gets the same instructions, options,
+  and JSON state as jev. Qwen3-8B in 4-bit form takes approximately 1.2 s
+  for one decision, with no cost.
+  - On the 261 recorded jev decisions, Qwen3-4B selects a "nearer" move in
+    210 of 226 (jev: 85 %), the key move in 16 of 16, and the same move as
+    jev in 157 of 261. Unlike Laya, it reads the full request.
+  - Real games, one run each (the model is deterministic): Qwen3-4B got 1,
+    2, and 0 keys in caverns 1, 2, and 3. Qwen3-8B got 0 and 2 keys, and
+    **completed The Menagerie** in 64 decisions (jev: approximately 80).
+  - The model is very sure (1.0 against 0.0), thus when it makes a loop it
+    repeats the loop until the run ends. Jev gives soft probabilities, and
+    its answers vary, thus it gets out of a loop. A temperature with a
+    sampled answer (`LOCAL_TEMPERATURE=2`, 2 runs each) gave Central Cavern
+    3.5 keys, The Cold Room 1.5, and The Menagerie 2, with no complete run.
+    A temperature of 4 was worse. The soft answers of jev are not only noise:
+    they are calibrated, and a flat distribution is not the same thing.
 - **The target order is the open problem.** In The Cold Room, the full
   difference between promptB (9 of 10) and promptA (4 to 6 of 10) is
   the order of the keys. We measured two prompt changes for it, 10 runs each:
@@ -964,6 +989,7 @@ result came from the search, not from jev.
 | `jevmanic/instructions/` | the instruction texts: `promptA/`, `promptB/`, and your own folders |
 | `jevmanic/llm_brain.py` | an LLM as the decision maker, for comparison |
 | `jevmanic/laya_brain.py` | Laya, a local typed decision model, as the decision maker, for comparison |
+| `jevmanic/local_brain.py` | a local LLM as the decision maker, with the answer read from its logits, for comparison |
 | `jevmanic/runner.py` | the settings, live run, log file, replay |
 | `jevmanic/options.py` | the run options of the terminal and the measurement |
 | `jevmanic/server.py`, `jevmanic/web/` | viewer |
