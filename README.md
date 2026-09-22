@@ -935,7 +935,9 @@ result came from the search, not from jev.
     its answers vary, thus it gets out of a loop. A temperature with a
     sampled answer (`LOCAL_TEMPERATURE=2`, 2 runs each) gave Central Cavern
     3.5 keys, The Cold Room 1.5, and The Menagerie 2, with no complete run.
-    A temperature of 4 was worse. The soft answers of jev are not only noise:
+    A temperature of 4 was worse. A temperature of 1.5 gave Central Cavern
+    4.5 keys and **The Cold Room complete in 1 of 2 runs** (55 decisions),
+    but The Menagerie 2 keys. The soft answers of jev are not only noise:
     they are calibrated, and a flat distribution is not the same thing.
 - **The target order is the open problem.** In The Cold Room, the full
   difference between promptB (9 of 10) and promptA (4 to 6 of 10) is
