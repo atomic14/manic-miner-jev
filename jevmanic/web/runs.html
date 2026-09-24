@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Recorded runs</title>
+<link rel="stylesheet" href="/static/common.css">
+<style>
+  .filters { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; padding: 10px 14px;
+             border-bottom: 1px solid var(--line); flex: none; }
+  .filters .row label { font-size: 12px; }
+  #group-info { padding: 8px 14px 0; margin: 0; flex: none; }
+  .runs-work { flex: 1; min-height: 0; display: grid; grid-template-columns: minmax(300px, 38%) minmax(0, 1fr);
+               gap: 12px; padding: 12px; }
+  @media (max-width: 1000px) { .runs-work { grid-template-columns: 1fr; } }
+  .side > .fixed h2 { margin: 0; }
+  /* The totals: one row for each cavern, one column for each decision maker. */
+  #totals th { white-space: normal; vertical-align: bottom; min-width: 64px; }
+  #totals td.cell { cursor: pointer; }
+  #totals td.cell:hover { background: #10222a; }
+  #totals td.cell.on { box-shadow: inset 0 0 0 1px var(--accent); background: #10222a; }
+  #totals td.cell .n { color: var(--dim); }
+  #totals td.cell b { font-weight: 600; }
+  #totals td.cell.all b { color: var(--good); }
+  #totals td.cell.none b { color: var(--dim); font-weight: 400; }
+  #totals tfoot td { font-weight: 600; border-top: 1px solid var(--line); }
+  #totals td.cavern { cursor: pointer; } #totals td.cavern:hover { color: var(--accent); }
+  /* The list of runs. */
+  #runs tbody tr { cursor: pointer; }
+  #runs tbody tr.picked { background: #10222a; }
+  #runs td.good { color: var(--good); } #runs td.bad { color: var(--bad); }
+  #runs td.dim, #runs .dim { color: var(--dim); }
+  #runs a.watch { text-decoration: none; }
+  .select-bar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  #empty { padding: 20px; }
+</style>
+</head>
+<body>
+<header class="top" data-page="runs"></header>
+<div id="error"></div>
+
+<div class="filters">
+  <div class="row"><label for="f-group">Group</label><select id="f-group"></select></div>
+  <div class="row"><label for="f-cavern">Cavern</label><select id="f-cavern"></select></div>
+  <div class="row"><label for="f-mode">Decision maker</label><select id="f-mode"></select></div>
+  <div class="row"><label for="f-result">Result</label>
+    <select id="f-result"><option value="">all</option><option value="complete">complete</option>
+      <option value="failed">not complete</option></select></div>
+  <button id="f-clear" title="Show all runs of the group">Clear the filters</button>
+  <div class="spacer"></div>
+  <a href="/experiment">Start a live run →</a>
+</div>
+<p class="hint" id="group-info"></p>
+
+<main class="runs-work">
+  <aside class="side">
+    <div class="fixed">
+      <h2><span>Totals for each cavern</span><small id="totals-note"></small></h2>
+      <p class="hint" style="margin:4px 0 0">Complete runs of all runs, and the mean number of keys. The totals use the group
+         only. Click a cell to show those runs.</p>
+    </div>
+    <div class="pane"><table class="grid" id="totals"></table></div>
+  </aside>
+
+  <section class="side">
+    <div class="fixed">
+      <h2><span id="runs-title">Runs</span><small id="runs-count"></small></h2>
+      <div class="select-bar">
+        <span class="hint" style="margin:0">Click a run to watch it. A replay is free. Tick two runs to compare them.</span>
+        <div class="spacer"></div>
+        <span class="hint" style="margin:0" id="picked-info"></span>
+        <button id="pick-clear" hidden>Clear</button>
+        <button class="primary" id="compare" disabled>Compare 2 runs</button>
+      </div>
+    </div>
+    <div class="pane" style="padding:0">
+      <table class="grid" id="runs"></table>
+      <p class="hint" id="empty" hidden>No run matches the filters.</p>
+    </div>
+  </section>
+</main>
+
+<script src="/static/common.js"></script>
+<script>
+let data = null, picked = [], sortKey = "started", sortUp = false;
+const params = new URLSearchParams(location.search);
+
+const COLUMNS = [
+  // [key, title, sortable, numeric]
+  ["pick", "", false], ["cavern", "Cavern", true], ["mode", "Decision maker", true], ["outcome", "Result", true],
+  ["keys_collected", "Keys", true, true], ["decisions", "Decisions", true, true], ["cost_usd", "Cost", true, true],
+  ["settings", "Settings", false], ["started", "Started", true], ["group", "Group", true], ["watch", "", false],
+];
+
+async function load() {
+  data = await getJson("/api/runs");
+  const groups = data.groups.filter(g => g.runs);
+  $("f-group").innerHTML = `<option value="">all groups (${data.runs.length})</option>` +
+    groups.map(g => `<option value="${escapeHtml(g.id)}">${escapeHtml(g.label)} (${g.runs})</option>`).join("");
+  $("f-cavern").innerHTML = `<option value="">all</option>` +
+    data.caverns.map((name, i) => `<option value="${i}">${i + 1}. ${escapeHtml(name)}</option>`).join("");
+  // The first visit shows the saved example runs: they are part of the project.
+  $("f-group").value = params.has("group") ? params.get("group") : "examples";
+  if ($("f-group").selectedIndex < 0) $("f-group").value = "";
+  fillModes();
+  $("f-cavern").value = params.get("cavern") ?? "";
+  $("f-mode").value = params.get("mode") ?? "";
+  $("f-result").value = params.get("result") ?? "";
+  show();
+}
+
+const inGroup = () => data.runs.filter(r => !$("f-group").value || r.group === $("f-group").value);
+// The decision makers of the group, promptA first.
+function modesOf(runs) {
+  const count = {};
+  runs.forEach(r => count[r.mode] = (count[r.mode] || 0) + 1);
+  return Object.keys(count).sort((a, b) => (b === "promptA") - (a === "promptA") || count[b] - count[a]);
+}
+function fillModes() {
+  const selected = $("f-mode").value;
+  $("f-mode").innerHTML = `<option value="">all</option>` +
+    modesOf(inGroup()).map(m => `<option value="${escapeHtml(m)}">${escapeHtml(m)}</option>`).join("");
+  $("f-mode").value = selected;
+  if ($("f-mode").selectedIndex < 0) $("f-mode").value = "";
+}
+
+function show() {
+  const group = data.groups.find(g => g.id === $("f-group").value);
+  $("group-info").textContent = group ? group.description :
+    "All recorded runs: the saved examples (demo/), your live runs (runs/), and the measurements (folders below runs/).";
+  // The filters go into the address, thus a reload or a link shows the same runs.
+  const query = new URLSearchParams();
+  for (const [name, id] of [["group", "f-group"], ["cavern", "f-cavern"], ["mode", "f-mode"], ["result", "f-result"]])
+    if ($(id).value || (name === "group" && $(id).value === "")) query.set(name, $(id).value);
+  history.replaceState(null, "", "?" + query);
+  showTotals(); showRuns(); showPicked();
+}
+
+function showTotals() {
+  const runs = inGroup(), modes = modesOf(runs);
+  const caverns = [...new Set(runs.map(r => r.cavern))].sort((a, b) => a - b);
+  $("totals-note").textContent = `${runs.length} runs`;
+  const cell = (list, cavern, mode) => {
+    const on = String(cavern) === $("f-cavern").value && mode === $("f-mode").value;
+    if (!list.length) return `<td class="num dim">·</td>`;
+    const complete = list.filter(isComplete).length;
+    const keys = list.reduce((t, r) => t + (r.keys_collected || 0), 0) / list.length;
+    const kind = complete === list.length ? "all" : complete === 0 ? "none" : "";
+    return `<td class="num cell ${kind} ${on ? "on" : ""}" data-cavern="${cavern}" data-mode="${escapeHtml(mode)}"
+      title="${complete} of ${list.length} runs complete, ${keys.toFixed(1)} keys in a run (mean)"><b>${complete}</b><span class="n"> / ${list.length}</span>
+      <span class="n"> · ${keys.toFixed(1)}</span></td>`;
+  };
+  $("totals").innerHTML = `<thead><tr><th>Cavern</th>${modes.map(m => `<th class="num">${escapeHtml(m)}</th>`).join("")}</tr></thead>
+    <tbody>${caverns.map(c => `<tr><td class="cavern" data-cavern="${c}" title="Show the runs of this cavern">${c + 1}. ${escapeHtml(data.caverns[c] || "")}</td>${
+      modes.map(m => cell(runs.filter(r => r.cavern === c && r.mode === m), c, m)).join("")}</tr>`).join("")}</tbody>
+    <tfoot><tr><td>All caverns</td>${modes.map(m => cell(runs.filter(r => r.mode === m), "", m)).join("")}</tr></tfoot>`;
+  $("totals").querySelectorAll("td.cell").forEach(td => td.onclick = () => {
+    $("f-cavern").value = td.dataset.cavern; $("f-mode").value = td.dataset.mode; show();
+  });
+  $("totals").querySelectorAll("td.cavern").forEach(td => td.onclick = () => {
+    $("f-cavern").value = td.dataset.cavern; $("f-mode").value = ""; show();
+  });
+}
+
+function filtered() {
+  const cavern = $("f-cavern").value, mode = $("f-mode").value, result = $("f-result").value;
+  return inGroup().filter(r => (cavern === "" || r.cavern === Number(cavern)) && (!mode || r.mode === mode) &&
+    (!result || (result === "complete") === isComplete(r)));
+}
+function settingsText(r) {
+  const parts = [`dead end check ${r.dead_end_check}`];
+  if (r.key_order) parts.push(`key order ${r.key_order}`);
+  else if (r.key_map === false) parts.push("key decision: facts only");
+  return parts.join(" · ");
+}
+function sortValue(r, key) {
+  if (key === "outcome") return isComplete(r) ? 1 : 0;
+  if (key === "keys_collected") return (r.keys_collected || 0) + (isComplete(r) ? 0.5 : 0);
+  return r[key] ?? -1;
+}
+
+function showRuns() {
+  const runs = filtered().sort((a, b) => {
+    const x = sortValue(a, sortKey), y = sortValue(b, sortKey);
+    return (x < y ? -1 : x > y ? 1 : 0) * (sortUp ? 1 : -1);
+  });
+  const allGroups = !$("f-group").value;
+  const cols = COLUMNS.filter(c => allGroups || c[0] !== "group");
+  $("runs-count").textContent = `${runs.length} shown`;
+  $("empty").hidden = runs.length > 0;
+  const groupLabel = id => (data.groups.find(g => g.id === id) || {label: id}).label;
+  $("runs").innerHTML = `<thead><tr>${cols.map(([key, title, sortable, num]) =>
+    `<th class="${sortable ? "sort" : ""} ${num ? "num" : ""} ${key === sortKey ? "sorted" + (sortUp ? " up" : "") : ""}" data-key="${key}">${title}</th>`).join("")}</tr></thead>
+    <tbody>${runs.map(r => {
+      const cells = {
+        pick: `<td><input type="checkbox" data-file="${escapeHtml(r.file)}" ${picked.includes(r.file) ? "checked" : ""} aria-label="select to compare"></td>`,
+        cavern: `<td>${r.cavern + 1}. ${escapeHtml(r.cavern_name)}</td>`,
+        mode: `<td>${escapeHtml(r.mode)}</td>`,
+        outcome: `<td class="${isComplete(r) ? "good" : "bad"}">${escapeHtml(outcomeText(r.outcome))}</td>`,
+        keys_collected: `<td class="num">${keysText(r)}</td>`,
+        decisions: `<td class="num">${r.decisions ?? "–"}</td>`,
+        cost_usd: `<td class="num dim">${r.cost_usd != null ? "$" + r.cost_usd.toFixed(4) : "–"}</td>`,
+        settings: `<td class="dim">${escapeHtml(settingsText(r))}</td>`,
+        started: `<td class="dim">${r.group === "examples" ? "example" : dateText(r.started)}</td>`,
+        group: `<td class="dim">${escapeHtml(groupLabel(r.group))}</td>`,
+        watch: `<td><a class="watch" href="/watch?file=${encodeURIComponent(r.file)}">Watch →</a></td>`,
+      };
+      return `<tr class="${picked.includes(r.file) ? "picked" : ""}" data-file="${escapeHtml(r.file)}">${cols.map(c => cells[c[0]]).join("")}</tr>`;
+    }).join("")}</tbody>`;
+  $("runs").querySelectorAll("th.sort").forEach(th => th.onclick = () => {
+    sortUp = th.dataset.key === sortKey ? !sortUp : th.dataset.key === "cavern" || th.dataset.key === "mode";
+    sortKey = th.dataset.key; showRuns();
+  });
+  $("runs").querySelectorAll("tbody tr").forEach(tr => tr.onclick = e => {
+    if (e.target.closest("input, a")) return;
+    location.href = "/watch?file=" + encodeURIComponent(tr.dataset.file);
+  });
+  $("runs").querySelectorAll("input[type=checkbox]").forEach(box => box.onchange = () => {
+    const file = box.dataset.file;
+    picked = picked.filter(f => f !== file);
+    if (box.checked) picked = [...picked, file].slice(-2);  // keep the last two
+    showRuns(); showPicked();
+  });
+}
+
+function showPicked() {
+  $("compare").disabled = picked.length !== 2;
+  $("pick-clear").hidden = !picked.length;
+  $("picked-info").textContent = picked.length === 1 ? "1 run selected. Tick one more." :
+    picked.length === 2 ? "2 runs selected." : "";
+}
+$("compare").onclick = () => {
+  location.href = `/compare?a=${encodeURIComponent(picked[0])}&b=${encodeURIComponent(picked[1])}`;
+};
+$("pick-clear").onclick = () => { picked = []; showRuns(); showPicked(); };
+
+$("f-group").onchange = () => { fillModes(); show(); };
+for (const id of ["f-cavern", "f-mode", "f-result"]) $(id).onchange = show;
+$("f-clear").onclick = () => { $("f-cavern").value = $("f-mode").value = $("f-result").value = ""; show(); };
+
+load().catch(error => { $("error").textContent = "The list of runs did not load: " + error; });
+</script>
+</body>
+</html>

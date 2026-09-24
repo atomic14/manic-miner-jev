@@ -3,11 +3,18 @@
 Run:  uv run python -m jevmanic.server
 Then open http://127.0.0.1:8000
 
-The page and the server use one WebSocket. The server sends:
-    text messages     JSON events (header, decision, result, end, runs, status)
+The pages of the viewer:
+    /               the recorded runs: a table with filters, and the totals for each cavern
+    /watch          watch one run: a replay (?file=...) or a live run
+    /compare        two recorded runs side by side (?a=...&b=...)
+    /experiment     ask jev one key question for a situation, or start a live run
+    /instructions   read the instruction sets, and write a new set
+
+The page /watch and the server use one WebSocket. The server sends:
+    text messages     JSON events
     binary messages   one PNG image of the game screen for each game tick
 The page sends JSON commands: start, replay, stop, pause, resume, step, speed.
-Text message types: hello, header, target, decision, result, end, runs, status, error.
+Text message types: hello, header, target, paths, decision, result, end, status, error.
 """
 
 import asyncio
@@ -18,24 +25,126 @@ from pathlib import Path
 import uvicorn
 from dotenv import load_dotenv
 from fastapi import Body, FastAPI, WebSocket, WebSocketDisconnect
-from fastapi.responses import FileResponse, Response
+from fastapi.responses import FileResponse, RedirectResponse, Response
+from fastapi.staticfiles import StaticFiles
 from PIL import Image
 
 from . import lab
-from .brain import DEFAULT_INSTRUCTIONS, Brain, instruction_sets, key_instructions
+from .brain import (
+    DEFAULT_INSTRUCTIONS,
+    FIXED_SETS,
+    INSTRUCTIONS_DIR,
+    MOVE_CRITERIA,
+    Brain,
+    instruction_files,
+    instruction_sets,
+    key_instructions,
+    move_instructions,
+    save_instruction_set,
+)
 from .game import SURVIVAL_DEPTH, Game
 from .key_orders import OPTIMUM_KEY_ORDER
-from .runner import Settings, list_run_groups, list_runs, play_live, play_replay
+from .runner import Settings, list_run_groups, list_runs, play_live, play_replay, read_run
 
 WEB_DIR = Path(__file__).resolve().parent / "web"
 TICK_SECONDS = 0.08  # time for one game tick at speed 1
 
 app = FastAPI()
+app.mount("/static", StaticFiles(directory=WEB_DIR), name="static")
+
+
+@app.middleware("http")
+async def no_stale_pages(request, call_next):
+    """The browser checks each page and script again, thus a changed file has effect at once."""
+    response = await call_next(request)
+    response.headers["Cache-Control"] = "no-cache"
+    return response
 
 
 @app.get("/")
-def index():
-    return FileResponse(WEB_DIR / "index.html")
+def runs_page():
+    return FileResponse(WEB_DIR / "runs.html")
+
+
+@app.get("/watch")
+def watch_page():
+    return FileResponse(WEB_DIR / "watch.html")
+
+
+@app.get("/compare")
+def compare_page():
+    return FileResponse(WEB_DIR / "compare.html")
+
+
+@app.get("/experiment")
+def experiment_page():
+    return FileResponse(WEB_DIR / "experiment.html")
+
+
+@app.get("/lab")
+def lab_page():  # the earlier name of the page
+    return RedirectResponse("/experiment")
+
+
+@app.get("/instructions")
+def instructions_page():
+    return FileResponse(WEB_DIR / "instructions.html")
+
+
+# -- The recorded runs ---------------------------------------------------------------------
+
+
+@app.get("/api/runs")
+async def runs_list():
+    """All recorded runs, their groups, and the names of the caverns."""
+    game, _, lock = _lab_parts()
+    async with lock:
+        caverns = game.cavern_names()
+    runs = list_runs()
+    return {"runs": runs, "groups": list_run_groups(runs), "caverns": caverns}
+
+
+@app.get("/api/run")
+def run_records(file: str):
+    """All records of one log file. A replay page gets the full run before it plays it."""
+    try:
+        return {"records": read_run(file)}
+    except (ValueError, OSError) as error:
+        return {"error": str(error)}
+
+
+# -- The instruction sets ------------------------------------------------------------------
+
+
+@app.get("/api/instructions")
+def instructions_list():
+    """All sets, each with its files and the text that jev gets from them."""
+    sets = []
+    for name in instruction_sets():
+        sets.append(
+            {
+                "name": name,
+                "fixed": name in FIXED_SETS,
+                "files": instruction_files(name),
+                "as_sent": {
+                    "move.txt": move_instructions(name),
+                    "key.txt": key_instructions(name, True),
+                    "key_facts_only.txt": key_instructions(name, False),
+                },
+            }
+        )
+    return {"sets": sets, "default": DEFAULT_INSTRUCTIONS,
+            "key_memory": (INSTRUCTIONS_DIR / "key_memory.txt").read_text(),
+            "move_criteria": MOVE_CRITERIA}
+
+
+@app.post("/api/instructions")
+def instructions_save(msg: dict = Body(...)):
+    try:
+        save_instruction_set(str(msg.get("name", "")), msg.get("files", {}), bool(msg.get("replace", False)))
+    except (ValueError, FileExistsError) as error:
+        return {"error": str(error)}
+    return {"saved": msg["name"], "sets": instruction_sets()}
 
 
 # -- The key decision lab ------------------------------------------------------------------
@@ -47,6 +156,14 @@ def _lab_parts():
     if not _lab:
         _lab.update(game=Game(), brain=Brain(), lock=asyncio.Lock())
     return _lab["game"], _lab["brain"], _lab["lock"]
+
+
+@app.get("/api/lab/info")
+async def lab_info():
+    """The names of the caverns and of the instruction sets."""
+    game, _, lock = _lab_parts()
+    async with lock:
+        return {"caverns": game.cavern_names(), "instruction_sets": instruction_sets()}
 
 
 @app.get("/api/lab/cavern/{cavern}")
@@ -100,11 +217,6 @@ def _png(game: Game) -> bytes:
     return buffer.getvalue()
 
 
-def _runs_message() -> dict:
-    runs = list_runs()
-    return {"type": "runs", "runs": runs, "groups": list_run_groups(runs)}
-
-
 class Session:
     """The status of one viewer connection."""
 
@@ -156,8 +268,6 @@ class Session:
                     # The pause point is after a decision and before its macro runs,
                     # thus the viewer can show the possible moves and the selected one.
                     await self._gate()
-                if data["type"] == "end":
-                    await self.send(_runs_message())
         except Exception as error:  # show the error in the viewer
             await self.send({"type": "error", "message": f"{type(error).__name__}: {error}"})
             raise
@@ -166,6 +276,8 @@ class Session:
         cmd = msg.get("cmd")
         if cmd == "start":
             await self.stop()
+            self.steps = 0
+            self.running.set()
             instructions = str(msg.get("instructions", DEFAULT_INSTRUCTIONS))
             settings = Settings(
                 instructions=instructions if instructions in instruction_sets() else DEFAULT_INSTRUCTIONS,
@@ -178,7 +290,11 @@ class Session:
             self.task = asyncio.create_task(self.run(play_live(self.game, self.brain, cavern, settings, show_paths=True)))
         elif cmd == "replay":
             await self.stop()
-            self.task = asyncio.create_task(self.run(play_replay(self.game, msg["file"], show_paths=True)))
+            # With "paused", the replay stops at its first decision: the viewer jumps to that decision.
+            self.steps = 0
+            self.running.clear() if msg.get("paused") else self.running.set()
+            start = max(0, int(msg.get("start", 0)))
+            self.task = asyncio.create_task(self.run(play_replay(self.game, msg["file"], show_paths=True, start=start)))
         elif cmd == "stop":
             await self.stop()
             await self.send({"type": "status", "status": "stopped"})
@@ -199,14 +315,12 @@ async def websocket(ws: WebSocket):
     session = Session(ws)
     await session.send(
         {
-            **_runs_message(),
             "type": "hello",
             "caverns": session.game.cavern_names(),
             "key_orders": OPTIMUM_KEY_ORDER,
             "instruction_sets": instruction_sets(),
         }
     )
-    await ws.send_bytes(_png(session.game))
     try:
         while True:
             await session.command(json.loads(await ws.receive_text()))

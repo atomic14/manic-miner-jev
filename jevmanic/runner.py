@@ -98,21 +98,43 @@ def list_runs() -> list[dict]:
         else:
             file = str(path.relative_to(RUNS_DIR))
             group = LIVE_GROUP if path.parent == RUNS_DIR else str(path.parent.relative_to(RUNS_DIR))
+        cavern = header.get("cavern", 0)
+        settings = header.get("settings", {})
         runs.append(
             {
                 "file": file,
                 "group": group,
-                "cavern": header.get("cavern", 0),
+                "cavern": cavern,
                 "cavern_name": header.get("cavern_name", "Central Cavern"),
                 "mode": run_mode(header),
                 "started": header.get("started"),
                 "outcome": end.get("outcome"),
                 "decisions": end.get("decisions"),
                 "keys_collected": end.get("keys_collected"),
+                "keys_total": len(OPTIMUM_KEY_ORDER.get(cavern, "")),
                 "cost_usd": end.get("cost_usd"),
+                "dead_end_check": settings.get("survival_depth", 12),
+                "key_map": settings.get("map_key_decision"),  # None: a log file from before this setting
+                "key_order": settings.get("forced_key_order", ""),
             }
         )
     return runs
+
+
+def run_path(file: str) -> Path:
+    """The path of a log file: a saved example (demo/) or a file below runs/."""
+    path = DEMO_DIR / Path(file).name
+    if path.exists():
+        return path
+    path = (RUNS_DIR / file).resolve()
+    if RUNS_DIR.resolve() not in path.parents or not path.is_file():
+        raise ValueError(f"not a run file: {file}")
+    return path
+
+
+def read_run(file: str) -> list[dict]:
+    """All records of a log file: the header, the requests, and the end record."""
+    return [json.loads(line) for line in run_path(file).read_text().splitlines()]
 
 
 def run_mode(header: dict) -> str:
@@ -428,35 +450,41 @@ async def play_live(game: Game, brain, cavern: int = 0, settings: Settings | Non
 # -- A replay --------------------------------------------------------------------------
 
 
-async def play_replay(game: Game, file: str, show_paths: bool = False):
-    path = DEMO_DIR / Path(file).name
-    if not path.exists():
-        path = (RUNS_DIR / file).resolve()
-        if RUNS_DIR.resolve() not in path.parents:
-            raise ValueError(f"not a run file: {file}")
-    records = [json.loads(line) for line in path.read_text().splitlines()]
-    header = {**records[0], "mode": "replay"}
+async def play_replay(game: Game, file: str, show_paths: bool = False, start: int = 0):
+    """Replay a log file. `start` is the first decision to show.
+
+    The decisions before `start` run with no frames and no events. The
+    emulator is fast, thus the viewer can jump to any decision of a run.
+    """
+    records = read_run(file)
+    header = {**records[0], "mode": "replay", "start": start}
     # Version 2: a fall onto a conveyor and a wait on it hold against the conveyor.
     game.hold_against_conveyor = header.get("macros", 1) >= 2
     game.select_cavern(header.get("cavern", 0))
     keys_at_start = len(game.snapshot().keys)
     yield "event", header
-    yield "frame", game
     for record in records[1:]:
+        if record["type"] == "decision" and record["n"] < start:
+            for _ in game.macro_ticks(record["macro"]):
+                pass
+            continue
         if record["type"] == "end":
             yield "event", record
             return
         if record["type"] != "decision":  # a target record has no macro
-            yield "event", record
+            if record.get("n", 0) >= start:
+                yield "event", record
             continue
+        if record["n"] == start:
+            yield "frame", game  # the screen at the first decision that the viewer shows
         logged = record.pop("result", None)
         if show_paths:
             yield "event", {"type": "paths", "n": record["n"], "paths": game.macro_paths()}
         yield "event", record
-        start = game.tick_count
+        first_tick = game.tick_count
         for _ in game.macro_ticks(record["macro"]):
             yield "frame", game
-        result = _result(game, record["n"], game.tick_count - start, keys_at_start)
+        result = _result(game, record["n"], game.tick_count - first_tick, keys_at_start)
         if logged and logged["willy"] != result["willy"]:
             # The replay must give the same game as the live run.
             result["replay_mismatch"] = True

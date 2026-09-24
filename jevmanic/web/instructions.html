@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Instruction sets</title>
+<link rel="stylesheet" href="/static/common.css">
+<style>
+  .bar-top { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; padding: 10px 14px;
+             border-bottom: 1px solid var(--line); flex: none; }
+  .files { display: flex; gap: 2px; }
+  .files button { border-radius: 6px; }
+  .files button.on { border-color: var(--accent); background: #10222a; font-weight: 600; }
+  .files button.changed::after { content: " •"; color: var(--warn); }
+  .cols { flex: 1; min-height: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; padding: 12px; }
+  .cols.single { grid-template-columns: minmax(0, 1fr); }
+  @media (max-width: 1000px) { .cols { grid-template-columns: 1fr; } }
+  .col { display: flex; flex-direction: column; min-height: 0; gap: 8px; }
+  .col[hidden] { display: none; }
+  .col h2 { margin: 0; }
+  #edit { flex: 1; min-height: 240px; }
+  .reading { flex: 1; min-height: 0; overflow: auto; background: #0b0d12; border: 1px solid var(--line); border-radius: 5px;
+             padding: 10px 12px; line-height: 1.6; }
+  .reading p { margin: 0 0 0.9em; max-width: 80ch; }
+  .reading .after { color: var(--dim); border-top: 1px dashed var(--line); padding-top: 8px; }
+  .save { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding: 10px 14px; border-top: 1px solid var(--line); flex: none; }
+  #save-name { width: 14em; }
+  #save-status.good { color: var(--good); } #save-status.bad { color: var(--bad); }
+  .crumbs { font-size: 13px; color: var(--dim); }
+  #edit[readonly] { color: #aab3c2; cursor: default; }
+  #fixed-note { color: var(--warn); }
+  #fixed-note:empty { display: none; }
+  /* The differences between the two texts. */
+  .only-edit { background: rgba(0, 215, 0, 0.22); border-radius: 2px; }
+  .only-compare { background: rgba(255, 138, 61, 0.3); border-radius: 2px; }
+  .diff-legend { font-size: 12px; color: var(--dim); }
+  .diff-legend span { padding: 0 4px; border-radius: 2px; }
+</style>
+</head>
+<body>
+<header class="top" data-page="experiment"></header>
+<div id="error"></div>
+
+<div class="bar-top">
+  <span class="crumbs"><a href="/experiment">Experiment</a> › Instruction sets</span>
+  <div class="row"><label for="set">Set</label><select id="set"></select></div>
+  <div class="files" id="files">
+    <button data-file="move.txt" title="File move.txt. jev gets this text before each move.">Move question</button>
+    <button data-file="key.txt" title="File key.txt. The key question when the state has the map of the cavern (normal).">Key question, with the map</button>
+    <button data-file="key_facts_only.txt" title="File key_facts_only.txt. The key question when the state has no map.">Key question, facts only</button>
+  </div>
+  <div class="row"><label for="compare">Compare with</label><select id="compare"></select></div>
+  <label id="diff-box"><input type="checkbox" id="diff" checked> mark the differences</label>
+</div>
+<p class="hint" style="padding:8px 14px 0;margin:0"><span id="file-info"></span> <b id="fixed-note"></b></p>
+
+<div class="cols" id="cols">
+  <div class="col">
+    <h2><span id="edit-title">–</span><small id="edit-count"></small></h2>
+    <textarea id="edit" spellcheck="true"></textarea>
+    <details><summary>The options of this question (they come from the code, and are the same for each set)</summary>
+      <div class="question"><dl id="criteria"></dl></div></details>
+  </div>
+  <div class="col" id="compare-col">
+    <h2><span id="compare-title">–</span><small id="compare-count"></small></h2>
+    <div class="diff-legend" id="diff-legend"></div>
+    <div class="reading" id="compare-text"></div>
+  </div>
+</div>
+
+<div class="save">
+  <span class="hint" style="margin:0">jev reads the words as they are: do not use markup. A line end has no meaning: jev
+    gets one paragraph. A name in <code>`back quotes`</code> refers to a field of the state.</span>
+  <div class="spacer"></div>
+  <button id="revert" disabled>Put back the text of the set</button>
+  <input type="text" id="save-name" placeholder="name of the new set" aria-label="name of the new set">
+  <button class="primary" id="save-new">Save as a new set</button>
+  <button id="save-over" hidden>Save to this set</button>
+  <a id="use-set" href="/experiment">Use this set in a live run →</a>
+  <span id="save-status"></span>
+</div>
+
+<script src="/static/common.js"></script>
+<script>
+const FILE_INFO = {
+  "move.txt": "File move.txt. jev gets this text with the move question, before each move. The options are the moves that the code offers.",
+  "key.txt": "File key.txt. jev gets this text with the key question when the state has the map of the cavern (the normal setting). The shared text on the right goes after it.",
+  "key_facts_only.txt": "File key_facts_only.txt. jev gets this text with the key question when the state has no map (the setting \"facts only\"). The shared text on the right goes after it.",
+};
+let data = null, file = "move.txt", drafts = {};  // drafts: the changed texts of the selected set, for each file
+
+async function load(selected) {
+  data = await getJson("/api/instructions");
+  const options = data.sets.map(s => `<option value="${s.name}">${s.name}${s.fixed ? " (fixed)" : ""}</option>`).join("");
+  $("set").innerHTML = options;
+  $("compare").innerHTML = `<option value="">nothing</option>` + options;
+  $("set").value = selected && data.sets.some(s => s.name === selected) ? selected : data.default;
+  if (!$("compare").dataset.touched) $("compare").value = $("set").value === "promptB" ? "promptA" : "promptB";
+  drafts = {};
+  show();
+}
+const current = () => data.sets.find(s => s.name === $("set").value);
+
+// A text in the form that jev gets it: one paragraph, with the names of fields as code.
+// With `mine`, the words that are different from that text have a colour.
+function reading(text, after, mine) {
+  const paragraph = mine === undefined ? withCode(text.split(/\s+/).join(" ").trim()) : diffHtml(mine, text);
+  return `<p>${paragraph}</p>` + (after ? `<p class="after">${withCode(after.split(/\s+/).join(" ").trim())}</p>` : "");
+}
+// The words of two texts, with the longest common sequence. The words that are only in one text get a colour.
+function diffHtml(mine, other) {
+  const a = mine.trim().split(/\s+/).filter(Boolean), b = other.trim().split(/\s+/).filter(Boolean);
+  const table = Array.from({length: a.length + 1}, () => new Uint16Array(b.length + 1));
+  for (let i = a.length - 1; i >= 0; i--)
+    for (let j = b.length - 1; j >= 0; j--)
+      table[i][j] = a[i] === b[j] ? table[i + 1][j + 1] + 1 : Math.max(table[i + 1][j], table[i][j + 1]);
+  // The steps: the same words, words only in the compared set, or words only in the edited set.
+  let steps = [];
+  const add = (kind, word) => {
+    const last = steps[steps.length - 1];
+    if (last && last.kind === kind) last.words.push(word); else steps.push({kind, words: [word]});
+  };
+  let i = 0, j = 0;
+  while (i < a.length || j < b.length) {
+    if (i < a.length && j < b.length && a[i] === b[j]) { add("same", a[i]); i++; j++; }
+    else if (j < b.length && (i >= a.length || table[i][j + 1] >= table[i + 1][j])) { add("only-compare", b[j]); j++; }
+    else { add("only-edit", a[i]); i++; }
+  }
+  // A short run of the same words between two changes ("the", "a") cuts one change into small parts.
+  // Put such a run into the change on the two sides, thus each change shows as one block.
+  const SHORT = 3;
+  for (let changed = true; changed;) {
+    changed = false;
+    const groups = [];  // each group: {same: [...]} or {edit: [...], compare: [...]}
+    for (const step of steps) {
+      const last = groups[groups.length - 1];
+      if (step.kind === "same") groups.push({same: step.words});
+      else if (last && !last.same) last[step.kind === "only-edit" ? "edit" : "compare"].push(...step.words);
+      else groups.push(step.kind === "only-edit" ? {edit: [...step.words], compare: []} : {edit: [], compare: [...step.words]});
+    }
+    for (let k = 1; k < groups.length - 1; k++) {
+      const g = groups[k];
+      if (g.same && g.same.length <= SHORT && !groups[k - 1].same && !groups[k + 1].same) {
+        const before = groups[k - 1], after = groups[k + 1];
+        before.edit.push(...g.same, ...after.edit); before.compare.push(...g.same, ...after.compare);
+        groups.splice(k, 2); changed = true; break;
+      }
+    }
+    steps = groups.flatMap(g => g.same ? [{kind: "same", words: g.same}] :
+      [{kind: "only-compare", words: g.compare}, {kind: "only-edit", words: g.edit}].filter(x => x.words.length));
+  }
+  return steps.map(step => step.kind === "same" ? withCode(step.words.join(" ")) :
+    `<span class="${step.kind}">${withCode(step.words.join(" "))}</span>`).join(" ");
+}
+const words = text => text.trim().split(/\s+/).filter(Boolean).length;
+const keyMemory = () => file === "move.txt" ? "" : data.key_memory;
+
+function show() {
+  const set = current();
+  const text = drafts[file] ?? set.files[file];
+  $("edit").value = text;
+  // A fixed set is read only. The results in the README come from it.
+  $("edit").readOnly = set.fixed;
+  $("edit-title").textContent = `${set.name} · ${FILE_NAMES[file]}`;
+  showCounts();
+  $("file-info").textContent = FILE_INFO[file];
+  $("fixed-note").textContent = set.fixed ? `The set ${set.name} is fixed, because the results in the README come from it. ` +
+    `To change it, type a name below and click "Copy as a new set".` : "";
+  $("save-new").textContent = set.fixed ? "Copy as a new set" : "Save as a new set";
+  $("files").querySelectorAll("button").forEach(b => b.classList.toggle("on", b.dataset.file === file));
+  // The options of the key question are the keys of the cavern: the code makes one option for each key.
+  $("criteria").innerHTML = file === "move.txt"
+    ? Object.entries(data.move_criteria).map(([k, v]) => `<dt>${k}</dt><dd>${withCode(v)}</dd>`).join("")
+    : `<dt>key_A, key_B, …</dt><dd>The key or switch that <code>keys.key_A</code> describes. One option for each key that is left.</dd>`;
+  const other = data.sets.find(s => s.name === $("compare").value);
+  $("compare-col").hidden = !other; $("cols").classList.toggle("single", !other);
+  $("diff-box").hidden = !other;
+  showCompare();
+  $("save-over").hidden = set.fixed;
+  $("use-set").href = `/experiment?set=${encodeURIComponent(set.name)}&live=1`;
+}
+function showCompare() {
+  const other = data.sets.find(s => s.name === $("compare").value);
+  if (!other) return;
+  const mark = $("diff").checked && other.name !== current().name;
+  $("compare-title").textContent = `${other.name} · ${FILE_NAMES[file]}`;
+  $("compare-count").textContent = `${words(other.files[file])} words`;
+  $("compare-text").innerHTML = reading(other.files[file], keyMemory(), mark ? $("edit").value : undefined);
+  $("diff-legend").innerHTML = mark ? `<span class="only-edit">only in ${escapeHtml(current().name)}` +
+    `${showCounts().includes(file) ? " (your text)" : ""}</span> <span class="only-compare">only in ${escapeHtml(other.name)}</span>` : "";
+}
+function showCounts() {
+  const set = current(), changed = Object.keys(drafts).filter(f => drafts[f].trim() !== set.files[f].trim());
+  $("edit").classList.toggle("edited", changed.includes(file));
+  $("edit-count").textContent = `${words($("edit").value)} words` + (keyMemory() ? ` + ${words(keyMemory())} shared words after it` : "") +
+    (changed.includes(file) ? " · changed" : "");
+  $("files").querySelectorAll("button").forEach(b => b.classList.toggle("changed", changed.includes(b.dataset.file)));
+  $("revert").disabled = !changed.length;
+  return changed;
+}
+
+const FILE_NAMES = {"move.txt": "move question", "key.txt": "key question, with the map", "key_facts_only.txt": "key question, facts only"};
+let diffTimer = null;
+$("edit").oninput = () => {
+  drafts[file] = $("edit").value; showCounts(); $("save-status").textContent = "";
+  clearTimeout(diffTimer); diffTimer = setTimeout(showCompare, 250);
+};
+$("diff").onchange = showCompare;
+// A change that is not saved: the browser asks before the person leaves the page.
+window.addEventListener("beforeunload", e => { if (data && showCounts().length) { e.preventDefault(); e.returnValue = ""; } });
+$("files").querySelectorAll("button").forEach(b => b.onclick = () => { file = b.dataset.file; show(); });
+$("set").onchange = () => {
+  if (showCounts().length && !confirm("Your changes to this set are not saved. Discard them?")) return;
+  drafts = {}; show();
+  history.replaceState(null, "", "?set=" + encodeURIComponent($("set").value));
+};
+$("compare").onchange = () => { $("compare").dataset.touched = "1"; show(); };
+$("revert").onclick = () => { drafts = {}; show(); };
+
+async function save(name, replace) {
+  const set = current(), files = {};
+  for (const f of Object.keys(set.files)) files[f] = drafts[f] ?? set.files[f];
+  const reply = await getJson("/api/instructions", {name, files, replace});
+  const status = $("save-status");
+  if (reply.error) { status.className = "bad"; status.textContent = reply.error + "."; return; }
+  await load(name);
+  history.replaceState(null, "", "?set=" + encodeURIComponent(name));
+  status.className = "good";
+  status.textContent = `Saved in jevmanic/instructions/${name}/. Measure it with: uv run python -m experiments.measure --caverns 1,2,3 --runs 10 --label ${name} --instructions ${name}`;
+}
+$("save-new").onclick = () => {
+  const name = $("save-name").value.trim();
+  if (!name) { $("save-status").className = "bad"; $("save-status").textContent = "Type a name for the new set."; $("save-name").focus(); return; }
+  save(name, false);
+};
+$("save-over").onclick = () => save(current().name, true);
+
+load(new URLSearchParams(location.search).get("set"));
+</script>
+</body>
+</html>

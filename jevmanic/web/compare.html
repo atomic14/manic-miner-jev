@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Compare two runs</title>
+<link rel="stylesheet" href="/static/common.css">
+<style>
+  :root { --run-a: #00d7d7; --run-b: #ff8a3d; }
+  .cmp-work { flex: 1; min-height: 0; display: grid; grid-template-columns: minmax(0, 1fr) minmax(420px, 44%);
+              gap: 12px; padding: 12px; }
+  @media (max-width: 1000px) { .cmp-work { grid-template-columns: 1fr; } }
+  .left { display: flex; flex-direction: column; gap: 10px; min-height: 0; overflow: auto; }
+  .cards { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .card h2 { margin-bottom: 6px; text-transform: none; letter-spacing: 0; font-size: 14px; color: var(--text); }
+  .card h2 .tag { display: inline-block; width: 18px; height: 18px; line-height: 18px; text-align: center; border-radius: 4px;
+                  color: #001; font-weight: 700; margin-right: 6px; letter-spacing: 0; }
+  .card.a .tag { background: var(--run-a); } .card.b .tag { background: var(--run-b); }
+  .card .big { font-size: 16px; font-weight: 600; }
+  .card .good { color: var(--good); } .card .bad { color: var(--bad); }
+  .maps { display: grid; gap: 10px; grid-template-columns: 1fr; }
+  .maps.two { grid-template-columns: 1fr 1fr; }
+  .maps canvas { width: 100%; image-rendering: pixelated; background: #000; border-radius: 6px; display: block; }
+  #diffs li { margin-bottom: 4px; }
+  #diffs code { white-space: pre-wrap; }
+  .tl { display: grid; grid-template-columns: 18px minmax(0, 1fr); gap: 4px 6px; align-items: end; }
+  .tl .lane { display: flex; gap: 1px; height: 34px; align-items: flex-end; }
+  .tl .lane div { flex: 1 1 0; min-width: 1px; max-width: 12px; border-radius: 1px 1px 0 0; cursor: pointer; }
+  .tl .lane div.dead { background: var(--bad) !important; height: 100% !important; }
+  .tl .lane div.split { box-shadow: 0 0 0 1px #fff; }
+  .tl b { font-size: 12px; text-align: center; border-radius: 3px; color: #001; }
+  #table td.a { color: var(--run-a); } #table td.b { color: var(--run-b); }
+  #table tr.differ td { background: #231c12; }
+  #table tr.first td { box-shadow: inset 0 2px var(--warn); }
+  #table tr.key td { color: var(--warn); font-style: italic; }
+  #table tbody tr { cursor: pointer; }
+  #table .dim { color: var(--dim); }
+</style>
+</head>
+<body>
+<header class="top" data-page="runs"></header>
+<div id="error"></div>
+
+<main class="cmp-work">
+  <section class="left">
+    <div class="cards"><div class="panel card a" id="card-a"></div><div class="panel card b" id="card-b"></div></div>
+    <div class="panel">
+      <h2><span>Where the runs differ</span></h2>
+      <ul id="diffs" style="margin:0;padding-left:18px"></ul>
+    </div>
+    <div class="panel">
+      <h2><span>The path of Willy</span><small>one point after each move · ● key collected · ✕ Willy died</small></h2>
+      <div class="maps" id="maps"></div>
+    </div>
+    <div class="panel">
+      <h2><span>Timelines</span><small>one bar for each move decision · height: confidence · white box: the first difference</small></h2>
+      <div class="tl" id="timelines"></div>
+    </div>
+  </section>
+  <aside class="side">
+    <div class="fixed">
+      <h2 style="margin:0"><span>The decisions side by side</span></h2>
+      <p class="hint" style="margin:4px 0 0">A coloured row: the two runs select a different move, or jev got a different state.
+         Click a move to watch that decision in its run.</p>
+    </div>
+    <div class="pane" style="padding:0"><table class="grid" id="table"></table></div>
+  </aside>
+</main>
+
+<script src="/static/common.js"></script>
+<script>
+const params = new URLSearchParams(location.search);
+const runs = [{id: "a", file: params.get("a")}, {id: "b", file: params.get("b")}];
+
+async function load() {
+  if (!runs[0].file || !runs[1].file) {
+    $("error").textContent = "Select two runs on the page Runs, then click Compare.";
+    return;
+  }
+  for (const run of runs) {
+    const reply = await getJson("/api/run?file=" + encodeURIComponent(run.file));
+    if (reply.error) { $("error").textContent = `The run ${run.file} did not load: ${reply.error}`; return; }
+    const records = reply.records;
+    run.header = records[0];
+    run.end = records.find(r => r.type === "end") || {outcome: "incomplete log"};
+    run.targets = records.filter(r => r.type === "target");
+    run.decisions = records.filter(r => r.type === "decision");
+    let keys = 0;
+    run.decisions.forEach(d => {
+      d.gotKey = d.result && d.result.keys_collected > keys;
+      if (d.result) keys = d.result.keys_collected;
+    });
+  }
+  showCards(); showDiffs(); await showMaps(); showTimelines(); showTable();
+}
+
+const watchUrl = (run, n) => `/watch?file=${encodeURIComponent(run.file)}` + (n ? `&n=${n}` : "");
+
+function showCards() {
+  for (const run of runs) {
+    const h = run.header, st = h.settings || {}, good = run.end.outcome === "cavern complete";
+    const tokens = run.decisions.reduce((t, d) => t + d.input_tokens, 0) + run.targets.reduce((t, d) => t + (d.input_tokens || 0), 0);
+    $("card-" + run.id).innerHTML = `<h2><span><span class="tag">${run.id.toUpperCase()}</span>${escapeHtml(makerOf(h))}</span>
+        <a href="${watchUrl(run)}">Watch →</a></h2>
+      <div class="big ${good ? "good" : "bad"}">${escapeHtml(outcomeText(run.end.outcome))} · ${run.end.keys_collected ?? 0} keys</div>
+      <div class="meta">
+        <span>cavern <b>${(h.cavern ?? 0) + 1}. ${escapeHtml(h.cavern_name || "Central Cavern")}</b></span>
+        <span>decisions <b>${run.decisions.length}</b></span>
+        <span>key decisions <b>${run.targets.filter(t => !t.forced).length}</b></span>
+        <span>cost <b>$${(run.end.cost_usd ?? tokens * USD_PER_TOKEN).toFixed(4)}</b></span>
+        <span>dead end check <b>${st.survival_depth ?? 12}</b></span>
+        ${st.forced_key_order ? `<span>key order <b>${escapeHtml(st.forced_key_order)}</b></span>` : ""}
+        <span>started <b>${dateText(h.started)}</b></span>
+      </div>
+      <p class="hint" style="margin:6px 0 0">${escapeHtml(run.file)}</p>`;
+  }
+}
+
+// The first decision where the state or the selected move is different.
+function firstDifference() {
+  const [a, b] = runs, n = Math.min(a.decisions.length, b.decisions.length);
+  let state = null, move = null;
+  for (let i = 0; i < n; i++) {
+    if (state === null && JSON.stringify(a.decisions[i].state) !== JSON.stringify(b.decisions[i].state)) state = i;
+    if (move === null && a.decisions[i].macro !== b.decisions[i].macro) move = i;
+    if (state !== null && move !== null) break;
+  }
+  return {state, move, first: [state, move].filter(x => x !== null).reduce((x, y) => Math.min(x, y), Infinity)};
+}
+
+function showDiffs() {
+  const [a, b] = runs, items = [];
+  if (a.header.cavern !== b.header.cavern) items.push("The runs are in <b>different caverns</b>.");
+  // The settings and the questions that are different.
+  const sa = a.header.settings || {}, sb = b.header.settings || {};
+  const changed = [...new Set([...Object.keys(sa), ...Object.keys(sb)])]
+    .filter(k => JSON.stringify(sa[k]) !== JSON.stringify(sb[k]));
+  if (changed.length) items.push("Different settings: " + changed.map(k =>
+    `<code>${escapeHtml(k)}</code> (A ${escapeHtml(JSON.stringify(sa[k]) ?? "–")}, B ${escapeHtml(JSON.stringify(sb[k]) ?? "–")})`).join(", ") + ".");
+  if ((a.header.decision_maker || "jev") !== (b.header.decision_maker || "jev"))
+    items.push(`Different decision makers: A ${escapeHtml(a.header.decision_maker || "jev")}, B ${escapeHtml(b.header.decision_maker || "jev")}.`);
+  const qa = JSON.stringify(a.header.questions), qb = JSON.stringify(b.header.questions);
+  const ka = JSON.stringify(a.header.target_questions), kb = JSON.stringify(b.header.target_questions);
+  items.push(qa === qb ? "The move question (instructions and options) is the same." :
+    "The move question is <b>different</b>. Watch each run to read its question.");
+  if (a.header.target_questions || b.header.target_questions)
+    items.push(ka === kb ? "The key question is the same." : "The key question is <b>different</b>.");
+  const d = firstDifference(), n = Math.min(a.decisions.length, b.decisions.length);
+  if (d.first === Infinity) {
+    items.push(`The first ${n} decisions are the same in the two runs` +
+      (a.decisions.length === b.decisions.length ? "." : `. Then one run continues: A has ${a.decisions.length}, B has ${b.decisions.length}.`));
+  } else {
+    const i = d.first, da = a.decisions[i], db = b.decisions[i];
+    let text = i === 0 ? `The runs are different from the start. At <b>decision 1</b>, ` :
+      `The runs are the same up to decision ${i}. At <b>decision ${i + 1}</b>, `;
+    text += d.state === i ? "jev got a different state, and " : "jev got the same state, and ";
+    text += da.macro === db.macro ? `the two runs select <b>${da.macro}</b>.` :
+      `A selects <b>${da.macro}</b> (${(da.probabilities[da.macro] ?? 0).toFixed(2)}), B selects <b>${db.macro}</b> (${(db.probabilities[db.macro] ?? 0).toFixed(2)}).`;
+    if (d.state !== i && da.macro !== db.macro) {
+      text += ` In A, jev gave ${db.macro} ${(da.probabilities[db.macro] ?? 0).toFixed(2)}. In B, jev gave ${da.macro} ${(db.probabilities[da.macro] ?? 0).toFixed(2)}.`;
+    }
+    items.push(text);
+  }
+  const keyOrder = run => run.targets.filter(t => !t.forced).map(t => t.choice.replace("key_", "")).join(" → ") || "none";
+  items.push(`The keys that jev selected, in order: A: <b>${escapeHtml(keyOrder(a))}</b>. B: <b>${escapeHtml(keyOrder(b))}</b>.`);
+  $("diffs").innerHTML = items.map(t => `<li>${t}</li>`).join("");
+}
+
+// The cavern with the path of each run: the middle of Willy after each move.
+async function showMaps() {
+  const [a, b] = runs, same = a.header.cavern === b.header.cavern;
+  const groups = same ? [[a, b]] : [[a], [b]];
+  $("maps").className = "maps" + (same ? "" : " two");
+  $("maps").innerHTML = groups.map((_, i) => `<canvas width="768" height="576" id="map-${i}"></canvas>`).join("");
+  for (const [i, group] of groups.entries()) {
+    const cavern = group[0].header.cavern ?? 0;
+    const bitmap = await createImageBitmap(await (await fetch(`/api/lab/screen/${cavern}.png`)).blob());
+    const c = $("map-" + i).getContext("2d");
+    c.setTransform(SCALE, 0, 0, SCALE, 0, 0); c.imageSmoothingEnabled = false;
+    c.drawImage(bitmap, 0, 0);
+    c.fillStyle = "rgba(0,0,0,0.45)"; c.fillRect(0, 0, 256, 128);  // the paths are brighter than the cavern
+    for (const run of group) {
+      const tone = color("run-" + run.id), offset = same ? (run.id === "a" ? -1 : 1) : 0;
+      const points = run.decisions.filter(d => d.result).map(d => [d.result.willy[0] * 8 + 8 + offset, d.result.willy[1] * 8 + 8 + offset]);
+      c.strokeStyle = tone; c.lineWidth = 1; c.globalAlpha = 0.85;
+      c.beginPath(); points.forEach((p, k) => k ? c.lineTo(p[0], p[1]) : c.moveTo(p[0], p[1])); c.stroke();
+      c.globalAlpha = 1; c.fillStyle = tone;
+      points.forEach(p => c.fillRect(p[0] - 0.75, p[1] - 0.75, 1.5, 1.5));
+      run.decisions.forEach(d => {
+        if (!d.result) return;
+        const x = d.result.willy[0] * 8 + 8 + offset, y = d.result.willy[1] * 8 + 8 + offset;
+        if (d.gotKey) { c.beginPath(); c.arc(x, y, 3, 0, 2 * Math.PI); c.fillStyle = color("good"); c.fill(); c.strokeStyle = tone; c.stroke(); }
+        if (d.result.dead) {
+          c.strokeStyle = color("bad"); c.lineWidth = 1.2;
+          c.beginPath(); c.moveTo(x - 4, y - 4); c.lineTo(x + 4, y + 4); c.moveTo(x + 4, y - 4); c.lineTo(x - 4, y + 4); c.stroke();
+        }
+      });
+    }
+  }
+}
+
+function showTimelines() {
+  const d = firstDifference();
+  $("timelines").innerHTML = runs.map(run => `<b style="background:var(--run-${run.id})">${run.id.toUpperCase()}</b>
+    <div class="lane">${run.decisions.map(x => `<div data-n="${x.n}" data-run="${run.id}"
+      class="${x.result && x.result.dead ? "dead" : ""} ${x.n === d.first ? "split" : ""}"
+      style="background:${color(x.macro)};height:${Math.max(8, x.confidence * 100)}%"
+      title="Decision ${x.n + 1}: ${x.macro} (${x.confidence.toFixed(2)})"></div>`).join("")}</div>`).join("");
+  $("timelines").querySelectorAll(".lane div").forEach(el => el.onclick = () =>
+    location.href = watchUrl(runs.find(r => r.id === el.dataset.run), Number(el.dataset.n)));
+}
+
+function showTable() {
+  const [a, b] = runs, d = firstDifference();
+  const count = Math.max(a.decisions.length, b.decisions.length);
+  const cells = (run, x) => !x ? `<td colspan="3" class="dim">–</td>` :
+    `<td class="${run.id}" data-run="${run.id}">${x.macro}</td><td class="num" data-run="${run.id}">${x.confidence.toFixed(2)}</td>` +
+    `<td class="dim" data-run="${run.id}">${x.result ? (x.result.dead ? "died" : `column ${x.result.willy[0]}, row ${x.result.willy[1]} · ${x.result.keys_collected} keys`) : "–"}</td>`;
+  const keyRow = (i) => {
+    const ta = a.targets.find(t => t.n === i && !t.forced), tb = b.targets.find(t => t.n === i && !t.forced);
+    if (!ta && !tb) return "";
+    return `<tr class="key"><td></td><td colspan="3">${ta ? "key decision: " + ta.choice : ""}</td>
+      <td colspan="3">${tb ? "key decision: " + tb.choice : ""}</td></tr>`;
+  };
+  let rows = "";
+  for (let i = 0; i < count; i++) {
+    const xa = a.decisions[i], xb = b.decisions[i];
+    const differ = !xa || !xb || xa.macro !== xb.macro || JSON.stringify(xa.state) !== JSON.stringify(xb.state);
+    rows += keyRow(i) + `<tr class="${differ ? "differ" : ""} ${i === d.first ? "first" : ""}" data-n="${i}">
+      <td class="num">${i + 1}</td>${cells(a, xa)}${cells(b, xb)}</tr>`;
+  }
+  $("table").innerHTML = `<thead><tr><th class="num">#</th><th>A move</th><th class="num">conf.</th><th>A after</th>
+    <th>B move</th><th class="num">conf.</th><th>B after</th></tr></thead><tbody>${rows}</tbody>`;
+  $("table").querySelectorAll("tbody tr[data-n]").forEach(tr => tr.onclick = e => {
+    const n = Number(tr.dataset.n), td = e.target.closest("td[data-run]");
+    const run = td && td.dataset.run === "b" ? b : a;
+    location.href = watchUrl(run, Math.min(n, run.decisions.length - 1));
+  });
+}
+
+load();
+</script>
+</body>
+</html>

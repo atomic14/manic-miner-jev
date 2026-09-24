@@ -19,7 +19,9 @@ folder is one set of instructions:
 
 The instructions are the only difference between two sets: the state, the
 options, and the schedule of the requests are the same. To try a new text,
-copy a folder, change the files, and run with `--instructions <folder>`.
+copy a folder, change the files, and run with `--instructions <folder>`. The
+page /instructions of the viewer can also save a new set. It cannot change a
+set in FIXED_SETS.
 
 Each folder has 3 files: `move.txt`, `key.txt` (the key state has the map),
 and `key_facts_only.txt` (the key state has no map). `key_memory.txt` goes
@@ -30,6 +32,7 @@ Do not change a text with no measurement. A shorter text and added facts made
 the results worse more than one time (see the README).
 """
 
+import re
 import time
 from dataclasses import asdict, dataclass, field
 from functools import cache
@@ -47,6 +50,36 @@ def instruction_sets() -> list[str]:
     """The names of the instruction folders. The default set is first."""
     names = sorted(p.name for p in INSTRUCTIONS_DIR.iterdir() if (p / "move.txt").exists())
     return sorted(names, key=lambda name: name != DEFAULT_INSTRUCTIONS)
+
+
+# The files of one set, and the sets that the page cannot change. The results in
+# the README come from these sets, thus a change must be a new set.
+SET_FILES = ("move.txt", "key.txt", "key_facts_only.txt")
+FIXED_SETS = ("promptA", "promptB", "promptC")
+SET_NAME = re.compile(r"[A-Za-z0-9_-]{1,40}")
+
+
+def instruction_files(name: str) -> dict[str, str]:
+    """The files of one set as they are on disk, with their line ends."""
+    return {file: (INSTRUCTIONS_DIR / name / file).read_text() for file in SET_FILES}
+
+
+def save_instruction_set(name: str, texts: dict[str, str], replace_set: bool = False):
+    """Write a new set of instruction files. A fixed set stays as it is."""
+    if not SET_NAME.fullmatch(name):
+        raise ValueError("a set name has 1 to 40 letters, digits, '-' or '_'")
+    if name in FIXED_SETS:
+        raise ValueError(f"{name} is a fixed set. Save your text as a new set")
+    folder = INSTRUCTIONS_DIR / name
+    if folder.exists() and not replace_set:
+        raise FileExistsError(f"the set {name} exists")
+    missing = [file for file in SET_FILES if not str(texts.get(file, "")).strip()]
+    if missing:
+        raise ValueError("each text must have words: " + ", ".join(missing))
+    folder.mkdir(exist_ok=True)
+    for file in SET_FILES:
+        (folder / file).write_text(str(texts[file]).strip() + "\n")
+    _text.cache_clear()
 
 
 @cache
