@@ -1,0 +1,272 @@
+{
+  "label": "c1-correct-info",
+  "settings": {
+    "instructions": "promptD",
+    "map_key_decision": true,
+    "key_decision_every": 25,
+    "survival_depth": 4,
+    "forced_key_order": "",
+    "random_moves": false,
+    "rule": "",
+    "progress_facts": true
+  },
+  "caverns": [
+    {
+      "cavern": 1,
+      "name": "Central Cavern",
+      "runs": 20,
+      "complete": 18,
+      "mean_keys": 4.5,
+      "mean_decisions_complete": 107,
+      "tokens_per_call": 1401,
+      "low_confidence_rate": 0.48,
+      "mean_cost_usd": 0.0059,
+      "other_outcomes": {
+        "Willy died": 1,
+        "stuck: no progress": 1
+      }
+    }
+  ],
+  "runs": [
+    {
+      "cavern": 0,
+      "file": "c1-correct-info/20260927-183457-cavern-01-central-cavern-promptD.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 73,
+      "tokens": 93587,
+      "cost_usd": 0.003931,
+      "mean_latency_ms": 300,
+      "low_confidence": 24,
+      "jev_calls": 66
+    },
+    {
+      "cavern": 0,
+      "file": "c1-correct-info/20260927-183457-cavern-01-central-cavern-promptD-2.jsonl",
+      "outcome": "Willy died",
+      "keys": 0,
+      "decisions": 190,
+      "tokens": 230957,
+      "cost_usd": 0.0097,
+      "mean_latency_ms": 281,
+      "low_confidence": 112,
+      "jev_calls": 165
+    },
+    {
+      "cavern": 0,
+      "file": "c1-correct-info/20260927-183457-cavern-01-central-cavern-promptD-3.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 97,
+      "tokens": 122751,
+      "cost_usd": 0.005156,
+      "mean_latency_ms": 281,
+      "low_confidence": 33,
+      "jev_calls": 87
+    },
+    {
+      "cavern": 0,
+      "file": "c1-correct-info/20260927-183457-cavern-01-central-cavern-promptD-4.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 114,
+      "tokens": 142563,
+      "cost_usd": 0.005988,
+      "mean_latency_ms": 280,
+      "low_confidence": 51,
+      "jev_calls": 102
+    },
+    {
+      "cavern": 0,
+      "file": "c1-correct-info/20260927-183457-cavern-01-central-cavern-promptD-5.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 120,
+      "tokens": 153093,
+      "cost_usd": 0.00643,
+      "mean_latency_ms": 285,
+      "low_confidence": 53,
+      "jev_calls": 109
+    },
+    {
+      "cavern": 0,
+      "file": "c1-correct-info/20260927-183457-cavern-01-central-cavern-promptD-6.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 98,
+      "tokens": 123996,
+      "cost_usd": 0.005208,
+      "mean_latency_ms": 276,
+      "low_confidence": 34,
+      "jev_calls": 88
+    },
+    {
+      "cavern": 0,
+      "file": "c1-correct-info/20260927-183457-cavern-01-central-cavern-promptD-7.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 112,
+      "tokens": 141365,
+      "cost_usd": 0.005937,
+      "mean_latency_ms": 288,
+      "low_confidence": 50,
+      "jev_calls": 100
+    },
+    {
+      "cavern": 0,
+      "file": "c1-correct-info/20260927-183457-cavern-01-central-cavern-promptD-8.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 82,
+      "tokens": 106370,
+      "cost_usd": 0.004468,
+      "mean_latency_ms": 291,
+      "low_confidence": 28,
+      "jev_calls": 76
+    },
+    {
+      "cavern": 0,
+      "file": "c1-correct-info/20260927-183457-cavern-01-central-cavern-promptD-9.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 130,
+      "tokens": 160412,
+      "cost_usd": 0.006737,
+      "mean_latency_ms": 276,
+      "low_confidence": 55,
+      "jev_calls": 116
+    },
+    {
+      "cavern": 0,
+      "file": "c1-correct-info/20260927-183457-cavern-01-central-cavern-promptD-10.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 98,
+      "tokens": 123996,
+      "cost_usd": 0.005208,
+      "mean_latency_ms": 278,
+      "low_confidence": 35,
+      "jev_calls": 88
+    },
+    {
+      "cavern": 0,
+      "file": "c1-correct-info/20260927-183519-cavern-01-central-cavern-promptD.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 97,
+      "tokens": 122751,
+      "cost_usd": 0.005156,
+      "mean_latency_ms": 284,
+      "low_confidence": 32,
+      "jev_calls": 87
+    },
+    {
+      "cavern": 0,
+      "file": "c1-correct-info/20260927-183522-cavern-01-central-cavern-promptD.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 131,
+      "tokens": 162745,
+      "cost_usd": 0.006835,
+      "mean_latency_ms": 288,
+      "low_confidence": 55,
+      "jev_calls": 117
+    },
+    {
+      "cavern": 0,
+      "file": "c1-correct-info/20260927-183524-cavern-01-central-cavern-promptD.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 99,
+      "tokens": 122559,
+      "cost_usd": 0.005147,
+      "mean_latency_ms": 289,
+      "low_confidence": 36,
+      "jev_calls": 87
+    },
+    {
+      "cavern": 0,
+      "file": "c1-correct-info/20260927-183524-cavern-01-central-cavern-promptD-2.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 77,
+      "tokens": 97185,
+      "cost_usd": 0.004082,
+      "mean_latency_ms": 291,
+      "low_confidence": 23,
+      "jev_calls": 69
+    },
+    {
+      "cavern": 0,
+      "file": "c1-correct-info/20260927-183524-cavern-01-central-cavern-promptD-3.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 112,
+      "tokens": 140986,
+      "cost_usd": 0.005921,
+      "mean_latency_ms": 288,
+      "low_confidence": 46,
+      "jev_calls": 100
+    },
+    {
+      "cavern": 0,
+      "file": "c1-correct-info/20260927-183529-cavern-01-central-cavern-promptD.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 127,
+      "tokens": 160676,
+      "cost_usd": 0.006748,
+      "mean_latency_ms": 287,
+      "low_confidence": 57,
+      "jev_calls": 115
+    },
+    {
+      "cavern": 0,
+      "file": "c1-correct-info/20260927-183530-cavern-01-central-cavern-promptD.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 103,
+      "tokens": 127526,
+      "cost_usd": 0.005356,
+      "mean_latency_ms": 280,
+      "low_confidence": 38,
+      "jev_calls": 91
+    },
+    {
+      "cavern": 0,
+      "file": "c1-correct-info/20260927-183532-cavern-01-central-cavern-promptD.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 1,
+      "decisions": 100,
+      "tokens": 129252,
+      "cost_usd": 0.005429,
+      "mean_latency_ms": 279,
+      "low_confidence": 65,
+      "jev_calls": 93
+    },
+    {
+      "cavern": 0,
+      "file": "c1-correct-info/20260927-183533-cavern-01-central-cavern-promptD.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 130,
+      "tokens": 160427,
+      "cost_usd": 0.006738,
+      "mean_latency_ms": 274,
+      "low_confidence": 57,
+      "jev_calls": 116
+    },
+    {
+      "cavern": 0,
+      "file": "c1-correct-info/20260927-183547-cavern-01-central-cavern-promptD.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 133,
+      "tokens": 168365,
+      "cost_usd": 0.007071,
+      "mean_latency_ms": 260,
+      "low_confidence": 66,
+      "jev_calls": 121
+    }
+  ]
+}

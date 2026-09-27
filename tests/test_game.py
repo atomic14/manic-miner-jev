@@ -215,7 +215,8 @@ def test_a_way_down_is_not_a_drop_that_kills_willy():
 
 
 def test_each_instruction_set_has_its_texts_in_files():
-    assert brain.instruction_sets()[:2] == ["promptA", "promptB"]  # the default set is first
+    sets = brain.instruction_sets()
+    assert sets[0] == "promptA" and "promptB" in sets  # the default set is first
     for name in brain.instruction_sets():
         for which in ("move.txt", "key.txt", "key_facts_only.txt"):
             assert (brain.INSTRUCTIONS_DIR / name / which).read_text().strip(), (name, which)
@@ -228,7 +229,10 @@ def test_each_instruction_set_has_its_texts_in_files():
         facts_only = brain.key_question(names, name, with_map=False)["key"].instructions
         # The text must name the map: if not, jev does not use it.
         assert "map" in with_map and "map" not in facts_only
-        assert with_map.endswith(memory) and facts_only.endswith(memory)
+        # The text explains a field only when the state can have it: `gave_up_on_it`
+        # is only in the state of the key decision with the facts only.
+        assert with_map.endswith(memory) and memory in facts_only
+        assert "gave_up_on_it" not in with_map and "gave_up_on_it" in facts_only
         assert "\n" not in with_map and "  " not in with_map  # one paragraph
     # The move question offers only the valid moves.
     assert list(brain.move_question(["walk_left", "wait"])["move"].criteria) == ["walk_left", "wait"]
@@ -266,7 +270,24 @@ def test_default_settings():
     assert settings.key_decision_every == 25 and settings.survival_depth == 4
     assert settings.forced_key_order == "" and not settings.random_moves
     assert Settings(instructions="promptB").uses_map  # each set gets the same state
-    assert len(fields(Settings)) == 6  # a new setting needs a reason and a measurement
+    assert settings.rule == "" and settings.progress_facts == "route"
+    assert settings.move_facts == "full"
+    assert len(fields(Settings)) == 9  # a new setting needs a reason and a measurement
+
+
+def test_nearer_rule():
+    """The rule for comparison: a key or the portal first, then a nearer move, then any valid move."""
+    from jevmanic.runner import rule_moves
+    facts = {"walk_left": {"progress": "farther", "place": "new place"},
+             "walk_right": {"progress": "nearer", "place": "visited before"},
+             "jump_right": {"progress": "nearer", "place": "new place", "collects_key": True},
+             "wait": {"progress": "same", "place": "visited before"}}
+    assert rule_moves("nearer", list(facts), facts) == ["jump_right"]
+    del facts["jump_right"]["collects_key"]
+    assert rule_moves("nearer", list(facts), facts) == ["walk_right", "jump_right"]
+    assert rule_moves("nearer-new", list(facts), facts) == ["jump_right"]
+    assert rule_moves("nearer", ["walk_left", "wait"], facts) == ["walk_left", "wait"]
+    assert rule_moves("nearer-new", ["walk_left", "wait"], facts) == ["walk_left"]
 
 
 def test_each_cavern_has_an_optimum_key_order_with_all_its_keys():

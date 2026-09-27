@@ -271,7 +271,7 @@ def _way_down(snap: Snapshot, preferred_side: str = "", target_x: int | None = N
     if best is None:
         return "none on this level"
     if falls_at(here):
-        best["warning"] = "a nasty or a guardian is below Willy: do not wait here"
+        best["warning"] = "a nasty or a guardian is below the place where Willy stands"
     return best
 
 
@@ -502,7 +502,45 @@ def _visits_word(visited, x, y) -> str:
     return "visited many times"
 
 
-def moves_state(snap: Snapshot, outcomes: dict, target, visited, tried=frozenset()) -> dict:
+# The facts about the direction of each move (the setting `progress` of a run):
+#   route  `progress` (nearer, farther, same) and `progress_measures`. The code measures
+#          the distance to one reference (the target, the way up, or the way down), and
+#          two rules of the code change the word: a move that uses the way up or the way
+#          down is "nearer", and a move that leaves the level of the target is "farther".
+#   plain  only measured distances, with no rules: `to_target`, and `to_way_up` or
+#          `to_way_down` when the target is on a different floor. Jev decides which
+#          distance is important.
+#   none   no facts about the direction.
+PROGRESS_FACTS = ("route", "plain", "none")
+
+
+# The fields of the move state (the setting `move_facts` of a run). "full" is the
+# normal state. The other sets keep only the facts of each move that they name,
+# and no other part of the state: a test of which facts jev needs.
+MOVE_FACT_SETS = {
+    "full": None,
+    "progress": ("progress",),
+    "progress-goal": ("progress", "collects_key", "completes_cavern"),
+    "progress-goal-memory": ("progress", "collects_key", "completes_cavern", "place", "tried_from_here"),
+}
+
+
+def reduced_move_state(state: dict, move_facts: str) -> dict:
+    """The move state with only the facts of `move_facts`. The full state is returned unchanged."""
+    keep = MOVE_FACT_SETS[move_facts]
+    if keep is None:
+        return state
+    moves = state["moves"]
+    if isinstance(moves, dict):
+        moves = {name: {k: v for k, v in facts.items() if k in keep} for name, facts in moves.items()}
+    return {"moves": moves}
+
+
+def _compare(before: int, after: int) -> str:
+    return "nearer" if after < before else "farther" if after > before else "same"
+
+
+def moves_state(snap: Snapshot, outcomes: dict, target, visited, tried=frozenset(), progress_facts="route") -> dict:
     """The result of each macro, from the look-ahead. Deadly macros are separate."""
     (tx, ty), measure = _progress_reference(snap, target)
     goal = target_cell(snap, target)
@@ -511,7 +549,11 @@ def moves_state(snap: Snapshot, outcomes: dict, target, visited, tried=frozenset
     def distance(x, y):
         return abs(tx - x) + abs(ty - y)
 
+    def to_goal(x, y):
+        return abs(goal[0] - x) + abs(goal[1] - y)
+
     now = distance(snap.willy_x, snap.willy_y)
+    way_name = "to_way_up" if measure.endswith("way up") else "to_way_down" if measure.endswith("way down") else None
     moves, removed = {}, {}
     # A wait is valid only if something can change while Willy waits.
     guardian_near = any(g["height"] == "same level" for g in _guardians(snap))
@@ -549,9 +591,14 @@ def moves_state(snap: Snapshot, outcomes: dict, target, visited, tried=frozenset
         if same_level and o.dy != 0 and not (o.keys_collected or o.complete):
             progress = "farther"
         floor_after = {_tile(snap, o.x + dx, o.y + 2) for dx in (0, 1)}
-        result = {
-            "movement": movement,
-            "progress": progress,
+        result = {"movement": movement}
+        if progress_facts == "route":
+            result["progress"] = progress
+        elif progress_facts == "plain":
+            result["to_target"] = _compare(to_goal(snap.willy_x, snap.willy_y), to_goal(o.x, o.y))
+            if way_name:
+                result[way_name] = _compare(now, after)
+        result |= {
             "place": _visits_word(visited, o.x, o.y),
             # Memory: did Willy select this move at this place before?
             "tried_from_here": "yes" if (snap.willy_x, snap.willy_y, name) in tried else "no",
@@ -565,11 +612,8 @@ def moves_state(snap: Snapshot, outcomes: dict, target, visited, tried=frozenset
         if o.complete:
             result["completes_cavern"] = True
         moves[name] = result
-    return {
-        "progress_measures": measure,
-        "moves": moves,
-        "moves_not_offered": removed or "none",
-    }
+    out = {"progress_measures": measure} if progress_facts == "route" else {}
+    return {**out, "moves": moves, "moves_not_offered": removed or "none"}
 
 
 def _guardians(snap: Snapshot) -> list[dict]:
@@ -584,7 +628,8 @@ def _guardians(snap: Snapshot) -> list[dict]:
         else:
             approach = "toward Willy"
         facts["height"] = rel["height"]
-        facts["moves"] = approach
+        # Not `moves`: the state uses that name for the valid moves of Willy.
+        facts["direction"] = approach
         if rel["height"] == "same level":
             # The patrol area: the columns that the guardian goes through.
             left, right = g.min_x, g.max_x + 1

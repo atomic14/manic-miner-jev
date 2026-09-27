@@ -31,7 +31,8 @@
   #fixed-note { color: var(--warn); }
   #fixed-note:empty { display: none; }
   /* The differences between the two texts. */
-  .only-edit { background: rgba(0, 215, 0, 0.22); border-radius: 2px; }
+  .only-edit { background: rgba(0, 215, 0, 0.22); border-radius: 3px; font-size: 11px; padding: 0 3px; cursor: help;
+               vertical-align: 1px; }
   .only-compare { background: rgba(255, 138, 61, 0.3); border-radius: 2px; }
   .diff-legend { font-size: 12px; color: var(--dim); }
   .diff-legend span { padding: 0 4px; border-radius: 2px; }
@@ -149,8 +150,11 @@ function diffHtml(mine, other) {
     steps = groups.flatMap(g => g.same ? [{kind: "same", words: g.same}] :
       [{kind: "only-compare", words: g.compare}, {kind: "only-edit", words: g.edit}].filter(x => x.words.length));
   }
+  // The panel shows the text of the compared set only. A mark shows where the edited text has words that
+  // the compared set does not have. The mark shows those words when the pointer is on it.
   return steps.map(step => step.kind === "same" ? withCode(step.words.join(" ")) :
-    `<span class="${step.kind}">${withCode(step.words.join(" "))}</span>`).join(" ");
+    step.kind === "only-compare" ? `<span class="only-compare">${withCode(step.words.join(" "))}</span>` :
+    `<span class="only-edit" title="${escapeHtml(step.words.join(" "))}">+${step.words.length}</span>`).join(" ");
 }
 const words = text => text.trim().split(/\s+/).filter(Boolean).length;
 const keyMemory = () => file === "move.txt" ? "" : data.key_memory;
@@ -186,8 +190,9 @@ function showCompare() {
   $("compare-title").textContent = `${other.name} · ${FILE_NAMES[file]}`;
   $("compare-count").textContent = `${words(other.files[file])} words`;
   $("compare-text").innerHTML = reading(other.files[file], keyMemory(), mark ? $("edit").value : undefined);
-  $("diff-legend").innerHTML = mark ? `<span class="only-edit">only in ${escapeHtml(current().name)}` +
-    `${showCounts().includes(file) ? " (your text)" : ""}</span> <span class="only-compare">only in ${escapeHtml(other.name)}</span>` : "";
+  const mine = escapeHtml(current().name) + (showCounts().includes(file) ? " (your text)" : "");
+  $("diff-legend").innerHTML = mark ? `<span class="only-compare">words only in ${escapeHtml(other.name)}</span> · ` +
+    `<span class="only-edit">+N</span> N words of ${mine} are not in ${escapeHtml(other.name)} here (point at the mark to read them)` : "";
 }
 function showCounts() {
   const set = current(), changed = Object.keys(drafts).filter(f => drafts[f].trim() !== set.files[f].trim());

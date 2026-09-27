@@ -1,0 +1,272 @@
+{
+  "label": "c1-rule-nearer-fixed",
+  "settings": {
+    "instructions": "promptA",
+    "map_key_decision": true,
+    "key_decision_every": 25,
+    "survival_depth": 4,
+    "forced_key_order": "OPTIMUM",
+    "random_moves": false,
+    "rule": "nearer-fixed",
+    "progress_facts": "route",
+    "move_facts": "full"
+  },
+  "caverns": [
+    {
+      "cavern": 1,
+      "name": "Central Cavern",
+      "runs": 20,
+      "complete": 0,
+      "mean_keys": 0,
+      "mean_decisions_complete": null,
+      "tokens_per_call": 0,
+      "low_confidence_rate": 1.0,
+      "mean_cost_usd": 0.0,
+      "other_outcomes": {
+        "stuck: no progress": 20
+      }
+    }
+  ],
+  "runs": [
+    {
+      "cavern": 0,
+      "file": "c1-rule-nearer-fixed/20260927-224917-cavern-01-central-cavern-rule-nearer-fixed.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 0,
+      "decisions": 46,
+      "tokens": 0,
+      "cost_usd": 0.0,
+      "mean_latency_ms": 0,
+      "low_confidence": 46,
+      "jev_calls": 46
+    },
+    {
+      "cavern": 0,
+      "file": "c1-rule-nearer-fixed/20260927-224917-cavern-01-central-cavern-rule-nearer-fixed-2.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 0,
+      "decisions": 46,
+      "tokens": 0,
+      "cost_usd": 0.0,
+      "mean_latency_ms": 0,
+      "low_confidence": 46,
+      "jev_calls": 46
+    },
+    {
+      "cavern": 0,
+      "file": "c1-rule-nearer-fixed/20260927-224918-cavern-01-central-cavern-rule-nearer-fixed.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 0,
+      "decisions": 46,
+      "tokens": 0,
+      "cost_usd": 0.0,
+      "mean_latency_ms": 0,
+      "low_confidence": 46,
+      "jev_calls": 46
+    },
+    {
+      "cavern": 0,
+      "file": "c1-rule-nearer-fixed/20260927-224918-cavern-01-central-cavern-rule-nearer-fixed-2.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 0,
+      "decisions": 46,
+      "tokens": 0,
+      "cost_usd": 0.0,
+      "mean_latency_ms": 0,
+      "low_confidence": 46,
+      "jev_calls": 46
+    },
+    {
+      "cavern": 0,
+      "file": "c1-rule-nearer-fixed/20260927-224919-cavern-01-central-cavern-rule-nearer-fixed.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 0,
+      "decisions": 46,
+      "tokens": 0,
+      "cost_usd": 0.0,
+      "mean_latency_ms": 0,
+      "low_confidence": 46,
+      "jev_calls": 46
+    },
+    {
+      "cavern": 0,
+      "file": "c1-rule-nearer-fixed/20260927-224919-cavern-01-central-cavern-rule-nearer-fixed-2.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 0,
+      "decisions": 46,
+      "tokens": 0,
+      "cost_usd": 0.0,
+      "mean_latency_ms": 0,
+      "low_confidence": 46,
+      "jev_calls": 46
+    },
+    {
+      "cavern": 0,
+      "file": "c1-rule-nearer-fixed/20260927-224920-cavern-01-central-cavern-rule-nearer-fixed.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 0,
+      "decisions": 46,
+      "tokens": 0,
+      "cost_usd": 0.0,
+      "mean_latency_ms": 0,
+      "low_confidence": 46,
+      "jev_calls": 46
+    },
+    {
+      "cavern": 0,
+      "file": "c1-rule-nearer-fixed/20260927-224920-cavern-01-central-cavern-rule-nearer-fixed-2.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 0,
+      "decisions": 46,
+      "tokens": 0,
+      "cost_usd": 0.0,
+      "mean_latency_ms": 0,
+      "low_confidence": 46,
+      "jev_calls": 46
+    },
+    {
+      "cavern": 0,
+      "file": "c1-rule-nearer-fixed/20260927-224921-cavern-01-central-cavern-rule-nearer-fixed.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 0,
+      "decisions": 46,
+      "tokens": 0,
+      "cost_usd": 0.0,
+      "mean_latency_ms": 0,
+      "low_confidence": 46,
+      "jev_calls": 46
+    },
+    {
+      "cavern": 0,
+      "file": "c1-rule-nearer-fixed/20260927-224921-cavern-01-central-cavern-rule-nearer-fixed-2.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 0,
+      "decisions": 46,
+      "tokens": 0,
+      "cost_usd": 0.0,
+      "mean_latency_ms": 0,
+      "low_confidence": 46,
+      "jev_calls": 46
+    },
+    {
+      "cavern": 0,
+      "file": "c1-rule-nearer-fixed/20260927-224922-cavern-01-central-cavern-rule-nearer-fixed.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 0,
+      "decisions": 46,
+      "tokens": 0,
+      "cost_usd": 0.0,
+      "mean_latency_ms": 0,
+      "low_confidence": 46,
+      "jev_calls": 46
+    },
+    {
+      "cavern": 0,
+      "file": "c1-rule-nearer-fixed/20260927-224922-cavern-01-central-cavern-rule-nearer-fixed-2.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 0,
+      "decisions": 46,
+      "tokens": 0,
+      "cost_usd": 0.0,
+      "mean_latency_ms": 0,
+      "low_confidence": 46,
+      "jev_calls": 46
+    },
+    {
+      "cavern": 0,
+      "file": "c1-rule-nearer-fixed/20260927-224923-cavern-01-central-cavern-rule-nearer-fixed.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 0,
+      "decisions": 46,
+      "tokens": 0,
+      "cost_usd": 0.0,
+      "mean_latency_ms": 0,
+      "low_confidence": 46,
+      "jev_calls": 46
+    },
+    {
+      "cavern": 0,
+      "file": "c1-rule-nearer-fixed/20260927-224923-cavern-01-central-cavern-rule-nearer-fixed-2.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 0,
+      "decisions": 46,
+      "tokens": 0,
+      "cost_usd": 0.0,
+      "mean_latency_ms": 0,
+      "low_confidence": 46,
+      "jev_calls": 46
+    },
+    {
+      "cavern": 0,
+      "file": "c1-rule-nearer-fixed/20260927-224924-cavern-01-central-cavern-rule-nearer-fixed.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 0,
+      "decisions": 46,
+      "tokens": 0,
+      "cost_usd": 0.0,
+      "mean_latency_ms": 0,
+      "low_confidence": 46,
+      "jev_calls": 46
+    },
+    {
+      "cavern": 0,
+      "file": "c1-rule-nearer-fixed/20260927-224924-cavern-01-central-cavern-rule-nearer-fixed-2.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 0,
+      "decisions": 46,
+      "tokens": 0,
+      "cost_usd": 0.0,
+      "mean_latency_ms": 0,
+      "low_confidence": 46,
+      "jev_calls": 46
+    },
+    {
+      "cavern": 0,
+      "file": "c1-rule-nearer-fixed/20260927-224925-cavern-01-central-cavern-rule-nearer-fixed.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 0,
+      "decisions": 46,
+      "tokens": 0,
+      "cost_usd": 0.0,
+      "mean_latency_ms": 0,
+      "low_confidence": 46,
+      "jev_calls": 46
+    },
+    {
+      "cavern": 0,
+      "file": "c1-rule-nearer-fixed/20260927-224925-cavern-01-central-cavern-rule-nearer-fixed-2.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 0,
+      "decisions": 46,
+      "tokens": 0,
+      "cost_usd": 0.0,
+      "mean_latency_ms": 0,
+      "low_confidence": 46,
+      "jev_calls": 46
+    },
+    {
+      "cavern": 0,
+      "file": "c1-rule-nearer-fixed/20260927-224926-cavern-01-central-cavern-rule-nearer-fixed.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 0,
+      "decisions": 46,
+      "tokens": 0,
+      "cost_usd": 0.0,
+      "mean_latency_ms": 0,
+      "low_confidence": 46,
+      "jev_calls": 46
+    },
+    {
+      "cavern": 0,
+      "file": "c1-rule-nearer-fixed/20260927-224926-cavern-01-central-cavern-rule-nearer-fixed-2.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 0,
+      "decisions": 46,
+      "tokens": 0,
+      "cost_usd": 0.0,
+      "mean_latency_ms": 0,
+      "low_confidence": 46,
+      "jev_calls": 46
+    }
+  ]
+}

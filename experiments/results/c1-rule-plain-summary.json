@@ -1,0 +1,272 @@
+{
+  "label": "c1-rule-plain",
+  "settings": {
+    "instructions": "promptA",
+    "map_key_decision": true,
+    "key_decision_every": 25,
+    "survival_depth": 4,
+    "forced_key_order": "OPTIMUM",
+    "random_moves": false,
+    "rule": "plain",
+    "progress_facts": "plain"
+  },
+  "caverns": [
+    {
+      "cavern": 1,
+      "name": "Central Cavern",
+      "runs": 20,
+      "complete": 0,
+      "mean_keys": 0.3,
+      "mean_decisions_complete": null,
+      "tokens_per_call": 0,
+      "low_confidence_rate": 1.0,
+      "mean_cost_usd": 0.0,
+      "other_outcomes": {
+        "stuck: no progress": 19,
+        "Willy died": 1
+      }
+    }
+  ],
+  "runs": [
+    {
+      "cavern": 0,
+      "file": "c1-rule-plain/20260927-183705-cavern-01-central-cavern-rule-plain.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 0,
+      "decisions": 46,
+      "tokens": 0,
+      "cost_usd": 0.0,
+      "mean_latency_ms": 0,
+      "low_confidence": 46,
+      "jev_calls": 46
+    },
+    {
+      "cavern": 0,
+      "file": "c1-rule-plain/20260927-183706-cavern-01-central-cavern-rule-plain.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 0,
+      "decisions": 46,
+      "tokens": 0,
+      "cost_usd": 0.0,
+      "mean_latency_ms": 0,
+      "low_confidence": 46,
+      "jev_calls": 46
+    },
+    {
+      "cavern": 0,
+      "file": "c1-rule-plain/20260927-183706-cavern-01-central-cavern-rule-plain-2.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 1,
+      "decisions": 130,
+      "tokens": 0,
+      "cost_usd": 0.0,
+      "mean_latency_ms": 0,
+      "low_confidence": 118,
+      "jev_calls": 118
+    },
+    {
+      "cavern": 0,
+      "file": "c1-rule-plain/20260927-183708-cavern-01-central-cavern-rule-plain.jsonl",
+      "outcome": "Willy died",
+      "keys": 0,
+      "decisions": 194,
+      "tokens": 0,
+      "cost_usd": 0.0,
+      "mean_latency_ms": 0,
+      "low_confidence": 179,
+      "jev_calls": 179
+    },
+    {
+      "cavern": 0,
+      "file": "c1-rule-plain/20260927-183711-cavern-01-central-cavern-rule-plain.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 0,
+      "decisions": 46,
+      "tokens": 0,
+      "cost_usd": 0.0,
+      "mean_latency_ms": 0,
+      "low_confidence": 46,
+      "jev_calls": 46
+    },
+    {
+      "cavern": 0,
+      "file": "c1-rule-plain/20260927-183711-cavern-01-central-cavern-rule-plain-2.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 1,
+      "decisions": 141,
+      "tokens": 0,
+      "cost_usd": 0.0,
+      "mean_latency_ms": 0,
+      "low_confidence": 128,
+      "jev_calls": 128
+    },
+    {
+      "cavern": 0,
+      "file": "c1-rule-plain/20260927-183713-cavern-01-central-cavern-rule-plain.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 0,
+      "decisions": 46,
+      "tokens": 0,
+      "cost_usd": 0.0,
+      "mean_latency_ms": 0,
+      "low_confidence": 46,
+      "jev_calls": 46
+    },
+    {
+      "cavern": 0,
+      "file": "c1-rule-plain/20260927-183714-cavern-01-central-cavern-rule-plain.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 0,
+      "decisions": 46,
+      "tokens": 0,
+      "cost_usd": 0.0,
+      "mean_latency_ms": 0,
+      "low_confidence": 46,
+      "jev_calls": 46
+    },
+    {
+      "cavern": 0,
+      "file": "c1-rule-plain/20260927-183714-cavern-01-central-cavern-rule-plain-2.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 1,
+      "decisions": 154,
+      "tokens": 0,
+      "cost_usd": 0.0,
+      "mean_latency_ms": 0,
+      "low_confidence": 143,
+      "jev_calls": 143
+    },
+    {
+      "cavern": 0,
+      "file": "c1-rule-plain/20260927-183716-cavern-01-central-cavern-rule-plain.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 1,
+      "decisions": 152,
+      "tokens": 0,
+      "cost_usd": 0.0,
+      "mean_latency_ms": 0,
+      "low_confidence": 142,
+      "jev_calls": 142
+    },
+    {
+      "cavern": 0,
+      "file": "c1-rule-plain/20260927-183718-cavern-01-central-cavern-rule-plain.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 0,
+      "decisions": 46,
+      "tokens": 0,
+      "cost_usd": 0.0,
+      "mean_latency_ms": 0,
+      "low_confidence": 46,
+      "jev_calls": 46
+    },
+    {
+      "cavern": 0,
+      "file": "c1-rule-plain/20260927-183719-cavern-01-central-cavern-rule-plain.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 0,
+      "decisions": 46,
+      "tokens": 0,
+      "cost_usd": 0.0,
+      "mean_latency_ms": 0,
+      "low_confidence": 46,
+      "jev_calls": 46
+    },
+    {
+      "cavern": 0,
+      "file": "c1-rule-plain/20260927-183719-cavern-01-central-cavern-rule-plain-2.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 0,
+      "decisions": 46,
+      "tokens": 0,
+      "cost_usd": 0.0,
+      "mean_latency_ms": 0,
+      "low_confidence": 46,
+      "jev_calls": 46
+    },
+    {
+      "cavern": 0,
+      "file": "c1-rule-plain/20260927-183720-cavern-01-central-cavern-rule-plain.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 1,
+      "decisions": 162,
+      "tokens": 0,
+      "cost_usd": 0.0,
+      "mean_latency_ms": 0,
+      "low_confidence": 151,
+      "jev_calls": 151
+    },
+    {
+      "cavern": 0,
+      "file": "c1-rule-plain/20260927-183722-cavern-01-central-cavern-rule-plain.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 0,
+      "decisions": 46,
+      "tokens": 0,
+      "cost_usd": 0.0,
+      "mean_latency_ms": 0,
+      "low_confidence": 46,
+      "jev_calls": 46
+    },
+    {
+      "cavern": 0,
+      "file": "c1-rule-plain/20260927-183722-cavern-01-central-cavern-rule-plain-2.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 0,
+      "decisions": 46,
+      "tokens": 0,
+      "cost_usd": 0.0,
+      "mean_latency_ms": 0,
+      "low_confidence": 46,
+      "jev_calls": 46
+    },
+    {
+      "cavern": 0,
+      "file": "c1-rule-plain/20260927-183723-cavern-01-central-cavern-rule-plain.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 1,
+      "decisions": 93,
+      "tokens": 0,
+      "cost_usd": 0.0,
+      "mean_latency_ms": 0,
+      "low_confidence": 89,
+      "jev_calls": 89
+    },
+    {
+      "cavern": 0,
+      "file": "c1-rule-plain/20260927-183724-cavern-01-central-cavern-rule-plain.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 0,
+      "decisions": 46,
+      "tokens": 0,
+      "cost_usd": 0.0,
+      "mean_latency_ms": 0,
+      "low_confidence": 46,
+      "jev_calls": 46
+    },
+    {
+      "cavern": 0,
+      "file": "c1-rule-plain/20260927-183725-cavern-01-central-cavern-rule-plain.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 1,
+      "decisions": 162,
+      "tokens": 0,
+      "cost_usd": 0.0,
+      "mean_latency_ms": 0,
+      "low_confidence": 151,
+      "jev_calls": 151
+    },
+    {
+      "cavern": 0,
+      "file": "c1-rule-plain/20260927-183727-cavern-01-central-cavern-rule-plain.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 0,
+      "decisions": 46,
+      "tokens": 0,
+      "cost_usd": 0.0,
+      "mean_latency_ms": 0,
+      "low_confidence": 46,
+      "jev_calls": 46
+    }
+  ]
+}

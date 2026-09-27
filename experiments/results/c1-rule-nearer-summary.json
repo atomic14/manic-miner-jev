@@ -1,0 +1,272 @@
+{
+  "label": "c1-rule-nearer",
+  "settings": {
+    "instructions": "promptA",
+    "map_key_decision": true,
+    "key_decision_every": 25,
+    "survival_depth": 4,
+    "forced_key_order": "OPTIMUM",
+    "random_moves": false,
+    "rule": "nearer",
+    "progress_facts": "route",
+    "move_facts": "full"
+  },
+  "caverns": [
+    {
+      "cavern": 1,
+      "name": "Central Cavern",
+      "runs": 20,
+      "complete": 17,
+      "mean_keys": 4.6,
+      "mean_decisions_complete": 106,
+      "tokens_per_call": 0,
+      "low_confidence_rate": 1.0,
+      "mean_cost_usd": 0.0,
+      "other_outcomes": {
+        "stuck: no progress": 3
+      }
+    }
+  ],
+  "runs": [
+    {
+      "cavern": 0,
+      "file": "c1-rule-nearer/20260927-224927-cavern-01-central-cavern-rule-nearer.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 120,
+      "tokens": 0,
+      "cost_usd": 0.0,
+      "mean_latency_ms": 0,
+      "low_confidence": 109,
+      "jev_calls": 109
+    },
+    {
+      "cavern": 0,
+      "file": "c1-rule-nearer/20260927-224928-cavern-01-central-cavern-rule-nearer.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 84,
+      "tokens": 0,
+      "cost_usd": 0.0,
+      "mean_latency_ms": 0,
+      "low_confidence": 81,
+      "jev_calls": 81
+    },
+    {
+      "cavern": 0,
+      "file": "c1-rule-nearer/20260927-224929-cavern-01-central-cavern-rule-nearer.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 90,
+      "tokens": 0,
+      "cost_usd": 0.0,
+      "mean_latency_ms": 0,
+      "low_confidence": 83,
+      "jev_calls": 83
+    },
+    {
+      "cavern": 0,
+      "file": "c1-rule-nearer/20260927-224931-cavern-01-central-cavern-rule-nearer.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 1,
+      "decisions": 101,
+      "tokens": 0,
+      "cost_usd": 0.0,
+      "mean_latency_ms": 0,
+      "low_confidence": 93,
+      "jev_calls": 93
+    },
+    {
+      "cavern": 0,
+      "file": "c1-rule-nearer/20260927-224932-cavern-01-central-cavern-rule-nearer.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 1,
+      "decisions": 164,
+      "tokens": 0,
+      "cost_usd": 0.0,
+      "mean_latency_ms": 0,
+      "low_confidence": 147,
+      "jev_calls": 147
+    },
+    {
+      "cavern": 0,
+      "file": "c1-rule-nearer/20260927-224934-cavern-01-central-cavern-rule-nearer.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 153,
+      "tokens": 0,
+      "cost_usd": 0.0,
+      "mean_latency_ms": 0,
+      "low_confidence": 137,
+      "jev_calls": 137
+    },
+    {
+      "cavern": 0,
+      "file": "c1-rule-nearer/20260927-224936-cavern-01-central-cavern-rule-nearer.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 99,
+      "tokens": 0,
+      "cost_usd": 0.0,
+      "mean_latency_ms": 0,
+      "low_confidence": 90,
+      "jev_calls": 90
+    },
+    {
+      "cavern": 0,
+      "file": "c1-rule-nearer/20260927-224937-cavern-01-central-cavern-rule-nearer.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 99,
+      "tokens": 0,
+      "cost_usd": 0.0,
+      "mean_latency_ms": 0,
+      "low_confidence": 91,
+      "jev_calls": 91
+    },
+    {
+      "cavern": 0,
+      "file": "c1-rule-nearer/20260927-224938-cavern-01-central-cavern-rule-nearer.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 161,
+      "tokens": 0,
+      "cost_usd": 0.0,
+      "mean_latency_ms": 0,
+      "low_confidence": 139,
+      "jev_calls": 139
+    },
+    {
+      "cavern": 0,
+      "file": "c1-rule-nearer/20260927-224941-cavern-01-central-cavern-rule-nearer.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 107,
+      "tokens": 0,
+      "cost_usd": 0.0,
+      "mean_latency_ms": 0,
+      "low_confidence": 100,
+      "jev_calls": 100
+    },
+    {
+      "cavern": 0,
+      "file": "c1-rule-nearer/20260927-224942-cavern-01-central-cavern-rule-nearer.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 96,
+      "tokens": 0,
+      "cost_usd": 0.0,
+      "mean_latency_ms": 0,
+      "low_confidence": 89,
+      "jev_calls": 89
+    },
+    {
+      "cavern": 0,
+      "file": "c1-rule-nearer/20260927-224944-cavern-01-central-cavern-rule-nearer.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 5,
+      "decisions": 92,
+      "tokens": 0,
+      "cost_usd": 0.0,
+      "mean_latency_ms": 0,
+      "low_confidence": 86,
+      "jev_calls": 86
+    },
+    {
+      "cavern": 0,
+      "file": "c1-rule-nearer/20260927-224945-cavern-01-central-cavern-rule-nearer.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 80,
+      "tokens": 0,
+      "cost_usd": 0.0,
+      "mean_latency_ms": 0,
+      "low_confidence": 76,
+      "jev_calls": 76
+    },
+    {
+      "cavern": 0,
+      "file": "c1-rule-nearer/20260927-224946-cavern-01-central-cavern-rule-nearer.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 107,
+      "tokens": 0,
+      "cost_usd": 0.0,
+      "mean_latency_ms": 0,
+      "low_confidence": 100,
+      "jev_calls": 100
+    },
+    {
+      "cavern": 0,
+      "file": "c1-rule-nearer/20260927-224947-cavern-01-central-cavern-rule-nearer.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 90,
+      "tokens": 0,
+      "cost_usd": 0.0,
+      "mean_latency_ms": 0,
+      "low_confidence": 87,
+      "jev_calls": 87
+    },
+    {
+      "cavern": 0,
+      "file": "c1-rule-nearer/20260927-224948-cavern-01-central-cavern-rule-nearer.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 127,
+      "tokens": 0,
+      "cost_usd": 0.0,
+      "mean_latency_ms": 0,
+      "low_confidence": 114,
+      "jev_calls": 114
+    },
+    {
+      "cavern": 0,
+      "file": "c1-rule-nearer/20260927-224950-cavern-01-central-cavern-rule-nearer.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 100,
+      "tokens": 0,
+      "cost_usd": 0.0,
+      "mean_latency_ms": 0,
+      "low_confidence": 88,
+      "jev_calls": 88
+    },
+    {
+      "cavern": 0,
+      "file": "c1-rule-nearer/20260927-224951-cavern-01-central-cavern-rule-nearer.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 104,
+      "tokens": 0,
+      "cost_usd": 0.0,
+      "mean_latency_ms": 0,
+      "low_confidence": 97,
+      "jev_calls": 97
+    },
+    {
+      "cavern": 0,
+      "file": "c1-rule-nearer/20260927-224953-cavern-01-central-cavern-rule-nearer.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 99,
+      "tokens": 0,
+      "cost_usd": 0.0,
+      "mean_latency_ms": 0,
+      "low_confidence": 91,
+      "jev_calls": 91
+    },
+    {
+      "cavern": 0,
+      "file": "c1-rule-nearer/20260927-224954-cavern-01-central-cavern-rule-nearer.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 80,
+      "tokens": 0,
+      "cost_usd": 0.0,
+      "mean_latency_ms": 0,
+      "low_confidence": 76,
+      "jev_calls": 76
+    }
+  ]
+}

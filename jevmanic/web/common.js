@@ -77,6 +77,8 @@ function makerOf(header) {
   const st = header.settings || {};
   if (header.decision_maker && header.decision_maker !== "jev") return header.decision_maker;
   if (st.random_moves) return "random moves";
+  if (st.rule) return "rule: " + st.rule;
+  if (st.nearer_moves) return "rule: nearer";  // a log file from before the setting `rule`
   if (st.instructions) return {free: "promptA", rules: "promptB"}[st.instructions] || st.instructions;
   if ("rules_mode" in st) return st.rules_mode ? "promptB" : "promptA";
   return st.free_move ? "promptA" : "promptB";

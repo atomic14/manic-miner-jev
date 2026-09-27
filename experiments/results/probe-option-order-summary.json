@@ -1,0 +1,25 @@
+{
+  "label": "probe-option-order",
+  "note": "200 recorded jev move decisions (runs/defaults-all-caverns, 3 or more options), each asked again in 4 forms. jev-1.13.0.",
+  "agrees_with_recorded_answer": {
+    "same order": 184,
+    "options reversed": 172,
+    "options shuffled": 174,
+    "options and state moves reversed": 144
+  },
+  "selects_first_option": {
+    "same order": 51,
+    "options reversed": 23,
+    "options shuffled": 51,
+    "options and state moves reversed": 24,
+    "by chance": 51
+  },
+  "mean_change_of_probability_of_recorded_answer_against_same": {
+    "options reversed": 0.053,
+    "options shuffled": 0.05,
+    "options and state moves reversed": 0.113
+  },
+  "decisions": 200,
+  "requests": 800,
+  "cost_usd": 0.0458
+}

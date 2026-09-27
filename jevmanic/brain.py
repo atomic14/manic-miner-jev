@@ -55,7 +55,8 @@ def instruction_sets() -> list[str]:
 # The files of one set, and the sets that the page cannot change. The results in
 # the README come from these sets, thus a change must be a new set.
 SET_FILES = ("move.txt", "key.txt", "key_facts_only.txt")
-FIXED_SETS = ("promptA", "promptB", "promptC")
+FIXED_SETS = ("promptA", "promptB", "promptC", "promptA-no-progress", "promptD", "promptD-plain",
+              "promptM-progress", "promptM-progress-goal", "promptM-progress-goal-memory")
 SET_NAME = re.compile(r"[A-Za-z0-9_-]{1,40}")
 
 
@@ -95,7 +96,9 @@ def move_instructions(instructions: str = DEFAULT_INSTRUCTIONS) -> str:
 def key_instructions(instructions: str = DEFAULT_INSTRUCTIONS, with_map: bool = True) -> str:
     """The key text of one set, with the meaning of the short memory of each key after it."""
     name = "key.txt" if with_map else "key_facts_only.txt"
-    return _text(f"{instructions}/{name}") + " " + _text("key_memory.txt")
+    text = _text(f"{instructions}/{name}") + " " + _text("key_memory.txt")
+    # `gave_up_on_it` is only in the state of the key decision with the facts only.
+    return text if with_map else text + " " + _text("key_memory_facts_only.txt")
 
 
 def key_question(names: list[str], instructions: str = DEFAULT_INSTRUCTIONS, with_map: bool = True) -> dict:
@@ -107,8 +110,8 @@ def key_question(names: list[str], instructions: str = DEFAULT_INSTRUCTIONS, wit
 MOVE_CRITERIA = {
     'jump_right': 'Jump to the right. The result is in `moves.jump_right`.',
     'jump_left': 'Jump to the left. The result is in `moves.jump_left`.',
-    'walk_right': 'Walk 1 cell to the right. The result is in `moves.walk_right`.',
-    'walk_left': 'Walk 1 cell to the left. The result is in `moves.walk_left`.',
+    'walk_right': 'Walk to the right. The result is in `moves.walk_right`.',
+    'walk_left': 'Walk to the left. The result is in `moves.walk_left`.',
     'jump_up': 'Jump straight up. The result is in `moves.jump_up`.',
     'wait': 'Do not move. The result is in `moves.wait`.',
 }

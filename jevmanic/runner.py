@@ -66,6 +66,16 @@ class Settings:
     # Research tools. They make no key request or no move request.
     forced_key_order: str = ""  # the code sets the key order, for example "EACDB"
     random_moves: bool = False  # a random choice from the valid moves
+    # A simple rule in the place of jev, for comparison (no jev call). "" = jev.
+    # See RULES for the names.
+    rule: str = ""
+    # The facts about the direction of each move: "route" (`progress`, with two rules
+    # of the code), "plain" (measured distances only), or "none". See PROGRESS_FACTS
+    # in describe.py. Use an instruction set that names the same fields.
+    progress_facts: str = "route"
+    # Which facts the move state has: "full" (normal), or a smaller set for a test.
+    # See MOVE_FACT_SETS in describe.py. Use an instruction set that names the same fields.
+    move_facts: str = "full"
 
     @property
     def uses_map(self) -> bool:
@@ -145,6 +155,10 @@ def run_mode(header: dict) -> str:
         return maker
     if settings.get("random_moves"):
         return "random moves"
+    if settings.get("rule"):
+        return f"rule: {settings['rule']}"
+    if settings.get("nearer_moves"):  # a log file from before the setting `rule`
+        return "rule: nearer"
     if "instructions" in settings:
         return OLD_SET_NAMES.get(settings["instructions"], settings["instructions"])
     if "rules_mode" in settings:  # a log file from before the instruction files
@@ -189,6 +203,44 @@ def list_run_groups(runs: list[dict]) -> list[dict]:
 
 
 # -- A live run ------------------------------------------------------------------------
+
+
+def _goal(f):
+    return f.get("completes_cavern") or f.get("collects_key")
+
+
+def _nearer(f):
+    return f.get("progress") == "nearer"
+
+
+def _new(f):
+    return f.get("place") == "new place"
+
+
+# The simple rules for comparison. Each rule is a sequence of tests: the rule
+# selects at random from the moves that pass the first test that any move
+# passes, else from all valid moves. The rules use only facts that jev gets.
+RULES = {
+    # A move that completes the cavern or collects a key, else a move that goes nearer.
+    "nearer": (_goal, _nearer),
+    # The same, but a nearer move to a new place first, and then a move to a new place.
+    "nearer-new": (_goal, lambda f: _nearer(f) and _new(f), _nearer, _new),
+    # The rule `nearer` with no random choice: always the first move that passes a test
+    # (in the order of the macros). A test of how much the random choice helps the rule.
+    "nearer-fixed": (_goal, _nearer),
+    # For the plain facts: a move that gets nearer to the way up or down, else nearer to the target.
+    "plain": (_goal, lambda f: "nearer" in (f.get("to_way_up"), f.get("to_way_down")),
+              lambda f: f.get("to_target") == "nearer"),
+}
+
+
+def rule_moves(rule: str, offered: list[str], facts: dict) -> list[str]:
+    """The moves that a rule of RULES can select. A base for comparison only."""
+    for test in RULES[rule]:
+        found = [m for m in offered if isinstance(facts, dict) and test(facts.get(m, {}))]
+        if found:
+            return found
+    return offered
 
 
 def _outcome(game: Game, decisions: int, idle: int) -> str | None:
@@ -314,8 +366,10 @@ class _LiveRun:
     async def move_decision(self, snap, n: int) -> dict:
         """Select one macro from the valid moves. Gives the log record."""
         outcomes = self.game.look_ahead(self.settings.survival_depth)
-        moves = describe.moves_state(snap, outcomes, self.target, self.visited, self.tried)
-        state = {**describe.words(snap, self.target), **moves}
+        moves = describe.moves_state(snap, outcomes, self.target, self.visited, self.tried,
+                                     self.settings.progress_facts)
+        state = describe.reduced_move_state({**describe.words(snap, self.target), **moves},
+                                            self.settings.move_facts)
         removed = {} if moves["moves_not_offered"] == "none" else moves["moves_not_offered"]
         offered = list(moves["moves"])
         if not offered:
@@ -346,6 +400,13 @@ class _LiveRun:
             share = 1 / len(offered)
             record.update(macro=random.choice(offered), probabilities={m: share for m in offered},
                           confidence=0.0, latency_ms=0, input_tokens=0, model="random", state=state)
+        elif self.settings.rule:
+            best = rule_moves(self.settings.rule, offered, state["moves"])
+            if self.settings.rule.endswith("-fixed"):
+                best = best[:1]
+            share = 1 / len(best)
+            record.update(macro=random.choice(best), probabilities={m: share for m in best},
+                          confidence=0.0, latency_ms=0, input_tokens=0, model="nearer", state=state)
         else:
             question = move_question(offered, self.settings.instructions)
             answer = await self.brain.ask(state, question, "move")
@@ -384,6 +445,8 @@ async def play_live(game: Game, brain, cavern: int = 0, settings: Settings | Non
     maker = getattr(brain, "maker", "jev")
     if settings.random_moves:
         mode = "random"
+    elif settings.rule:
+        mode = f"rule-{settings.rule}"
     elif maker != "jev":
         mode = brain.mode
     else:

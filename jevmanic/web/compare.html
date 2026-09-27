@@ -132,7 +132,9 @@ function showDiffs() {
   const [a, b] = runs, items = [];
   if (a.header.cavern !== b.header.cavern) items.push("The runs are in <b>different caverns</b>.");
   // The settings and the questions that are different.
-  const sa = a.header.settings || {}, sb = b.header.settings || {};
+  // An older log file names the instruction sets "free" and "rules": show the present names.
+  const names = st => ({...st, ...(st.instructions ? {instructions: {free: "promptA", rules: "promptB"}[st.instructions] || st.instructions} : {})});
+  const sa = names(a.header.settings || {}), sb = names(b.header.settings || {});
   const changed = [...new Set([...Object.keys(sa), ...Object.keys(sb)])]
     .filter(k => JSON.stringify(sa[k]) !== JSON.stringify(sb[k]));
   if (changed.length) items.push("Different settings: " + changed.map(k =>
@@ -161,8 +163,10 @@ function showDiffs() {
     }
     items.push(text);
   }
-  const keyOrder = run => run.targets.filter(t => !t.forced).map(t => t.choice.replace("key_", "")).join(" → ") || "none";
-  items.push(`The keys that jev selected, in order: A: <b>${escapeHtml(keyOrder(a))}</b>. B: <b>${escapeHtml(keyOrder(b))}</b>.`);
+  // A key decision that keeps the same key does not change the order: show each key one time in a row.
+  const keyOrder = run => run.targets.map(t => t.choice.replace("key_", ""))
+    .filter((k, i, all) => i === 0 || k !== all[i - 1]).join(" → ") || "none";
+  items.push(`The targets in order: A: <b>${escapeHtml(keyOrder(a))}</b>. B: <b>${escapeHtml(keyOrder(b))}</b>.`);
   $("diffs").innerHTML = items.map(t => `<li>${t}</li>`).join("");
 }
 
