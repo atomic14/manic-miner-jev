@@ -3,14 +3,14 @@
 Run:  uv run python -m jevmanic.server
 Then open http://127.0.0.1:8000
 
-The pages of the viewer:
-    /               the recorded runs: a table with filters, and the totals for each cavern
-    /watch          watch one run: a replay (?file=...) or a live run
-    /compare        two recorded runs side by side (?a=...&b=...)
-    /experiment     ask jev one key question for a situation, or start a live run
-    /instructions   read the instruction sets, and write a new set
+The viewer's pages:
+    /               Runs: the recorded runs in a table with filters, and the totals for each cavern
+    /watch          Watch: one run, as a replay (?file=...) or a live run
+    /compare        Compare: two recorded runs side by side (?a=...&b=...)
+    /experiment     Experiment: ask jev for one key decision in a situation, or start a live run
+    /instructions   Instruction sets: read the sets, and write a new set
 
-The page /watch and the server use one WebSocket. The server sends:
+The Watch page and the server share one WebSocket. The server sends:
     text messages     JSON events
     binary messages   one PNG image of the game screen for each game tick
 The page sends JSON commands: start, replay, stop, pause, resume, step, speed.
@@ -25,7 +25,7 @@ from pathlib import Path
 import uvicorn
 from dotenv import load_dotenv
 from fastapi import Body, FastAPI, WebSocket, WebSocketDisconnect
-from fastapi.responses import FileResponse, RedirectResponse, Response
+from fastapi.responses import FileResponse, Response
 from fastapi.staticfiles import StaticFiles
 from PIL import Image
 
@@ -55,7 +55,7 @@ app.mount("/static", StaticFiles(directory=WEB_DIR), name="static")
 
 @app.middleware("http")
 async def no_stale_pages(request, call_next):
-    """The browser checks each page and script again, thus a changed file has effect at once."""
+    """Tell the browser to check each page and script again, so that a changed file takes effect at once."""
     response = await call_next(request)
     response.headers["Cache-Control"] = "no-cache"
     return response
@@ -81,11 +81,6 @@ def experiment_page():
     return FileResponse(WEB_DIR / "experiment.html")
 
 
-@app.get("/lab")
-def lab_page():  # the earlier name of the page
-    return RedirectResponse("/experiment")
-
-
 @app.get("/instructions")
 def instructions_page():
     return FileResponse(WEB_DIR / "instructions.html")
@@ -96,17 +91,18 @@ def instructions_page():
 
 @app.get("/api/runs")
 async def runs_list():
-    """All recorded runs, their groups, and the names of the caverns."""
+    """All recorded runs, their groups, and the cavern names."""
     game, _, lock = _lab_parts()
     async with lock:
         caverns = game.cavern_names()
     runs = list_runs()
-    return {"runs": runs, "groups": list_run_groups(runs), "caverns": caverns}
+    return {"runs": runs, "groups": list_run_groups(runs), "caverns": caverns,
+            "default_set": DEFAULT_INSTRUCTIONS}
 
 
 @app.get("/api/run")
 def run_records(file: str):
-    """All records of one log file. A replay page gets the full run before it plays it."""
+    """All records of one log file. The Watch page gets the whole run before the replay starts."""
     try:
         return {"records": read_run(file)}
     except (ValueError, OSError) as error:
@@ -118,7 +114,7 @@ def run_records(file: str):
 
 @app.get("/api/instructions")
 def instructions_list():
-    """All sets, each with its files and the text that jev gets from them."""
+    """All instruction sets, each with its files and the texts as jev gets them."""
     sets = []
     for name in instruction_sets():
         sets.append(
@@ -148,7 +144,7 @@ def instructions_save(msg: dict = Body(...)):
 
 
 # -- The key decision lab ------------------------------------------------------------------
-# One game and one jev client for the lab. A lock keeps two requests apart.
+# The lab has one game and one jev client. A lock makes the lab's requests wait for each other.
 _lab: dict = {}
 
 
@@ -160,7 +156,7 @@ def _lab_parts():
 
 @app.get("/api/lab/info")
 async def lab_info():
-    """The names of the caverns and of the instruction sets."""
+    """The cavern names and the instruction set names."""
     game, _, lock = _lab_parts()
     async with lock:
         return {"caverns": game.cavern_names(), "instruction_sets": instruction_sets()}
@@ -183,14 +179,14 @@ async def lab_screen(cavern: int):
 
 @app.get("/api/lab/instructions")
 async def lab_instructions(name: str = DEFAULT_INSTRUCTIONS, with_map: bool = True):
-    """The key instruction text of one set, as jev gets it."""
+    """The key decision's text of one set, as jev gets it."""
     name = name if name in instruction_sets() else DEFAULT_INSTRUCTIONS
     return {"text": key_instructions(name, with_map)}
 
 
 @app.post("/api/lab/place")
 async def lab_place(msg: dict = Body(...)):
-    """The place where Willy can stand that is nearest to a click."""
+    """The nearest place to a click where Willy can stand."""
     game, _, lock = _lab_parts()
     async with lock:
         snap = lab.situation(game, max(0, min(19, int(msg.get("cavern", 0)))), msg.get("willy"), "")
@@ -218,7 +214,7 @@ def _png(game: Game) -> bytes:
 
 
 class Session:
-    """The status of one viewer connection."""
+    """One viewer connection: its game, its jev client, and the pause state."""
 
     def __init__(self, ws: WebSocket):
         self.ws = ws
@@ -265,8 +261,8 @@ class Session:
                     continue
                 await self.send(data)
                 if data["type"] == "decision":
-                    # The pause point is after a decision and before its macro runs,
-                    # thus the viewer can show the possible moves and the selected one.
+                    # Pause after a decision and before its move plays, so that the
+                    # viewer can show the possible moves and the selected one.
                     await self._gate()
         except Exception as error:  # show the error in the viewer
             await self.send({"type": "error", "message": f"{type(error).__name__}: {error}"})
@@ -283,14 +279,14 @@ class Session:
                 instructions=instructions if instructions in instruction_sets() else DEFAULT_INSTRUCTIONS,
                 map_key_decision=bool(msg.get("map_key_decision", True)),
                 survival_depth=max(0, min(20, int(msg.get("dead_end_depth", SURVIVAL_DEPTH)))),
-                # The code sets the key order, and there is no key request. "" = jev selects the keys.
+                # A fixed key order instead of key decisions. "" = jev makes the key decisions.
                 forced_key_order="".join(c for c in str(msg.get("key_order", "")).upper() if c in "ABCDE"),
             )
             cavern = max(0, min(19, int(msg.get("cavern", 0))))
             self.task = asyncio.create_task(self.run(play_live(self.game, self.brain, cavern, settings, show_paths=True)))
         elif cmd == "replay":
             await self.stop()
-            # With "paused", the replay stops at its first decision: the viewer jumps to that decision.
+            # With "paused", the replay stops at its first decision. The viewer uses this to jump to a decision.
             self.steps = 0
             self.running.clear() if msg.get("paused") else self.running.set()
             start = max(0, int(msg.get("start", 0)))

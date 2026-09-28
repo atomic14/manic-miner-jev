@@ -17,7 +17,7 @@ the cavern is complete. `ends_on` tells that Willy stands on a crumbling floor
 after this move, and how much of that floor is left. `warning` tells that no
 move is safe after this move. Knowledge of the game: Willy can climb only 2
 rows with one jump. If Willy comes back to the same places again and again,
-the direct way is closed, and he must go a different way, also if that way
+the direct way is closed, and he must go a different way, even if that way
 goes away from the target first. A crumbling floor breaks a little each time
 Willy stands on it. It can be the only way up, and it is also a way down. A
 nasty does not move: if it stops a jump, a jump from a different cell can go

@@ -1,8 +1,8 @@
 """Manic Miner on the ZX Spectrum emulator.
 
-This module starts the game, reads the game data from the emulator memory,
-and runs macros. The memory addresses come from the SkoolKit disassembly
-(https://skoolkit.ca/disassemblies/manic_miner/).
+This module starts the game, reads the game data from emulator memory, and
+plays moves (the code calls them macros). The memory addresses come from the
+SkoolKit disassembly (https://skoolkit.ca/disassemblies/manic_miner/).
 """
 
 import contextlib
@@ -68,33 +68,34 @@ JOY_RIGHT = 1
 JOY_LEFT = 2
 JOY_FIRE = 16
 
-START_SLOT = 0  # emulator state slot for the start of cavern 0
-# Slot 100 + n has the start of cavern n. The look-ahead uses slot 1, and the
-# dead end check uses the slots from 2 to 2 + depth. They must not overlap.
+# Emulator save slots. Slot 0 holds the start of cavern 0, and slot 100 + n
+# holds the start of cavern n. The look-ahead uses slot 1, and the dead-end
+# check uses slots 2 to 2 + depth. The ranges must not overlap.
+START_SLOT = 0
 CAVERN_SLOT_BASE = 100
-LOOK_AHEAD_SLOT = 1  # emulator state slot that the look-ahead uses
-DEAD_END_SLOT = 2  # the dead end check uses the slots from this number up
-# The dead end check: can Willy stay alive for this number of macros? 4 is a
-# compromise: it is sufficient for Central Cavern, and it is a small help from
-# the code. The Menagerie is better with 6 or more (see the README).
+LOOK_AHEAD_SLOT = 1
+DEAD_END_SLOT = 2
+# The dead-end check asks: can Willy stay alive for this number of moves? A
+# deeper check does more of the work for jev. See "The dead-end check" in
+# docs/findings.md for the choice of 4.
 SURVIVAL_DEPTH = 4
-# The largest number of macros that one dead end check can try.
+# The largest number of moves that one dead-end check can try.
 SURVIVAL_BUDGET = 600
 DEAD_END_CAUSE = "dead end, Willy cannot stay alive after it"
 
-# Willy moves 2 pixels in each game tick. Thus 4 ticks move him one cell.
+# Willy moves 2 pixels in each game tick, so 4 ticks move him one cell.
 TICKS_PER_CELL = 4
-# The longest time that we wait for Willy to land after a macro.
+# The longest time that we wait for Willy to land after a move.
 MAX_SETTLE_TICKS = 40
 
 
 @dataclass
 class Macro:
-    """A short fixed sequence of joystick input."""
+    """One move of Willy: a short, fixed sequence of joystick input."""
 
     name: str
     joystick: int
-    ticks: int  # number of ticks to hold the joystick
+    ticks: int  # how many ticks to hold the joystick
     is_jump: bool = False
 
 
@@ -128,7 +129,7 @@ class Snapshot:
     """The game data at one moment. All positions are cell positions."""
 
     cavern_name: str
-    tiles: list[str]  # 16 strings of 32 characters, see TILE_CHARS
+    tiles: list[str]  # 16 strings of 32 characters (TILE_EMPTY, TILE_FLOOR, ...)
     willy_x: int  # left column of Willy (Willy is 2 x 2 cells)
     willy_y: int  # top row of Willy
     willy_facing: str  # "left" or "right"
@@ -138,10 +139,10 @@ class Snapshot:
     guardians: list[Guardian] = field(default_factory=list)
     switches: list[tuple[int, int]] = field(default_factory=list)  # switches that are not flipped
     conveyor_direction: str = "left"  # the direction in which a conveyor moves Willy
-    # One letter for each key (A, B, C, ...). A key keeps its letter for the full run.
+    # One letter for each key (A, B, C, ...). A key keeps its letter for the whole run.
     key_letters: dict = field(default_factory=dict)
     air: float = 1.0  # 1.0 = full, 0.0 = empty
-    # The crumbling floor tiles that are partly gone: cell -> pixel rows that are gone (1 to 7).
+    # Crumbling floor tiles that are partly gone: cell -> pixel rows gone (1 to 7).
     crumbled: dict = field(default_factory=dict)
     score: int = 0
     lives: int = 0
@@ -149,20 +150,20 @@ class Snapshot:
 
 @dataclass
 class Outcome:
-    """The result of one macro, found by the look-ahead."""
+    """The result of one move, from the look-ahead."""
 
     dead: bool
-    cause: str  # if dead: "guardian", "nasty", "fall or other cause", or "dead end"
+    cause: str  # if dead: "guardian", "nasty", "fall or other cause", or DEAD_END_CAUSE
     complete: bool
     dx: int  # cells to the right (a negative value is to the left)
     dy: int  # rows higher (a negative value is lower)
     keys_collected: int
     ticks: int
-    x: int  # the position of Willy after the macro
+    x: int  # Willy's position after the move
     y: int
-    # The crumbling floor below Willy after the macro: pixel rows that are gone (0 to 7).
+    # The crumbling floor below Willy after the move: pixel rows gone (0 to 7).
     floor_rows_gone: int = 0
-    # The game after the macro: the guardians, the keys, and the floors at that time.
+    # The game after the move: the guardians, keys, and floors at that time.
     snapshot: "Snapshot | None" = field(default=None, repr=False, compare=False)
 
 
@@ -201,8 +202,6 @@ class Game:
             loaded = self.emu.load_z80(str(snapshot_path))
         if not loaded:
             raise RuntimeError(f"cannot load {snapshot_path}")
-        # False replays a log file from before this behaviour (see _against_conveyor).
-        self.hold_against_conveyor = True
         self._boot()
         self.emu.save_state(START_SLOT)
         self.tick_count = 0
@@ -254,7 +253,7 @@ class Game:
     def _warp(self, cavern: int):
         """Go to a different cavern.
 
-        The code sets the cavern number, gives Willy one more life, and makes
+        It sets the cavern number, gives Willy one more life, and makes
         the air empty. Willy dies, and the game then starts the new cavern.
         """
         self.emu.poke(ADDR_CAVERN, cavern)
@@ -271,7 +270,9 @@ class Game:
                 break
         else:
             raise RuntimeError(f"cannot go to cavern {cavern}")
-        # Wait until the game has drawn the new cavern.
+        # Wait until the game has drawn the new cavern. While the game draws
+        # it, most attribute cells are still 0. More than 40 non-zero cells
+        # means that the tiles are on the screen.
         for _ in range(200):
             self.emu.run_frames(2)
             drawn = sum(1 for b in self.emu.peek_range(ATTR_BUFFER, COLS * ROWS) if b != 0)
@@ -279,6 +280,7 @@ class Game:
                 break
         else:
             raise RuntimeError(f"cavern {cavern} did not start")
+        # Let the game run a few more frames before the caller saves the start.
         self.emu.run_frames(16)
 
     def restart(self):
@@ -314,6 +316,7 @@ class Game:
         return self.emu.get_screen_rgb()
 
     def snapshot(self) -> Snapshot:
+        """Read the game data from emulator memory. The game does not change."""
         emu = self.emu
         attrs = emu.peek_range(EMPTY_ATTR_BUFFER, COLS * ROWS)
         tile_chars = {
@@ -431,7 +434,7 @@ class Game:
         """The switches that are not flipped. Only the Kong Beast caverns have switches.
 
         The game has no flag for a switch. It draws a flipped switch with a
-        different graphic, thus the code compares the pixels with the tile.
+        different graphic, so this method compares the pixels with the tile.
         """
         if self.cavern not in SWITCH_CAVERNS:
             return []
@@ -464,11 +467,9 @@ class Game:
 
         A conveyor carries Willy along. He stands still on it only if the
         opposite direction is held when he lands on it, and for as long as
-        it is held. After one tick with no key, the conveyor has him, and
+        it is held. After one tick with no input, the conveyor has him, and
         he cannot stop again.
         """
-        if not self.hold_against_conveyor:
-            return 0
         x, y = self._cell(self._word(ADDR_WILLY_ATTR))
         conveyor = self.emu.peek(ADDR_TILE_CONVEYOR)
         solid = {self.emu.peek(a) for a in (ADDR_TILE_FLOOR, ADDR_TILE_CRUMBLING, ADDR_TILE_WALL)}
@@ -482,15 +483,15 @@ class Game:
         return 0
 
     def macro_ticks(self, name: str):
-        """Run one macro, then wait until Willy is on the ground.
+        """Play one move, then wait until Willy is on the ground.
 
         This is a generator. It gives control back after each game tick, so
         that the viewer can show the screen.
 
-        The game uses one tick to turn Willy when he looks the other way.
-        A walk macro continues until Willy is 1 cell away and in line with
-        the cell grid. A jump macro turns Willy first. Without this, a jump
-        after a turn goes straight up, and a walk ends between two cells.
+        When Willy looks the other way, the game uses one tick to turn him.
+        So a jump first turns Willy, and only then jumps; if not, the jump
+        goes straight up. A walk continues until Willy is 1 cell away and in
+        line with the grid; if not, the walk can end between two cells.
         """
         macro = MACROS[name]
         direction = macro.joystick & (JOY_LEFT | JOY_RIGHT)
@@ -522,10 +523,11 @@ class Game:
                     break
                 self._tick(joystick)
                 yield
-        # Keep the direction during a jump. The game ignores it in the air,
-        # but it is necessary if Willy lands and the jump is not complete.
-        # A fall onto a conveyor holds against it, thus Willy stands still when
-        # he lands. A direction has no effect in the air.
+        # Hold an input until Willy lands. The game ignores it in the air; it
+        # matters only at the moment he lands. After a jump, keep the jump
+        # direction, so that a jump that lands early continues. After a walk
+        # or a wait, hold against a conveyor below, so that Willy stands
+        # still when he lands on it.
         hold = direction if macro.is_jump else self._against_conveyor(falling=True)
         for _ in range(MAX_SETTLE_TICKS):
             if self._finished() or not self.is_airborne():
@@ -535,7 +537,7 @@ class Game:
         self.emu.set_joystick(0)
 
     def run_macro(self, name: str) -> int:
-        """Run one macro fully. Returns the number of game ticks that it used."""
+        """Play one move to its end. Returns the number of game ticks that it used."""
         start = self.tick_count
         for _ in self.macro_ticks(name):
             pass
@@ -543,7 +545,7 @@ class Game:
 
     @staticmethod
     def _death_cause(snap: Snapshot) -> str:
-        """The thing that killed Willy, from the positions at the death."""
+        """What killed Willy: an estimate from the positions at the death."""
         for g in snap.guardians:
             if abs(g.x - snap.willy_x) <= 2 and abs(g.y - snap.willy_y) <= 2:
                 return "guardian"
@@ -554,18 +556,18 @@ class Game:
         return "fall or other cause"
 
     def _can_survive(self, depth: int, budget: list) -> bool:
-        """Can Willy stay alive for `depth` more macros from the current state?
+        """Can Willy stay alive for `depth` more moves from the current game?
 
-        The check stops at the first sequence of macros that stays alive. It
-        does not look for the target, thus it is not a search for a route.
+        The check stops at the first sequence of moves that keeps Willy
+        alive. It ignores the target.
         """
         if self.is_dead():
             return False
         if depth == 0 or self.is_complete():
             return True
         if budget[0] <= 0:
-            # In open space the check finds a safe sequence in a small number
-            # of tries. If the budget is gone, most sequences kill Willy.
+            # In open space the check finds a safe sequence in a few tries.
+            # When the budget is gone, most sequences kill Willy.
             return False
         slot = DEAD_END_SLOT + depth
         ticks_before = self.tick_count
@@ -587,10 +589,10 @@ class Game:
         return [x * 8 + 2 * (self.emu.peek(ADDR_WILLY_FRAME) & 3), self.emu.peek(ADDR_WILLY_PIXEL_Y) // 2]
 
     def macro_paths(self) -> dict:
-        """The path of Willy for each macro, for the viewer. The game does not change.
+        """Willy's path for each move, for the viewer. The game does not change.
 
-        Each path has the pixel position of Willy (top left) before the macro
-        and after each game tick. `dead` tells that the macro kills Willy.
+        Each path has Willy's pixel position (top left) before the move and
+        after each game tick. `dead` is true if the move kills Willy.
         """
         ticks_before = self.tick_count
         self.emu.save_state(LOOK_AHEAD_SLOT)
@@ -608,14 +610,11 @@ class Game:
         return paths
 
     def look_ahead(self, survival_depth: int = SURVIVAL_DEPTH) -> dict[str, Outcome]:
-        """Try each macro one time and give its result.
+        """Play each move once and return its result. The game does not change.
 
-        The game goes back to the saved state after each try, thus the
-        look-ahead does not change the game. This is a safety check. It is
-        not a search for a route.
-
-        A macro is also deadly if it is a dead end: Willy is alive after it,
-        but no sequence of macros keeps him alive after that.
+        After each move, the emulator loads the saved slot again. A move
+        that goes into a dead end counts as deadly: Willy is alive after it,
+        but no sequence of moves keeps him alive after that.
         """
         before = self.snapshot()
         ticks_before = self.tick_count

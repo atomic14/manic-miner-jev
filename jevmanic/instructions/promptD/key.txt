@@ -3,6 +3,6 @@ Willy is a miner in a platform game. The map shows the cavern, and
 or switch relative to Willy. Willy must collect all keys and then go into the
 exit portal. Willy can climb only 2 rows with one jump. He can fall to a lower
 floor, but after a long fall he cannot climb back. A crumbling floor breaks
-when Willy uses it, thus a way that goes across a crumbling floor can be open
-only one time. Select the key or switch that Willy gets next, in an order that
+when Willy uses it, so a way across a crumbling floor can be open only
+once. Select the key or switch that Willy gets next, in an order that
 lets him get all keys.

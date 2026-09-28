@@ -1,15 +1,16 @@
 # A reasoning model as the planner
 
-This document records one test: a reasoning model makes the plan for a
+This document records one test: a reasoning model plans the key order for a
 cavern, and jev makes each move decision.
 
 ## Why we did this test
 
 Jev selects a good **first** key from the map. It does not reliably give the
-full key order, because a later decision can need the route across several
-floors. That is reasoning of more than one step, and jev is not made for it.
-A reasoning model is made for it. TypeSafe describes this division: a System
-Two model plans, and a System One model (jev) makes the fast decisions.
+full key order, because a later key decision can depend on the route across
+several floors. That needs reasoning over more than one step, and jev is not
+made for it. A reasoning model is. TypeSafe describes this division of work:
+a System Two model plans, and a System One model (jev) makes the fast
+decisions.
 
 ## The method
 
@@ -17,7 +18,7 @@ We started a clean subagent (a reasoning model, Claude) with one message.
 
 - It got only: the maps of caverns 1 to 4, the legend, the patrol limits of
   the guardians, the conveyor directions, and the game mechanics.
-- It got no results of this project and no key orders.
+- It got no results from this project and no key orders.
 - The message told it not to read files, not to search the web, not to use
   tools, and not to use published walkthroughs.
 - It used approximately 72,000 tokens and 7 minutes for the four caverns.
@@ -140,11 +141,11 @@ Horizontal guardians (the map shows the present position):
 Conveyor direction: moves Willy to the right
 ```
 
-## The answer of the subagent
+## The subagent's answer
 
 | Cavern | Key order | What we know |
 | --- | --- | --- |
-| 1 Central Cavern | **E A C D B** | the known good order from earlier search work |
+| 1 Central Cavern | **E A C D B** | the optimum order (it came from earlier search work) |
 | 2 The Cold Room | **E D A B C** | the most frequent order of our complete runs (36 of 52) |
 | 3 The Menagerie | **A B C D E** (E A B C D as an alternative) | our complete runs: E A B C D 55 times, A B C D E 4 times |
 | 4 Abandoned Uranium Workings | **E D A B C** | our 2 complete runs: D E C B A |
@@ -159,9 +160,9 @@ Reasons:
 - From the ground floor, Willy can reach only the row 13 platform. He can
   reach the top floor (row 5) only from the far left: the row 9 floor, then
   the row 7 ledge, then row 5.
-- E is on the only way up, which is the right side, thus it is first. Willy
+- E is on the only way up, which is on the right side, so it is first. Willy
   then meets the top keys in the order A, C, D, B while he walks right.
-- The row 5 floor goes across the full cavern, thus the only way down is
+- The row 5 floor goes across the full cavern, so the only way down is
   through its crumbling cells. Columns 19 to 20 are the only safe drop: it
   lands on the wall block. Columns 20 to 22 fall onto the nasty at column 21.
 
@@ -184,14 +185,14 @@ Reasons:
 
 - C is in a walled chimney (columns 26 to 27). Willy can reach it only from
   the top, through its crumbling floors. That drop ends on the ground 2 to 3
-  cells from the portal, thus C is the last key.
+  cells from the portal, so C is the last key.
 - B is on the way to the top of the chimney, and A is on the row 5 floor
   immediately before B.
 - Willy touches D when he stands on the conveyor at columns 3 to 4, on the
   way up.
 - Willy can reach E only at ground level. If E is last, he must go through
-  the patrol of the ground guardian two times after he lands next to the
-  portal. Thus E is first.
+  the ground guardian's patrol twice after he lands next to the portal. So
+  E is first.
 
 Route plan: Jump onto the row 13 crumbling floor, jump right to the row 12
 platform, wait for the ground guardian to pass, then walk off the right end
@@ -210,7 +211,7 @@ the way down. Walk 2 to 3 cells right into the portal.
 Reasons:
 
 - Willy can reach the right-side ledges (row 7 and row 10) only from above,
-  thus the route is: up the left, across the top, down the right.
+  so the route is: up the left, across the top, down the right.
 - That gives A, B, C along the crumbling top floor, then D when the top floor
   breaks at columns 29 to 30 and Willy lands on the row 7 ledge.
 - Willy cannot get E from directly above. A drop through the top floor at
@@ -218,7 +219,7 @@ Reasons:
 - Willy gets E at the top of a jump to the right from the right end of the
   row 11 platform. That jump lands on the row 13 floor that goes to the
   portal.
-- E first, from the same platform, costs approximately the same. Thus
+- E first, from the same platform, costs approximately the same. So
   E A B C D is an alternative order.
 
 Route plan: Walk right along the ground floor, jump over the ground guardian,
@@ -240,7 +241,7 @@ Reasons:
 - E is near the start, and its ledges (row 12, row 10, row 8, then row 6) are
   also a way up.
 - D is low. Willy cannot get it from above, because a fall from there kills
-  him. He cannot get back up from the row 9 platform to row 6, thus he must
+  him. He cannot get back up from the row 9 platform to row 6, so he must
   get D before the final climb.
 - Willy gets D with a jump to the left from the left end of the row 9
   platform, and he lands on the row 11 platform.
@@ -264,12 +265,12 @@ right down to the row 4 ledge and walk into the portal.
 
 ## The test in play
 
-We used only the key order of the subagent. The code set it with the option
-`--key-order`, and jev got no key request. Jev made each move decision with the
-normal movement, which we did not change. We did not give the route plan to
-jev. 10 live runs for each cavern.
+We used only the subagent's key order. The code set it with the option
+`--key-order`, so the runs had no key decisions. Jev made each move decision
+with the default state and texts, which we did not change. We did not give
+the route plan to jev. 10 live runs for each cavern.
 
-| Cavern | Order | Complete | Decisions | The default configuration |
+| Cavern | Order | Complete runs | Decisions | Jev's own key decisions (the defaults) |
 | --- | --- | --- | --- | --- |
 | 1 Central Cavern | E A C D B | 7 of 10 | 74 | 8 to 10 of 10, 70 to 75 decisions |
 | 2 The Cold Room | E D A B C | 6 of 10 | 76 | 4 to 6 of 10, 95 to 122 decisions |
@@ -284,13 +285,14 @@ jev. 10 live runs for each cavern.
 - A better key order makes the runs shorter (The Cold Room 76 decisions and
   not 95 to 122, The Menagerie 54 and not 66). It does not make more runs
   complete.
-- Thus the key order is not the limit. The limit is the movement layer: the
-  facts that tell jev how to get to the selected key.
+- So the key order is not the limit. The limit is the move decisions: the
+  facts that tell jev how to get to the target.
 - We did not test the route plan as a fact in the jev state. That is a
   possible next step.
 - 10 runs cannot separate results that are near. The same configuration
   (order E A C D B in Central Cavern) gave 10 of 10 in one measurement and 7
   of 10 in the next one.
 
-The summaries of the measurements are in `experiments/results/`
-(`planner-order-cavern-*.json` and `planner-subagent-orders.json`).
+The measurement summaries (`planner-order-cavern-*.json` and
+`planner-subagent-orders.json`) are in `experiments/results/` in the git tag
+`research-2026-09`.

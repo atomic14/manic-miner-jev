@@ -117,7 +117,7 @@
     <div class="pane" id="pane-move">
       <h2><span><span id="d-n">Decision –</span> <span id="pinned"></span></span><small>confidence <b id="d-conf">–</b></small></h2>
       <div id="bars"><p class="hint">Before each move, jev gets the state below and selects one move. Each bar is the
-        probability that jev gave to a move. A move with a line through it was not offered to jev, and the text gives the cause.</p></div>
+        probability that jev gave to a move. A move with a line through it is not a valid move, so jev did not get it. The text gives the cause.</p></div>
       <div class="meta">
         <span>result: <b id="d-result">–</b></span>
         <span>jev time: <b id="d-latency">–</b></span>
@@ -135,7 +135,7 @@
     </div>
     <div class="pane" id="pane-key">
       <h2><span>Key decision: <b id="t-name" style="color:var(--warn)">–</b></span></h2>
-      <p class="hint">jev selects the key that Willy goes to next (the yellow box in the game). Each bar is the probability
+      <p class="hint">jev selects the target: the key or switch that Willy goes to next (the yellow box in the game). Each bar is the probability
          that jev gave to a key. A diamond in the timeline marks each key decision.</p>
       <div class="meta" id="t-meta" style="margin:0 0 8px"></div>
       <div id="t-bars"></div>
@@ -196,10 +196,10 @@ function connect() {
   ws = new WebSocket(`ws://${location.host}/ws`);
   ws.binaryType = "blob";
   ws.onopen = () => {
-    // The Experiment page gives the settings of a new live run. Use them one time only: a reload does not start a second paid run.
+    // The Experiment page gives the settings of a new live run. Use them once only, so that a reload does not start a second paid run.
     const live = store.get("jev-live-start");
     if (live) { store.remove("jev-live-start"); send(JSON.parse(live)); return; }
-    // With ?n=, the replay starts paused at that decision (a link from the page Compare).
+    // With ?n=, the replay starts paused at that decision (a link from the Compare page).
     if (file) params.has("n") ? seek(Number(params.get("n"))) : replay(0, false);
     else updateControls();
   };
@@ -224,14 +224,14 @@ async function draw(blob, targetCell, decision) {
     ctx.strokeRect(cell[0] * 8 - 1.5, cell[1] * 8 - 1.5, 11, 11);
   }
 }
-// The possible moves: a faded figure of Willy along the path of each macro.
-// The figure has the colour of its macro. The selected macro is the brightest.
-// A red cross marks a move that kills Willy or that is a dead end.
+// The possible moves: faded figures of Willy along the path of each move.
+// Each figure has the colour of its move. The selected move is the brightest.
+// A red cross marks a move that kills Willy or goes into a dead end.
 const GHOST_EVERY_TICKS = 2;
 const SHORT_NAME = {walk_left: "walk L", walk_right: "walk R", jump_left: "jump L", jump_right: "jump R", jump_up: "jump up", wait: "wait"};
 function drawGhosts(bitmap, d) {
   const start = d.paths[MACROS[0]].points[0];
-  // The selected macro comes last, thus it is on top.
+  // Draw the selected move last, so that it is on top.
   const order = MACROS.filter(m => m !== d.macro).concat(d.macro in d.paths ? [d.macro] : []);
   const labels = [];
   for (const m of order) {
@@ -410,11 +410,11 @@ function handle(msg) {
     $("mode").className = "badge " + msg.mode;
     $("q-move").innerHTML = questionsHtml(msg.questions);
     $("q-key").innerHTML = msg.target_questions ? questionsHtml(msg.target_questions) :
-      `<p class="hint">This run has no key question.</p>`;
+      `<p class="hint">This run has no key decision.</p>`;
     const st = msg.settings || {}, maker = makerOf(msg);
     document.querySelectorAll(".q-set").forEach(s => s.textContent = maker);
     const keys = st.forced_key_order ? ` · fixed key order ${st.forced_key_order}` : "";
-    $("runinfo").textContent = `${msg.cavern_name || "Central Cavern"} · ${maker} · dead end check ${st.survival_depth ?? 12}${keys}`;
+    $("runinfo").textContent = `${msg.cavern_name || "Central Cavern"} · ${maker} · dead-end check ${st.survival_depth}${keys}`;
     $("runinfo").title = file || msg.file;
     document.title = `${msg.cavern_name || "Central Cavern"} · ${maker}`;
     markTimeline(); updateStats(); updateControls();
@@ -512,9 +512,9 @@ function showDecision(d) {
   const total = isReplay() ? ` of ${decisions.length}` : "";
   $("d-n").textContent = `Decision ${d.n + 1}${total}` + (d.forced ? ` (no jev call: ${d.forced_reason || "only one move is valid"})` : "");
   $("d-conf").textContent = d.confidence.toFixed(2);
-  $("bars").innerHTML = (d.no_safe_move ? `<div class="outcome-bad">No safe move: all 6 macros kill Willy. Jev got all of them.</div>` : "") +
+  $("bars").innerHTML = (d.no_safe_move ? `<div class="outcome-bad">No safe move: all 6 moves kill Willy. jev got all of them.</div>` : "") +
     MACROS.map(m => (d.removed && d.removed[m] && !d.no_safe_move)
-    ? `<div class="bar removed"><span class="name">${m}</span><span class="reason">not offered to jev — ${d.removed[m]}</span></div>`
+    ? `<div class="bar removed"><span class="name">${m}</span><span class="reason">not valid — ${d.removed[m]}</span></div>`
     : bar(m, d.probabilities[m] ?? 0, color(m), m === d.macro)).join("");
   $("d-latency").textContent = d.latency_ms + " ms";
   $("d-tokens").textContent = d.input_tokens;
@@ -550,7 +550,7 @@ function setPaused(value) {
   updateControls();
 }
 $("pause").onclick = () => setPaused(!(paused || pausing));
-// Step during a pause runs one move. Step during play stops at the next decision, as Pause.
+// Step during a pause runs one move. Step during play stops at the next decision, like Pause.
 $("step").onclick = () => {
   if (!paused) { setPaused(true); return; }
   stepping = true; paused = false; send({cmd: "step"}); updateControls();

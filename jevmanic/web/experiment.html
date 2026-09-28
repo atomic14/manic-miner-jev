@@ -29,7 +29,7 @@
   <div class="row"><label for="cavern">Cavern</label><select id="cavern"></select></div>
   <div class="row"><label for="set">Instruction set</label><select id="set" title="The texts that jev gets with each question"></select>
     <a id="set-link" href="/instructions">Read or write sets →</a></div>
-  <label title="On (normal): the key request has a text map of the cavern. Off: it has facts about each key only.">
+  <label title="On (default): the key decision state has a text map of the cavern. Off: it has only the facts about each key.">
     <input type="checkbox" id="map" checked> give jev the map for the key decision</label>
   <div class="spacer"></div>
   <button class="primary" id="lab-ask">Ask jev: which key next? <span class="cost">· $0.0001</span></button>
@@ -38,7 +38,7 @@
 
 <main class="work">
   <section class="stage">
-    <p class="hint" style="margin:0"><b>Key decision lab.</b> In a game, jev selects the key that Willy goes to next. Here you set
+    <p class="hint" style="margin:0"><b>Key decision lab.</b> In a run, jev selects the key that Willy goes to next. Here you set
        up a situation and ask the same question. <b>Click a key</b> to mark it as collected (click again to put it back).
        <b>Click any other place</b> to put Willy there: he goes to the nearest place where he can stand. Limits: the cavern is in
        its start condition, and jev has no memory of earlier decisions.</p>
@@ -51,7 +51,7 @@
 
   <aside class="side">
     <div class="fixed" id="lab-result">
-      <h2><span>Answer of jev</span><small id="lab-meta"></small></h2>
+      <h2><span>jev's answer</span><small id="lab-meta"></small></h2>
       <div id="lab-answer" class="hint">No question yet. Set up a situation and click "Ask jev".</div>
       <div id="lab-bars"></div>
       <div id="lab-compare" style="margin-top:8px"></div>
@@ -62,7 +62,7 @@
       <button data-pane="pane-question">Question</button>
     </nav>
     <div class="pane" id="pane-text">
-      <p class="hint" style="margin:0">jev gets this text with the key question. It starts with the text of the selected set.
+      <p class="hint" style="margin:0">jev gets this text with the key question. It starts as the text of the selected set.
          <b>You can change it here</b> to see how the answer changes. The change is for this page only, and a live run
          does not use it. To keep a text, <a href="/instructions" id="save-link">save it as a set</a>.</p>
       <textarea id="lab-text" spellcheck="false"></textarea>
@@ -83,7 +83,7 @@
     <p id="live-summary"></p>
     <p class="hint">A live run starts at the start of the cavern: your situation in the lab has no effect. jev makes each
        decision. One run costs approximately $0.005. It needs <code>TYPESAFE_API_KEY</code> in the <code>.env</code> file.
-       The run is saved in <code>runs/</code>, and it is in the list of runs.</p>
+       The log file goes to <code>runs/</code>, and the run shows in the list of runs.</p>
     <div class="field">
       <label for="keymode">Who selects the next key?</label>
       <div class="row">
@@ -94,14 +94,14 @@
          and jev makes only the move decisions. The map setting then has no effect.</p>
     </div>
     <div class="field">
-      <label for="depth">Dead end check</label>
+      <label for="depth">Dead-end check</label>
       <select id="depth">
         <option value="0">off</option><option value="1">1 move</option><option value="2">2 moves</option>
         <option value="4" selected>4 moves</option><option value="6">6 moves</option><option value="8">8 moves</option>
         <option value="12">12 moves</option><option value="16">16 moves</option>
       </select>
       <p class="hint">The code always removes a move that kills Willy directly. This check also removes a move after which
-         Willy cannot stay alive for this number of moves.</p>
+         Willy cannot stay alive for this number of moves (a dead end).</p>
     </div>
     <details><summary>The move text of this set</summary>
       <div class="question"><div class="text" id="set-preview" style="max-height:180px;overflow:auto"></div></div></details>
@@ -124,9 +124,9 @@ function setChanged() {
   history.replaceState(null, "", `?cavern=${$("cavern").value}&set=${encodeURIComponent(name)}`);
 }
 
-// The key text of the selected set. A change by the person stays until the set or the map box changes.
+// The key text of the selected set. An edit stays until the set or the map box changes.
 async function labLoadText() {
-  const url = `/api/lab/instructions?name=${encodeURIComponent($("set").value || "promptA")}&with_map=${$("map").checked}`;
+  const url = `/api/lab/instructions?name=${encodeURIComponent($("set").value)}&with_map=${$("map").checked}`;
   lab.cannedText = (await getJson(url)).text;
   $("lab-text").value = lab.cannedText; labTextStatus();
 }
@@ -155,7 +155,7 @@ function labDraw() {
   const c = labCtx, info = lab.info;
   c.setTransform(SCALE, 0, 0, SCALE, 0, 0); c.imageSmoothingEnabled = false;
   c.drawImage(lab.bitmap, 0, 0);  // the canvas shows the 16 cavern rows only
-  // Willy at the place of the person: remove him from the start place, and draw him at the new place.
+  // Move Willy to the place that the person selected: erase him at the start place, and draw him at the new place.
   const [sx, sy] = info.willy, [wx, wy] = lab.willy;
   const figure = willyFigure(lab.bitmap, sx * 8, sy * 8, null);
   if (wx !== sx || wy !== sy) { c.fillStyle = "#000"; c.fillRect(sx * 8, sy * 8, 16, 16); }
@@ -229,7 +229,7 @@ $("lab-ask").onclick = async () => {
   $("lab-meta").textContent = `${reply.latency_ms} ms · ${reply.input_tokens} tokens · $${(reply.input_tokens * USD_PER_TOKEN).toFixed(5)} · ${reply.model}`;
   $("lab-bars").innerHTML = Object.keys(reply.probabilities).sort().map(k =>
     bar(k, reply.probabilities[k] ?? 0, "var(--warn)", k === reply.choice)).join("");
-  // The next key of the optimum order: the first letter of the order that is not collected.
+  // The next key in the optimum order: the first letter in the order that is not collected.
   const next = [...lab.info.optimum_order].find(l => !lab.collected.has(l));
   $("lab-compare").innerHTML = `Optimum key order: <b>${lab.info.optimum_order}</b>. The next key in that order is <b>${next}</b>: ` +
     (next === letter ? `<span class="match">jev agrees.</span>` : `<span class="nomatch">jev selects a different key.</span>`) +
@@ -255,7 +255,7 @@ $("start").onclick = () => {
     $("live-error").textContent = "Give the key order as key letters, for example " + (lab.info ? lab.info.optimum_order : "EACDB") + ".";
     return;
   }
-  // The page Watch starts the run. It reads these settings one time.
+  // The Watch page starts the run. It reads these settings once.
   const command = {cmd: "start", cavern: Number($("cavern").value), instructions: $("set").value,
     map_key_decision: $("map").checked, dead_end_depth: Number($("depth").value), key_order: fixed ? $("keyorder").value : ""};
   if (!store.set("jev-live-start", JSON.stringify(command))) {
@@ -277,7 +277,7 @@ $("start").onclick = () => {
   setChanged();
   await labLoad(cavern); await labLoadText();
   setChanged();
-  // The page Instruction sets links here with ?live=1: open the live run dialog with that set.
+  // The Instruction sets page links here with ?live=1: open the live run dialog with that set.
   if (params.get("live")) $("open-live").click();
 })().catch(error => { $("error").textContent = "The page did not load: " + error; });
 </script>

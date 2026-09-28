@@ -1,9 +1,0 @@
-Willy is a miner in a platform game. He must collect all keys. The map shows
-the cavern, and `map_legend` tells what each symbol means. Select the key that
-Willy goes to next. `keys` gives facts about each key relative to Willy. Willy
-can climb only 2 rows with one jump, thus a key on a much higher floor needs a
-long route. Apply these rules in order. Rule 1: do not select a key that has
-`one_way_trip`, if a different key is left. Willy cannot come back from it,
-thus it must be the last key. Rule 2: prefer the key with the smallest
-`floor_rows_apart`. Rule 3: if two keys are equal, prefer the key with the
-smallest `horizontal_cells`.

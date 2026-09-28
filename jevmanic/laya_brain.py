@@ -4,17 +4,20 @@ Laya (https://github.com/mizorewww/laya-mlx) has the same form of request as
 jev: a state, and typed questions with instructions and criteria. It runs on
 Apple Silicon with MLX. It makes no network call and has no cost.
 
-This is for a comparison with jev. Laya gets the same instructions, the same
-options, and the same state as jev. The important difference is the size of
-the input:
+It is for comparison with jev. With `as_text=False`, Laya gets the same
+instructions, options, and state as jev. The main difference is the input
+size:
 
 - The instructions and the options together get 256 tokens at most. Laya cuts
   the end of the instructions to make them fit.
 - The full input gets 1024 tokens at most. Laya cuts the end of the state.
 
-Laya does this with no message. Thus this class counts what was cut, and
-`cut_report()` gives the totals. A long instruction text (promptA has 400
+Laya does this without a message, so this class counts what it cut, and
+`cut_report()` gives the totals. A long text such as promptA (about 400
 tokens) loses most of its content.
+
+The default (`as_text=True`) sends short sentences instead: see
+`_ask_with_text`.
 
 Install:  uv sync --extra laya
 """
@@ -28,21 +31,21 @@ from .brain import Answer
 DEFAULT_MODEL = "aac6fef/laya-typed-decisions-mlx"  # context of 1024 tokens
 
 
-# The loop fact that the sentences have: "new" (the move goes to a new place), "tried", "many", or "".
-# In real games, "new" was the best (The Cold Room: 4 keys, and 2 keys with no loop fact).
+# The loop fact that each move sentence adds: "new" (the move goes to a new place), "tried", "many",
+# or "" for none. See "Laya instead of jev" in docs/findings.md for the choice of "new".
 LOOP_FACT = os.environ.get("LAYA_LOOP_FACT", "new")
-ORDERS = 6  # Laya prefers the first option: ask with different option orders, and use the mean
+ORDERS = 6  # Laya prefers the first option, so ask with this many option orders and use the mean
 
 
 def option_sentences(state: dict, names=()) -> dict:
     """One short sentence for each option, from the facts of the state.
 
-    A move: its `progress` word, and one more fact: "collects a key",
-    "completes the cavern", or "new" (a new place). A key: its distance word
-    and its height word. More than this in one sentence made Laya worse.
+    A move: its `progress` word, and at most one more fact: "collects a
+    key", "completes the cavern", or the LOOP_FACT. A key: its distance word
+    and its height word. Longer sentences made Laya worse.
     """
     if "moves" in state and not isinstance(state["moves"], dict):
-        return {name: f"{name} is not safe." for name in names}  # no move is safe: the state has a text here
+        return {name: f"{name} is not safe." for name in names}  # no move is safe: `moves` is a string
     if "moves" in state:
         out = {}
         for name, move in state["moves"].items():
@@ -66,9 +69,9 @@ def state_as_text(state: dict, order=None) -> str:
 
 class LayaBrain:
     def __init__(self, model: str = DEFAULT_MODEL, as_text: bool = True):
-        self.as_text = as_text  # False = the same JSON state and option texts as jev
+        self.as_text = as_text  # False = the same JSON state and options as jev
         self._rng = random.Random(1)  # the same orders in each run
-        import laya_mlx  # an optional dependency
+        import laya_mlx  # optional dependency
 
         self.model = f"laya {model.split('/')[-1]}"
         self.maker, self.mode = self.model, "laya"
@@ -130,11 +133,12 @@ class LayaBrain:
         )
 
     def _ask_with_text(self, facts: dict, q, choice_name: str) -> Answer:
-        """The form that Laya can read: short sentences, option names with no text, and a mean of some orders.
+        """Ask Laya in a form that it can read: short sentences, and option names with no text.
 
         Laya reads short sentences much better than nested JSON. It prefers
-        the first option, thus the code asks with different option orders and
-        uses the mean of the probabilities (see the README).
+        the first option, so this method asks with ORDERS different option
+        orders and uses the mean probabilities. See "Laya instead of jev" in
+        docs/findings.md.
         """
         names = list(q.criteria)
         orders = [names] + [self._rng.sample(names, len(names)) for _ in range(ORDERS - 1)]

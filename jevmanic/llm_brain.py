@@ -1,14 +1,14 @@
 """A decision maker that uses an LLM through the `claude` command line tool.
 
-This is for a comparison with jev. The LLM gets the same instructions, the
-same options with their criteria, and the same state as jev. It answers with
-one option name. The differences from jev:
+It is for comparison with jev. The LLM gets the same instructions, the same
+options with their criteria, and the same state as jev. It answers with one
+option name. The differences from jev:
 
-- The answer is text. The code checks that it is one of the options.
+- The answer is text. `parse_choice` checks that it names one of the options.
 - There are no calibrated probabilities. The selected option gets 1.0.
 - A call takes seconds, not a fraction of a second.
 
-The call uses no tools, no project settings, and an empty working folder, thus
+The call uses no tools, no project settings, and an empty working folder, so
 the LLM knows only what is in the prompt.
 """
 
@@ -43,7 +43,7 @@ def parse_choice(text: str, options: list[str]):
     for name in options:
         if cleaned == name.lower():
             return name
-    # Longest names first, thus "jump_left" does not match "left" by accident.
+    # Longest names first, so that "jump_left" does not match "left" by accident.
     found = [name for name in sorted(options, key=len, reverse=True) if name.lower() in cleaned]
     return found[0] if len(found) == 1 else None
 
@@ -78,7 +78,7 @@ class LLMBrain:
         prompt = build_prompt(state, question)
         start = time.perf_counter()
         tokens, choice, raw = 0, None, ""
-        for _ in range(2):  # one more try if the answer is not an option
+        for _ in range(2):  # one more try if the answer names no option
             reply = await self._call(prompt)
             usage = reply.get("usage", {})
             tokens += usage.get("input_tokens", 0) + usage.get("cache_read_input_tokens", 0)

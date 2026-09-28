@@ -1,17 +1,18 @@
 """Live runs and replays.
 
-A live run asks the decision maker (jev, or an LLM for comparison) for each
-decision and writes a log file in `runs/`. A replay reads a log file and runs
-the same macros again. The emulator is deterministic, thus a replay shows the
-same game and needs no jev calls.
+A live run asks the decision maker (jev, a rule, or another model) for each
+decision and writes a log file in `runs/`. A replay reads a log file and plays
+the same moves again. The emulator is deterministic, so a replay shows the
+same game and makes no jev request.
 
 `play_live` and `play_replay` are async generators. They give a sequence of:
     ("frame", Game)      the screen changed (one game tick)
     ("event", dict)      data for the viewer: header, target, decision, result, end
 
 Log file format: JSON Lines. Line 1 is the header. Then one line for each
-request: a "target" record (the key decision) or a "decision" record (the move
-decision, with its result). The last line is the end record.
+decision: a "target" record for a key decision, or a "decision" record for a
+move decision, with its result. Forced decisions also get a line. The last
+line is the end record.
 """
 
 import json
@@ -29,57 +30,49 @@ from .game import MACROS, SURVIVAL_DEPTH, Game
 from .key_orders import OPTIMUM, OPTIMUM_KEY_ORDER
 
 RUNS_DIR = Path(__file__).resolve().parent.parent / "runs"
-# Recorded runs that are in git. Use them for a demonstration without jev calls.
+# Recorded runs that are in git. A demonstration with them makes no jev request.
 DEMO_DIR = Path(__file__).resolve().parent.parent / "demo"
 USD_PER_TOKEN = 0.042 / 1_000_000  # jev-1.13 price for input tokens
 
 MAX_DECISIONS = 400
-# The earlier names of the two instruction sets, in the log files of that time.
-OLD_SET_NAMES = {"free": "promptA", "rules": "promptB"}
-MACROS_VERSION = 2  # 2: a fall onto a conveyor and a wait on it hold against the conveyor
-# End the run if Willy visits no new position and collects no key in this
-# number of decisions. This prevents cost for a run that goes nowhere.
+# Version 2 of the moves: a fall onto a conveyor, and a wait on one, hold
+# against the conveyor.
+MACROS_VERSION = 2
+# End the run ("stuck: no progress") if Willy visits no new place and collects
+# no key in this many decisions, so that a run that goes nowhere stops costing.
 STUCK_DECISIONS = 30
-# The key decision with the facts only: jev gets it again after this number of
-# decisions with no new place, and after a change of floor level (with this
-# number of decisions or more between two requests).
+# The key decision without the map comes again after this many decisions with
+# no new place, and after a change of floor level (if at least
+# FLOOR_CHANGE_MIN_GAP decisions have passed since the last one).
 GIVE_UP_DECISIONS = 12
 FLOOR_CHANGE_MIN_GAP = 4
 
 
+def is_current(header: dict) -> bool:
+    """Is this log file from the present version? The viewer skips older log files,
+    because their moves were different (the replay would not match) or their
+    settings had older names."""
+    return header.get("macros", 1) == MACROS_VERSION and "instructions" in header.get("settings", {})
+
+
 @dataclass
 class Settings:
-    """The configuration of a live run. The defaults are the normal configuration."""
+    """The settings of a live run. The defaults are the normal settings."""
 
-    # The set of instruction texts: a folder in `jevmanic/instructions/`.
-    # "promptA" (the default): the decisions come from jev. "promptB": the texts
-    # are lists of rules that we wrote (for comparison). The instructions are the
-    # only difference: the state and the schedule of the requests are the same.
+    # The instruction set: a folder in `jevmanic/instructions/`.
     instructions: str = DEFAULT_INSTRUCTIONS
-    # The key decision uses the map of the cavern. Jev gets it at the start,
-    # when Willy collects a key, and again after `key_decision_every`
-    # decisions (0 = no repeat). False = the key decision with the facts only.
+    # True: the key decision's state has the cavern map. The key decision
+    # comes at the start, after each collected key or flipped switch, and
+    # again after `key_decision_every` decisions (0 = no repeat).
+    # False: the state has the key facts only, and GIVE_UP_DECISIONS applies.
     map_key_decision: bool = True
     key_decision_every: int = 25
-    # The number of moves that the dead end check looks ahead. 0 = off.
+    # How many moves the dead-end check looks ahead. 0 = off.
     survival_depth: int = SURVIVAL_DEPTH
-    # Research tools. They make no key request or no move request.
-    forced_key_order: str = ""  # the code sets the key order, for example "EACDB"
-    random_moves: bool = False  # a random choice from the valid moves
-    # A simple rule in the place of jev, for comparison (no jev call). "" = jev.
-    # See RULES for the names.
-    rule: str = ""
-    # The facts about the direction of each move: "route" (`progress`, with two rules
-    # of the code), "plain" (measured distances only), or "none". See PROGRESS_FACTS
-    # in describe.py. Use an instruction set that names the same fields.
-    progress_facts: str = "route"
-    # Which facts the move state has: "full" (normal), or a smaller set for a test.
-    # See MOVE_FACT_SETS in describe.py. Use an instruction set that names the same fields.
-    move_facts: str = "full"
-
-    @property
-    def uses_map(self) -> bool:
-        return self.map_key_decision
+    # Settings for comparison. Each one replaces jev in one type of decision.
+    forced_key_order: str = ""  # a fixed key order instead of key decisions, for example "EACDB"
+    random_moves: bool = False  # a random valid move instead of jev's move decision
+    rule: str = ""  # a rule from RULES instead of jev's move decision. "" = jev.
 
 
 # -- The list of recorded runs ---------------------------------------------------------
@@ -89,7 +82,7 @@ LIVE_GROUP = "live"
 
 
 def list_runs() -> list[dict]:
-    """The header and end record of each log file, newest first.
+    """A summary of each current log file: the examples first, then the others, newest first.
 
     Each run is in one group: the saved examples (folder demo/), the live
     runs (folder runs/), or one measurement (a folder below runs/).
@@ -101,6 +94,8 @@ def list_runs() -> list[dict]:
         if len(lines) < 2:
             continue
         header, end = json.loads(lines[0]), json.loads(lines[-1])
+        if not is_current(header):
+            continue
         if end.get("type") != "end":
             end = {"outcome": "incomplete", "decisions": len(lines) - 1}
         if path.parent == DEMO_DIR:
@@ -109,7 +104,7 @@ def list_runs() -> list[dict]:
             file = str(path.relative_to(RUNS_DIR))
             group = LIVE_GROUP if path.parent == RUNS_DIR else str(path.parent.relative_to(RUNS_DIR))
         cavern = header.get("cavern", 0)
-        settings = header.get("settings", {})
+        settings = header["settings"]
         runs.append(
             {
                 "file": file,
@@ -123,9 +118,9 @@ def list_runs() -> list[dict]:
                 "keys_collected": end.get("keys_collected"),
                 "keys_total": len(OPTIMUM_KEY_ORDER.get(cavern, "")),
                 "cost_usd": end.get("cost_usd"),
-                "dead_end_check": settings.get("survival_depth", 12),
-                "key_map": settings.get("map_key_decision"),  # None: a log file from before this setting
-                "key_order": settings.get("forced_key_order", ""),
+                "dead_end_check": settings["survival_depth"],
+                "key_map": settings["map_key_decision"],
+                "key_order": settings["forced_key_order"],
             }
         )
     return runs
@@ -143,13 +138,13 @@ def run_path(file: str) -> Path:
 
 
 def read_run(file: str) -> list[dict]:
-    """All records of a log file: the header, the requests, and the end record."""
+    """All records of a log file: the header, the decision records, and the end record."""
     return [json.loads(line) for line in run_path(file).read_text().splitlines()]
 
 
 def run_mode(header: dict) -> str:
-    """The mode of a run in words, also for a log file of an older version."""
-    settings = header.get("settings", {})
+    """The run's decision maker, as the viewer shows it (for jev: the instruction set)."""
+    settings = header["settings"]
     maker = header.get("decision_maker", "jev")
     if maker != "jev":
         return maker
@@ -157,13 +152,7 @@ def run_mode(header: dict) -> str:
         return "random moves"
     if settings.get("rule"):
         return f"rule: {settings['rule']}"
-    if settings.get("nearer_moves"):  # a log file from before the setting `rule`
-        return "rule: nearer"
-    if "instructions" in settings:
-        return OLD_SET_NAMES.get(settings["instructions"], settings["instructions"])
-    if "rules_mode" in settings:  # a log file from before the instruction files
-        return "promptB" if settings["rules_mode"] else "promptA"
-    return "promptA" if settings.get("free_move") else "promptB"
+    return settings["instructions"]
 
 
 def list_run_groups(runs: list[dict]) -> list[dict]:
@@ -213,29 +202,18 @@ def _nearer(f):
     return f.get("progress") == "nearer"
 
 
-def _new(f):
-    return f.get("place") == "new place"
-
-
-# The simple rules for comparison. Each rule is a sequence of tests: the rule
-# selects at random from the moves that pass the first test that any move
-# passes, else from all valid moves. The rules use only facts that jev gets.
+# The rules. Each rule is a sequence of tests. The rule finds the first test
+# that at least one move passes, and selects at random from those moves. If no
+# move passes a test, it selects at random from all valid moves. The rules use
+# only facts that jev also gets.
 RULES = {
     # A move that completes the cavern or collects a key, else a move that goes nearer.
     "nearer": (_goal, _nearer),
-    # The same, but a nearer move to a new place first, and then a move to a new place.
-    "nearer-new": (_goal, lambda f: _nearer(f) and _new(f), _nearer, _new),
-    # The rule `nearer` with no random choice: always the first move that passes a test
-    # (in the order of the macros). A test of how much the random choice helps the rule.
-    "nearer-fixed": (_goal, _nearer),
-    # For the plain facts: a move that gets nearer to the way up or down, else nearer to the target.
-    "plain": (_goal, lambda f: "nearer" in (f.get("to_way_up"), f.get("to_way_down")),
-              lambda f: f.get("to_target") == "nearer"),
 }
 
 
 def rule_moves(rule: str, offered: list[str], facts: dict) -> list[str]:
-    """The moves that a rule of RULES can select. A base for comparison only."""
+    """The moves that a rule from RULES can select."""
     for test in RULES[rule]:
         found = [m for m in offered if isinstance(facts, dict) and test(facts.get(m, {}))]
         if found:
@@ -271,7 +249,7 @@ def _result(game: Game, n: int, ticks: int, keys_at_start: int) -> dict:
 
 
 def _log_path(folder: str, cavern: int, cavern_name: str, mode: str) -> Path:
-    """Example: runs/20260919-151227-cavern-01-central-cavern-free.jsonl"""
+    """Example: runs/20260919-151227-cavern-01-central-cavern-promptD.jsonl"""
     runs_dir = RUNS_DIR / folder
     runs_dir.mkdir(parents=True, exist_ok=True)
     slug = re.sub(r"[^a-z0-9]+", "-", cavern_name.lower()).strip("-")
@@ -286,26 +264,24 @@ def _log_path(folder: str, cavern: int, cavern_name: str, mode: str) -> Path:
 
 
 class _LiveRun:
-    """The memory of one live run, and its two types of decision."""
+    """One live run: its memory, and its key and move decisions."""
 
     def __init__(self, game: Game, brain, settings: Settings):
         self.game, self.brain, self.settings = game, brain, settings
         first = game.snapshot()
         self.keys_at_start = len(first.keys)
-        # The name of a key has the letter that the key has on the map.
-        self.names = {cell: f"key_{first.key_letters[cell]}" for cell in first.keys}
-        self.names.update({cell: f"switch_{i + 1}" for i, cell in enumerate(first.switches)})
+        self.names = describe.key_names(first)
         self.tokens = 0
         self.target = None
-        # The memory of Willy: the places, and the moves that he tried there.
+        # Willy's memory: the places, and the moves that he made from each one.
         self.visited = Counter({(first.willy_x, first.willy_y): 1})
         self.tried = set()
-        # For the "no progress" rule: (place, keys collected) that Willy reached.
+        # For STUCK_DECISIONS: each (place, keys collected) that Willy reached.
         self.seen = set()
         self.idle = 0
         self.since_new_place = 0
-        # The memory of the key decision.
-        self.used_for = Counter()  # decisions that Willy used for each key as the target
+        # The key decision's memory.
+        self.used_for = Counter()  # decisions that Willy used on each key as the target
         self.gave_up = Counter()  # times that Willy made no progress toward each key
         self.goals_at_request, self.floor_at_request, self.n_at_request = -1, -1, 0
 
@@ -316,10 +292,10 @@ class _LiveRun:
             return False  # the target is the portal
         if self.target not in goals or len(goals) != self.goals_at_request:
             return True  # the start, or Willy collected a key or flipped a switch
-        if self.settings.uses_map:
+        if self.settings.map_key_decision:
             repeat = self.settings.key_decision_every
             return repeat > 0 and n - self.n_at_request >= repeat
-        # The facts only: also after no progress, and after a change of floor level.
+        # Without the map: also after no new place, and after a change of floor level.
         if self.since_new_place >= GIVE_UP_DECISIONS:
             self.gave_up[self.target] += 1
             return True
@@ -327,7 +303,7 @@ class _LiveRun:
         return floor_changed and n - self.n_at_request >= FLOOR_CHANGE_MIN_GAP
 
     async def key_decision(self, snap, n: int) -> dict | None:
-        """Select the key that Willy goes to next. Gives the log record, or None."""
+        """Select the target, if a key decision is due. Returns the log record, or None."""
         goals = snap.keys + snap.switches
         if self.settings.forced_key_order:
             by_letter = {snap.key_letters[k]: k for k in snap.keys}
@@ -345,9 +321,9 @@ class _LiveRun:
                       "forced_reason": "only one key is left"}
         else:
             memory = {"current": self.target, "used": self.used_for, "gave_up": self.gave_up}
-            state = describe.key_request_state(snap, self.names, memory, self.settings.uses_map)
+            state = describe.key_request_state(snap, self.names, memory, self.settings.map_key_decision)
             names = [self.names[k] for k in goals]
-            question = key_question(names, self.settings.instructions, self.settings.uses_map)
+            question = key_question(names, self.settings.instructions, self.settings.map_key_decision)
             answer = await self.brain.ask(state, question, "key")
             self.tokens += answer.input_tokens
             previous = self.target
@@ -362,15 +338,14 @@ class _LiveRun:
     # -- the move decision --
 
     async def move_decision(self, snap, n: int) -> dict:
-        """Select one macro from the valid moves. Gives the log record."""
+        """Select one of the valid moves. Returns the log record."""
         outcomes = self.game.look_ahead(self.settings.survival_depth)
-        state, moves = describe.move_request_state(snap, outcomes, self.target, self.visited, self.tried,
-                                                   self.settings.progress_facts, self.settings.move_facts)
-        removed = {} if moves["moves_not_offered"] == "none" else moves["moves_not_offered"]
-        offered = list(moves["moves"])
+        state = describe.move_request_state(snap, outcomes, self.target, self.visited, self.tried)
+        removed = {} if state["moves_not_offered"] == "none" else state["moves_not_offered"]
+        offered = list(state["moves"])
         if not offered:
-            # Each macro kills Willy. Jev gets all of them, because a Choice
-            # needs options. The log keeps the causes.
+            # Each move kills Willy. Jev gets all of them, because a Choice
+            # question needs options. The log file keeps the causes.
             offered = list(MACROS)
             state["moves"] = "none: no move is safe"
         record = {
@@ -386,8 +361,8 @@ class _LiveRun:
             {(o.x, o.y, o.keys_collected, o.complete) for m, o in outcomes.items() if m in offered}
         ) == 1
         if len(offered) == 1 or same_result:
-            # There is no decision to make: only one macro is valid, or all
-            # valid macros have the same result (Willy is in the air).
+            # A forced decision: only one move is valid, or all valid moves
+            # have the same result (Willy is in the air).
             macro = "wait" if same_result and "wait" in offered else offered[0]
             reason = "all valid moves have the same result" if same_result else "only one move is valid"
             record.update(macro=macro, probabilities={macro: 1.0}, confidence=1.0, latency_ms=0,
@@ -398,11 +373,9 @@ class _LiveRun:
                           confidence=0.0, latency_ms=0, input_tokens=0, model="random", state=state)
         elif self.settings.rule:
             best = rule_moves(self.settings.rule, offered, state["moves"])
-            if self.settings.rule.endswith("-fixed"):
-                best = best[:1]
             share = 1 / len(best)
             record.update(macro=random.choice(best), probabilities={m: share for m in best},
-                          confidence=0.0, latency_ms=0, input_tokens=0, model="nearer", state=state)
+                          confidence=0.0, latency_ms=0, input_tokens=0, model=f"rule-{self.settings.rule}", state=state)
         else:
             question = move_question(offered, self.settings.instructions)
             answer = await self.brain.ask(state, question, "move")
@@ -415,7 +388,7 @@ class _LiveRun:
         return record
 
     def remember(self, result: dict):
-        """Update the memory of Willy with the result of a move."""
+        """Add the result of a move to Willy's memory."""
         place = tuple(result["willy"])
         self.since_new_place = 0 if place not in self.visited else self.since_new_place + 1
         self.visited[place] += 1
@@ -428,16 +401,15 @@ async def play_live(game: Game, brain, cavern: int = 0, settings: Settings | Non
                     show_paths: bool = False):
     """Play one live game. `folder` is a folder below `runs/` for the log file.
 
-    `show_paths` is for the viewer: before each decision, an event gives the
-    path of Willy for each macro. The paths do not go to jev or to the log file.
+    `show_paths` is for the viewer: before each decision, an event gives
+    Willy's path for each move. The paths do not go to jev or to the log file.
     """
     settings = settings or Settings()
     if settings.forced_key_order == OPTIMUM:
         settings = replace(settings, forced_key_order=OPTIMUM_KEY_ORDER[cavern])
-    game.hold_against_conveyor = True
     game.select_cavern(cavern)
     run = _LiveRun(game, brain, settings)
-    # A decision maker that is not jev gives its name (`maker`) and the word for the file name (`mode`).
+    # A decision maker other than jev has a name (`maker`) and a word for the file name (`mode`).
     maker = getattr(brain, "maker", "jev")
     if settings.random_moves:
         mode = "random"
@@ -460,7 +432,7 @@ async def play_live(game: Game, brain, cavern: int = 0, settings: Settings | Non
         "cavern_name": cavern_name,
         "questions": questions_as_json(move_question(instructions=settings.instructions)),
         "target_questions": questions_as_json(
-            key_question(list(run.names.values()), settings.instructions, settings.uses_map)
+            key_question(list(run.names.values()), settings.instructions, settings.map_key_decision)
         ),
         "started": time.time(),
     }
@@ -498,8 +470,8 @@ async def play_live(game: Game, brain, cavern: int = 0, settings: Settings | Non
             "decisions": n,
             "keys_collected": result.get("keys_collected", 0),
             "input_tokens": run.tokens,
-            # An LLM decision maker counts its own cost. For jev, the cost comes
-            # from the input tokens.
+            # The other models count their own cost. Jev's cost comes from the
+            # input tokens.
             "cost_usd": round(brain.total_cost if hasattr(brain, "total_cost") else run.tokens * USD_PER_TOKEN, 6),
         }
         write(end)
@@ -512,13 +484,13 @@ async def play_live(game: Game, brain, cavern: int = 0, settings: Settings | Non
 async def play_replay(game: Game, file: str, show_paths: bool = False, start: int = 0):
     """Replay a log file. `start` is the first decision to show.
 
-    The decisions before `start` run with no frames and no events. The
-    emulator is fast, thus the viewer can jump to any decision of a run.
+    The decisions before `start` play with no frames and no events. The
+    emulator is fast, so the viewer can jump to any decision in a run.
     """
     records = read_run(file)
     header = {**records[0], "mode": "replay", "start": start}
-    # Version 2: a fall onto a conveyor and a wait on it hold against the conveyor.
-    game.hold_against_conveyor = header.get("macros", 1) >= 2
+    if not is_current(header):
+        raise ValueError(f"{file} is a log file of an earlier version")
     game.select_cavern(header.get("cavern", 0))
     keys_at_start = len(game.snapshot().keys)
     yield "event", header
@@ -545,7 +517,7 @@ async def play_replay(game: Game, file: str, show_paths: bool = False, start: in
             yield "frame", game
         result = _result(game, record["n"], game.tick_count - first_tick, keys_at_start)
         if logged and logged["willy"] != result["willy"]:
-            # The replay must give the same game as the live run.
+            # The replay did not give the same game as the live run.
             result["replay_mismatch"] = True
         yield "event", result
     yield "event", {"type": "end", "outcome": "incomplete log", "decisions": len(records) - 1}

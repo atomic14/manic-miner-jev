@@ -1,12 +1,12 @@
-"""The key decision lab: ask jev the key question for a situation that a person sets up.
+"""The key decision lab: ask jev for a key decision in a situation that a person sets up.
 
 The person selects a cavern, marks keys as collected, and puts Willy at a
 place. The lab makes the same request as a live run (the same state and the
-same question), and gives the answer of jev.
+same question), and returns jev's answer.
 
 Limits: the cavern is in its start condition (no crumbling floor is used, and
 the guardians are at their start positions). The key memory is empty, as in
-the first key request of a run.
+a run's first key decision.
 """
 
 from dataclasses import replace
@@ -16,10 +16,7 @@ from .brain import DEFAULT_INSTRUCTIONS, key_question, questions_as_json
 from .game import (
     COLS,
     ROWS,
-    TILE_CONVEYOR,
-    TILE_CRUMBLING,
     TILE_EMPTY,
-    TILE_FLOOR,
     TILE_NASTY,
     TILE_WALL,
     Game,
@@ -27,11 +24,9 @@ from .game import (
 )
 from .key_orders import OPTIMUM_KEY_ORDER
 
-SOLID = (TILE_FLOOR, TILE_CRUMBLING, TILE_WALL, TILE_CONVEYOR)  # tiles that Willy can stand on
-
 
 def cavern_info(game: Game, cavern: int) -> dict:
-    """The data that the page needs to draw the cavern and to find a click."""
+    """The data that the Experiment page needs to draw the cavern and to find what a click hits."""
     game.select_cavern(cavern)
     snap = game.snapshot()
     return {
@@ -54,7 +49,7 @@ def standing_place(snap: Snapshot, x: int, y: int) -> tuple[int, int]:
         body = [tile(wx + dx, wy + dy) for dx in (0, 1) for dy in (0, 1)]
         free = all(t == TILE_EMPTY for t in body)
         below = [tile(wx + dx, wy + 2) for dx in (0, 1)]
-        return free and any(t in SOLID for t in below) and TILE_NASTY not in below
+        return free and any(t in describe.SOLID for t in below) and TILE_NASTY not in below
 
     x = max(1, min(COLS - 3, x))
     # The click is on the body of Willy: look down from one row above the click.
@@ -67,7 +62,7 @@ def standing_place(snap: Snapshot, x: int, y: int) -> tuple[int, int]:
 
 
 def situation(game: Game, cavern: int, willy, collected: str) -> Snapshot:
-    """The start of the cavern, with Willy at a different place and some keys collected."""
+    """The cavern's start, with Willy at a different place and some keys collected."""
     game.select_cavern(cavern)
     snap = game.snapshot()
     keys = [k for k in snap.keys if snap.key_letters[k] not in collected.upper()]
@@ -80,12 +75,12 @@ def situation(game: Game, cavern: int, willy, collected: str) -> Snapshot:
 
 def request_for(snap: Snapshot, with_map: bool = True, instructions: str = DEFAULT_INSTRUCTIONS,
                 custom_text: str = ""):
-    """The state and the question of the key request, the same as in a live run.
+    """The key decision's state and question, the same as in a live run.
 
-    `custom_text` replaces the instruction text: a person can try a text with no file.
+    A non-empty `custom_text` replaces the text of the set, so that a person
+    can try a text without saving a file.
     """
-    names = {cell: f"key_{snap.key_letters[cell]}" for cell in snap.keys}
-    names.update({cell: f"switch_{i + 1}" for i, cell in enumerate(snap.switches)})
+    names = describe.key_names(snap)
     memory = {"current": None, "used": {}, "gave_up": {}}
     state = describe.key_request_state(snap, names, memory, with_map)
     question = key_question(list(names.values()), instructions, with_map)
@@ -96,11 +91,18 @@ def request_for(snap: Snapshot, with_map: bool = True, instructions: str = DEFAU
 
 async def ask(game: Game, brain, cavern: int, willy, collected: str, with_map: bool = True,
               instructions: str = DEFAULT_INSTRUCTIONS, custom_text: str = "") -> dict:
+    """Set up the situation, and ask jev for the key decision.
+
+    Returns Willy's place and the keys that are left. If a key or switch is
+    left, it also returns the state and the question. With two or more, it
+    also returns jev's answer. With fewer, `no_call` says why a live run
+    makes no request here.
+    """
     snap = situation(game, cavern, willy, collected)
     out = {"willy": [snap.willy_x, snap.willy_y], "keys_left": [snap.key_letters[k] for k in snap.keys]}
     goals = len(snap.keys) + len(snap.switches)
     if goals == 0:
-        return {**out, "no_call": "No key is left. The target is the exit portal, and there is no key request."}
+        return {**out, "no_call": "No key is left. The target is the exit portal, and there is no key decision."}
     state, question = request_for(snap, with_map, instructions, custom_text)
     out.update(state=state, question=questions_as_json(question))
     if goals == 1:

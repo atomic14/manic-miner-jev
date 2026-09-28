@@ -49,7 +49,7 @@
       <ul id="diffs" style="margin:0;padding-left:18px"></ul>
     </div>
     <div class="panel">
-      <h2><span>The path of Willy</span><small>one point after each move · ● key collected · ✕ Willy died</small></h2>
+      <h2><span>Willy's path</span><small>one point after each move · ● key collected · ✕ Willy died</small></h2>
       <div class="maps" id="maps"></div>
     </div>
     <div class="panel">
@@ -74,7 +74,7 @@ const runs = [{id: "a", file: params.get("a")}, {id: "b", file: params.get("b")}
 
 async function load() {
   if (!runs[0].file || !runs[1].file) {
-    $("error").textContent = "Select two runs on the page Runs, then click Compare.";
+    $("error").textContent = "Select two runs on the Runs page, then click Compare.";
     return;
   }
   for (const run of runs) {
@@ -108,7 +108,7 @@ function showCards() {
         <span>decisions <b>${run.decisions.length}</b></span>
         <span>key decisions <b>${run.targets.filter(t => !t.forced).length}</b></span>
         <span>cost <b>$${(run.end.cost_usd ?? tokens * USD_PER_TOKEN).toFixed(4)}</b></span>
-        <span>dead end check <b>${st.survival_depth ?? 12}</b></span>
+        <span>dead-end check <b>${st.survival_depth ?? 12}</b></span>
         ${st.forced_key_order ? `<span>key order <b>${escapeHtml(st.forced_key_order)}</b></span>` : ""}
         <span>started <b>${dateText(h.started)}</b></span>
       </div>
@@ -132,9 +132,7 @@ function showDiffs() {
   const [a, b] = runs, items = [];
   if (a.header.cavern !== b.header.cavern) items.push("The runs are in <b>different caverns</b>.");
   // The settings and the questions that are different.
-  // An older log file names the instruction sets "free" and "rules": show the present names.
-  const names = st => ({...st, ...(st.instructions ? {instructions: {free: "promptA", rules: "promptB"}[st.instructions] || st.instructions} : {})});
-  const sa = names(a.header.settings || {}), sb = names(b.header.settings || {});
+  const sa = a.header.settings, sb = b.header.settings;
   const changed = [...new Set([...Object.keys(sa), ...Object.keys(sb)])]
     .filter(k => JSON.stringify(sa[k]) !== JSON.stringify(sb[k]));
   if (changed.length) items.push("Different settings: " + changed.map(k =>
@@ -163,7 +161,7 @@ function showDiffs() {
     }
     items.push(text);
   }
-  // A key decision that keeps the same key does not change the order: show each key one time in a row.
+  // A key decision that keeps the same key does not change the order, so show a repeated key only once.
   const keyOrder = run => run.targets.map(t => t.choice.replace("key_", ""))
     .filter((k, i, all) => i === 0 || k !== all[i - 1]).join(" → ") || "none";
   items.push(`The targets in order: A: <b>${escapeHtml(keyOrder(a))}</b>. B: <b>${escapeHtml(keyOrder(b))}</b>.`);

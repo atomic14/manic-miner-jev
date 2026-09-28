@@ -3,11 +3,11 @@
 Examples:
     uv run python -m jevmanic.cli --cavern 2
     uv run python -m jevmanic.cli --cavern 2 --until-complete
-    uv run python -m jevmanic.cli --cavern 1 --rules
+    uv run python -m jevmanic.cli --cavern 1 --rule nearer --key-order optimum
     uv run python -m jevmanic.cli --cavern 1 --llm haiku
 
-The cavern number starts at 1: cavern 1 is Central Cavern. Each run writes a
-log file in runs/, and the viewer can replay it.
+Here the cavern number starts at 1: cavern 1 is Central Cavern. Each run
+writes a log file in runs/, and the viewer can replay it.
 """
 
 import argparse
@@ -51,14 +51,14 @@ async def main():
     parser.add_argument("--cavern", type=int, default=1, help="cavern number, 1 to 20 (default 1)")
     parser.add_argument("--until-complete", action="store_true",
                         help=f"play again until a run is complete ({MAX_ATTEMPTS} runs at most)")
-    parser.add_argument("--llm", metavar="MODEL", help="an LLM makes the decisions through the "
-                        "`claude` command line tool, for example haiku (for comparison, slow)")
+    parser.add_argument("--llm", metavar="MODEL", help="for comparison: an LLM makes the decisions through the "
+                        "`claude` command line tool, for example haiku (slow)")
     parser.add_argument("--local", nargs="?", const="default", metavar="MODEL",
-                        help="a local LLM makes the decisions: the code reads the answer from its logits, as jevfire "
-                             "and SemIf do (for comparison, needs `uv sync --extra local`). MODEL is an mlx-community "
-                             "model name; the default is Qwen3-4B in 4-bit form")
-    parser.add_argument("--laya", action="store_true", help="Laya makes the decisions: a typed decision model "
-                        "that runs on this computer (for comparison, needs `uv sync --extra laya`)")
+                        help="for comparison: a local LLM makes the decisions, with the answer read from its logits "
+                             "(needs `uv sync --extra local`). MODEL is an MLX model name; the default is "
+                             "mlx-community/Qwen3-8B-4bit")
+    parser.add_argument("--laya", action="store_true", help="for comparison: Laya makes the decisions, a typed "
+                        "decision model that runs on this computer (needs `uv sync --extra laya`)")
     add_run_options(parser)
     args = parser.parse_args()
     if not 1 <= args.cavern <= 20:
@@ -66,11 +66,11 @@ async def main():
     load_dotenv(".env")
     game = Game()
     if args.local:
-        from .local_brain import DEFAULT_MODEL, LocalBrain  # an optional dependency
+        from .local_brain import DEFAULT_MODEL, LocalBrain  # optional dependency
 
         brain, folder = LocalBrain(DEFAULT_MODEL if args.local == "default" else args.local), "local"
     elif args.laya:
-        from .laya_brain import LayaBrain  # an optional dependency
+        from .laya_brain import LayaBrain  # optional dependency
 
         brain, folder = LayaBrain(), "laya"
     else:

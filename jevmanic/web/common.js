@@ -2,19 +2,19 @@
 const $ = id => document.getElementById(id);
 const MACROS = ["walk_left", "walk_right", "jump_left", "jump_right", "jump_up", "wait"];
 const USD_PER_TOKEN = 0.042 / 1e6;
-const SCALE = 3;  // the canvas is 3 times finer than the game screen, thus the lines and the labels are sharp
+const SCALE = 3;  // the canvas is 3 times finer than the game screen, so that lines and labels are sharp
 const color = m => getComputedStyle(document.documentElement).getPropertyValue("--" + m).trim();
 
 function escapeHtml(text) {
   return String(text).replace(/[&<>"]/g, c => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"}[c]));
 }
-// A `name` in an instruction text refers to a field of the state: show it as code.
+// A `name` in back quotes in a text is a field of the state: show it as code.
 function withCode(text) {
   return escapeHtml(text).replace(/`([^`]+)`/g, "<code>$1</code>");
 }
 
 // -- The header and the help dialog: the same on each page ---------------------------------------
-// The page gives its name in <header class="top" data-page="...">.
+// Each page gives its name in <header class="top" data-page="...">.
 const PAGES = [["runs", "/", "Runs"], ["watch", "/watch", "Watch"], ["experiment", "/experiment", "Experiment"]];
 function setupHeader() {
   const top = document.querySelector("header.top");
@@ -32,21 +32,21 @@ function setupHeader() {
          and a question, and it selects one answer. Here it plays <b>Manic Miner</b> (ZX Spectrum, 1983).
          Miner Willy must collect all keys in a cavern and then go into the exit portal, and he must stay alive.</p>
       <ol>
-        <li>The game stops before each move. The code reads the game and writes a description as text. jev gets no picture.</li>
-        <li>The code tries each of the 6 moves in the emulator first. A move that kills Willy is not offered to jev.</li>
+        <li>The game stops before each move. The code reads the game memory and writes the facts as JSON. jev gets no picture.</li>
+        <li>The code first tries each of the 6 moves in the emulator. jev gets only the valid moves: not a move that kills Willy, goes into a dead end, or has no effect.</li>
         <li>jev selects one move (walk left or right, jump left, right, or up, or wait). The game runs that move, and then stops again.</li>
         <li>Less frequently, jev selects the key that Willy goes to next (the key decision).</li>
-        <li>An <b>instruction set</b> is the text that jev gets with each question. The state and the options are the same
+        <li>An <b>instruction set</b> has the texts that jev gets with each question. The state and the options are the same
             for each set.</li>
       </ol>
       <p>The pages:</p>
       <ul>
         <li><b>Runs</b>: all recorded runs, with filters, and the totals for each cavern. Select two runs to compare them.</li>
-        <li><b>Watch</b>: one run. Each decision of jev, its probabilities, and all data that jev got.</li>
-        <li><b>Experiment</b>: ask jev one key question for a situation that you set up, start a live run, or write
+        <li><b>Watch</b>: one run. Each of jev's decisions, with its probabilities and all data that jev got.</li>
+        <li><b>Experiment</b>: ask jev for one key decision in a situation that you set up, start a live run, or write
             an instruction set.</li>
       </ul>
-      <p class="hint">A replay is free: it makes no jev call. A live run and a lab question call jev. They need
+      <p class="hint">A replay is free: it makes no jev call. A live run and a question in the key decision lab call jev. They need
          <code>TYPESAFE_API_KEY</code> in the <code>.env</code> file.</p>
     </div></dialog>`);
   $("open-about").onclick = () => $("dlg-about").showModal();
@@ -71,17 +71,13 @@ function dateText(seconds) {
   return d.toLocaleDateString([], {month: "short", day: "numeric"}) + " " +
     d.toLocaleTimeString([], {hour: "2-digit", minute: "2-digit"});
 }
-// The decision maker of a run from its header, also for a log file of an older version.
-// The same rule as run_mode() in runner.py.
+// The decision maker of a run, from its header. Keep this in step with run_mode() in runner.py.
 function makerOf(header) {
-  const st = header.settings || {};
+  const st = header.settings;
   if (header.decision_maker && header.decision_maker !== "jev") return header.decision_maker;
   if (st.random_moves) return "random moves";
   if (st.rule) return "rule: " + st.rule;
-  if (st.nearer_moves) return "rule: nearer";  // a log file from before the setting `rule`
-  if (st.instructions) return {free: "promptA", rules: "promptB"}[st.instructions] || st.instructions;
-  if ("rules_mode" in st) return st.rules_mode ? "promptB" : "promptA";
-  return st.free_move ? "promptA" : "promptB";
+  return st.instructions;
 }
 
 function bar(name, value, fill, chosen) {
@@ -91,7 +87,7 @@ function bar(name, value, fill, chosen) {
 }
 
 // -- The data that goes to jev ------------------------------------------------------------------
-// The questions of a request, as a person reads them. The exact JSON is below them.
+// The questions of a request in a readable form, with the exact JSON below them.
 function questionsHtml(questions) {
   if (!questions) return "";
   const parts = Object.entries(questions).map(([name, q]) => `<div class="question">
@@ -103,7 +99,7 @@ function questionsHtml(questions) {
     escapeHtml(JSON.stringify(questions, null, 2))}</pre></details>`;
 }
 
-// A state as a person reads it: each field with its value. It shows all fields of the JSON.
+// A state in a readable form: each field with its value. It shows every field of the JSON.
 // A list of strings (the map) is a block of rows.
 function factsHtml(value) {
   const simple = v => v === null || typeof v !== "object";
@@ -125,7 +121,7 @@ function factsHtml(value) {
     ? `<dl class="facts top">${Object.entries(value).map(([k, x]) => `<dt>${escapeHtml(k)}</dt><dd>${one(x)}</dd>`).join("")}</dl>`
     : one(value);
 }
-// The state of a request two times: as a person reads it, and as the exact JSON.
+// The state of a request twice: in a readable form, and as the exact JSON.
 function stateHtml(state) {
   if (!state) return `<p class="hint">No state.</p>`;
   return factsHtml(state) + `<details class="json"><summary>The exact JSON of this state</summary><pre>${
@@ -144,7 +140,7 @@ function setupTabs(nav, onShow) {
   return show;
 }
 
-// The canvas has object-fit: contain. This gives the part of the box that has the picture.
+// The canvas has object-fit: contain. This gives the part of the box that the picture fills.
 function pictureRect(canvas) {
   const r = canvas.getBoundingClientRect(), ratio = canvas.width / canvas.height;
   const w = Math.min(r.width, r.height * ratio), h = w / ratio;

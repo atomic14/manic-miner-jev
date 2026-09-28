@@ -99,7 +99,7 @@ async function load() {
     groups.map(g => `<option value="${escapeHtml(g.id)}">${escapeHtml(g.label)} (${g.runs})</option>`).join("");
   $("f-cavern").innerHTML = `<option value="">all</option>` +
     data.caverns.map((name, i) => `<option value="${i}">${i + 1}. ${escapeHtml(name)}</option>`).join("");
-  // The first visit shows the saved example runs: they are part of the project.
+  // On the first visit, show the saved example runs, which are part of the project.
   $("f-group").value = params.has("group") ? params.get("group") : "examples";
   if ($("f-group").selectedIndex < 0) $("f-group").value = "";
   fillModes();
@@ -110,11 +110,11 @@ async function load() {
 }
 
 const inGroup = () => data.runs.filter(r => !$("f-group").value || r.group === $("f-group").value);
-// The decision makers of the group, promptA first.
+// The decision makers in the group: the default instruction set first, then the most frequent.
 function modesOf(runs) {
   const count = {};
   runs.forEach(r => count[r.mode] = (count[r.mode] || 0) + 1);
-  return Object.keys(count).sort((a, b) => (b === "promptA") - (a === "promptA") || count[b] - count[a]);
+  return Object.keys(count).sort((a, b) => (b === data.default_set) - (a === data.default_set) || count[b] - count[a]);
 }
 function fillModes() {
   const selected = $("f-mode").value;
@@ -128,7 +128,7 @@ function show() {
   const group = data.groups.find(g => g.id === $("f-group").value);
   $("group-info").textContent = group ? group.description :
     "All recorded runs: the saved examples (demo/), your live runs (runs/), and the measurements (folders below runs/).";
-  // The filters go into the address, thus a reload or a link shows the same runs.
+  // The filters go into the address, so that a reload or a link shows the same runs.
   const query = new URLSearchParams();
   for (const [name, id] of [["group", "f-group"], ["cavern", "f-cavern"], ["mode", "f-mode"], ["result", "f-result"]])
     if ($(id).value || (name === "group" && $(id).value === "")) query.set(name, $(id).value);
@@ -168,7 +168,7 @@ function filtered() {
     (!result || (result === "complete") === isComplete(r)));
 }
 function settingsText(r) {
-  const parts = [`dead end check ${r.dead_end_check}`];
+  const parts = [`dead-end check ${r.dead_end_check}`];
   if (r.key_order) parts.push(`key order ${r.key_order}`);
   else if (r.key_map === false) parts.push("key decision: facts only");
   return parts.join(" · ");

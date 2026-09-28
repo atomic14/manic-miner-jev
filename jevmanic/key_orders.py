@@ -1,7 +1,8 @@
-"""The optimum key order for each cavern, for the mode in which the code sets the key order.
+"""The optimum key order of each cavern, for `--key-order optimum`.
 
-The letters are the key letters of this project (the map of the key decision
-shows them). Cavern numbers start at 0.
+The letters are the key letters on the key decision's map. Here the cavern
+numbers start at 0. The optimum order is a good reference order, not a
+proven best order.
 """
 
 OPTIMUM_KEY_ORDER = {
@@ -27,4 +28,4 @@ OPTIMUM_KEY_ORDER = {
     19: "EDCAB",  # The Final Barrier
 }
 
-OPTIMUM = "OPTIMUM"  # the value of the key order setting that selects the order above
+OPTIMUM = "OPTIMUM"  # the `forced_key_order` value that selects the order above

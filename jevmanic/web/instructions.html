@@ -47,7 +47,7 @@
   <div class="row"><label for="set">Set</label><select id="set"></select></div>
   <div class="files" id="files">
     <button data-file="move.txt" title="File move.txt. jev gets this text before each move.">Move question</button>
-    <button data-file="key.txt" title="File key.txt. The key question when the state has the map of the cavern (normal).">Key question, with the map</button>
+    <button data-file="key.txt" title="File key.txt. The key question when the state has the map of the cavern (the default).">Key question, with the map</button>
     <button data-file="key_facts_only.txt" title="File key_facts_only.txt. The key question when the state has no map.">Key question, facts only</button>
   </div>
   <div class="row"><label for="compare">Compare with</label><select id="compare"></select></div>
@@ -96,19 +96,19 @@ async function load(selected) {
   $("set").innerHTML = options;
   $("compare").innerHTML = `<option value="">nothing</option>` + options;
   $("set").value = selected && data.sets.some(s => s.name === selected) ? selected : data.default;
-  if (!$("compare").dataset.touched) $("compare").value = $("set").value === "promptB" ? "promptA" : "promptB";
+  if (!$("compare").dataset.touched) $("compare").value = $("set").value === "promptA" ? "promptD" : "promptA";
   drafts = {};
   show();
 }
 const current = () => data.sets.find(s => s.name === $("set").value);
 
-// A text in the form that jev gets it: one paragraph, with the names of fields as code.
-// With `mine`, the words that are different from that text have a colour.
+// A text in the form that jev gets: one paragraph, with field names shown as code.
+// With `mine`, the words that differ from that text have a colour.
 function reading(text, after, mine) {
   const paragraph = mine === undefined ? withCode(text.split(/\s+/).join(" ").trim()) : diffHtml(mine, text);
   return `<p>${paragraph}</p>` + (after ? `<p class="after">${withCode(after.split(/\s+/).join(" ").trim())}</p>` : "");
 }
-// The words of two texts, with the longest common sequence. The words that are only in one text get a colour.
+// Compare the words of two texts by their longest common sequence. The words that are only in one text get a colour.
 function diffHtml(mine, other) {
   const a = mine.trim().split(/\s+/).filter(Boolean), b = other.trim().split(/\s+/).filter(Boolean);
   const table = Array.from({length: a.length + 1}, () => new Uint16Array(b.length + 1));
@@ -127,8 +127,8 @@ function diffHtml(mine, other) {
     else if (j < b.length && (i >= a.length || table[i][j + 1] >= table[i + 1][j])) { add("only-compare", b[j]); j++; }
     else { add("only-edit", a[i]); i++; }
   }
-  // A short run of the same words between two changes ("the", "a") cuts one change into small parts.
-  // Put such a run into the change on the two sides, thus each change shows as one block.
+  // A few equal words between two changes ("the", "a") cut one change into small parts.
+  // Join such words into the change on both sides, so that each change shows as one block.
   const SHORT = 3;
   for (let changed = true; changed;) {
     changed = false;
@@ -150,7 +150,7 @@ function diffHtml(mine, other) {
     steps = groups.flatMap(g => g.same ? [{kind: "same", words: g.same}] :
       [{kind: "only-compare", words: g.compare}, {kind: "only-edit", words: g.edit}].filter(x => x.words.length));
   }
-  // The panel shows the text of the compared set only. A mark shows where the edited text has words that
+  // The panel shows only the text of the compared set. A mark shows where the edited text has words that
   // the compared set does not have. The mark shows those words when the pointer is on it.
   return steps.map(step => step.kind === "same" ? withCode(step.words.join(" ")) :
     step.kind === "only-compare" ? `<span class="only-compare">${withCode(step.words.join(" "))}</span>` :
@@ -163,16 +163,16 @@ function show() {
   const set = current();
   const text = drafts[file] ?? set.files[file];
   $("edit").value = text;
-  // A fixed set is read only. The results in the README come from it.
+  // A fixed set is read-only, because the default, the README results, or the Laya runs depend on it.
   $("edit").readOnly = set.fixed;
   $("edit-title").textContent = `${set.name} · ${FILE_NAMES[file]}`;
   showCounts();
   $("file-info").textContent = FILE_INFO[file];
-  $("fixed-note").textContent = set.fixed ? `The set ${set.name} is fixed, because the results in the README come from it. ` +
+  $("fixed-note").textContent = set.fixed ? `The set ${set.name} is fixed: it is the default, the text of the README results, or the text for Laya. ` +
     `To change it, type a name below and click "Copy as a new set".` : "";
   $("save-new").textContent = set.fixed ? "Copy as a new set" : "Save as a new set";
   $("files").querySelectorAll("button").forEach(b => b.classList.toggle("on", b.dataset.file === file));
-  // The options of the key question are the keys of the cavern: the code makes one option for each key.
+  // The key question has one option for each key of the cavern, so the options depend on the cavern, not on the set.
   $("criteria").innerHTML = file === "move.txt"
     ? Object.entries(data.move_criteria).map(([k, v]) => `<dt>${k}</dt><dd>${withCode(v)}</dd>`).join("")
     : `<dt>key_A, key_B, …</dt><dd>The key or switch that <code>keys.key_A</code> describes. One option for each key that is left.</dd>`;
@@ -211,7 +211,7 @@ $("edit").oninput = () => {
   clearTimeout(diffTimer); diffTimer = setTimeout(showCompare, 250);
 };
 $("diff").onchange = showCompare;
-// A change that is not saved: the browser asks before the person leaves the page.
+// If a change is not saved, the browser asks before the person leaves the page.
 window.addEventListener("beforeunload", e => { if (data && showCounts().length) { e.preventDefault(); e.returnValue = ""; } });
 $("files").querySelectorAll("button").forEach(b => b.onclick = () => { file = b.dataset.file; show(); });
 $("set").onchange = () => {

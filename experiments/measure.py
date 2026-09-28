@@ -1,13 +1,13 @@
-"""Measure how well jev plays: run many live games and print a table.
+"""Measure how well a decision maker plays: run many live games and print a table.
 
-Jev does not always give the same answer for the same state, thus one run
-tells us little. Use this tool before and after each change to the state or to
-the questions. 10 runs for each cavern show only large effects.
+Jev does not always give the same answer for the same state, so one run tells
+us little. Use this tool before and after each change to the state or to the
+questions. Even 10 runs for each cavern show only large effects.
 
 Examples:
     uv run python -m experiments.measure --caverns 1,2,3 --runs 10 --label my-test
-    uv run python -m experiments.measure --caverns 1,2 --label rules --rules
-    uv run python -m experiments.measure --caverns 1 --label random --random-moves --key-order ABCDE
+    uv run python -m experiments.measure --caverns 1,2 --label nearer --rule nearer --key-order optimum
+    uv run python -m experiments.measure --caverns 1 --label random --random-moves --key-order optimum
 
 The log files go to runs/<label>/, and the viewer can replay them. The summary
 goes to runs/<label>/summary.json.
@@ -29,19 +29,19 @@ from jevmanic.runner import RUNS_DIR, play_live
 
 
 def parse():
-    parser = argparse.ArgumentParser(description="Measure how well jev plays Manic Miner.")
+    parser = argparse.ArgumentParser(description="Measure how well jev, or a decision maker for comparison, plays Manic Miner.")
     parser.add_argument("--caverns", default="1,2,3", help="cavern numbers, 1 to 20 (default 1,2,3)")
     parser.add_argument("--runs", type=int, default=10, help="live games for each cavern (default 10)")
-    parser.add_argument("--label", default="measure", help="the name of the folder below runs/")
+    parser.add_argument("--label", default="measure", help="the measurement's name, and its folder below runs/")
     parser.add_argument("--parallel", type=int, default=5, help="games that run at the same time (default 5)")
     parser.add_argument("--local", nargs="?", const="default", metavar="MODEL",
-                        help="a local LLM makes the decisions: the code reads the answer from its logits, as jevfire "
-                             "and SemIf do (for comparison, needs `uv sync --extra local`). MODEL is an mlx-community "
-                             "model name; the default is Qwen3-4B in 4-bit form")
+                        help="for comparison: a local LLM makes the decisions, with the answer read from its logits "
+                             "(needs `uv sync --extra local`). MODEL is an MLX model name; the default is "
+                             "mlx-community/Qwen3-8B-4bit")
     parser.add_argument("--skip-checks", action="store_true",
-                        help="do not check the requests before the measurement (see jevmanic/checks.py)")
-    parser.add_argument("--laya", action="store_true", help="Laya makes the decisions: a typed decision model "
-                        "that runs on this computer (for comparison, needs `uv sync --extra laya`)")
+                        help="do not run the request checks (jevmanic/checks.py) before the measurement")
+    parser.add_argument("--laya", action="store_true", help="for comparison: Laya makes the decisions, a typed "
+                        "decision model that runs on this computer (needs `uv sync --extra laya`)")
     add_run_options(parser)
     args = parser.parse_args()
     try:
@@ -54,7 +54,7 @@ def parse():
 
 
 async def one_run(brain, limit, cavern, settings, label):
-    """Play one game and give a summary of it. An error in one game does not stop the others."""
+    """Play one game and return its summary. An error in one game does not stop the others."""
     try:
         return await _one_run(brain, limit, cavern, settings, label)
     except Exception as error:
@@ -67,7 +67,7 @@ async def one_run(brain, limit, cavern, settings, label):
 async def _one_run(brain, limit, cavern, settings, label):
     async with limit:
         game = Game()
-        decisions, latencies, confidences = 0, [], []
+        latencies, confidences = [], []
         end, file = {}, ""
         async for kind, data in play_live(game, brain, cavern, settings, label):
             if kind != "event":
@@ -109,7 +109,7 @@ def table(results, names):
             "runs": len(runs),
             "complete": len(done),
             "mean_keys": round(statistics.mean(r["keys"] for r in runs), 1),
-            # The decisions of the complete runs only. A failed run has no useful count.
+            # Complete runs only: a failed run's decision count means nothing.
             "mean_decisions_complete": round(statistics.mean(r["decisions"] for r in done)) if done else None,
             "tokens_per_call": round(sum(r["tokens"] for r in runs) / calls),
             "low_confidence_rate": round(sum(r["low_confidence"] for r in runs) / calls, 2),
@@ -132,22 +132,22 @@ async def main():
     settings = settings_from(args)
     print(f"label={args.label} caverns={[c + 1 for c in args.cavern_list]} runs={args.runs} {settings}")
     if not args.skip_checks:
-        # Check the requests before the measurement costs money (see jevmanic/checks.py).
+        # Run the request checks (jevmanic/checks.py) before the measurement costs money.
         from jevmanic.checks import measurement_problems
 
         problems = measurement_problems(settings)
         if problems:
-            print("The requests have problems. No run started. (--skip-checks starts the runs anyway.)")
+            print("The request checks found problems. No run started. (--skip-checks starts the runs anyway.)")
             for problem in problems:
                 print("  " + problem)
             raise SystemExit(1)
-        print("The requests passed the checks.")
+        print("The requests passed the request checks.")
     if args.local:
-        from jevmanic.local_brain import DEFAULT_MODEL, LocalBrain  # an optional dependency
+        from jevmanic.local_brain import DEFAULT_MODEL, LocalBrain  # optional dependency
 
         brain = LocalBrain(DEFAULT_MODEL if args.local == "default" else args.local)
     elif args.laya:
-        from jevmanic.laya_brain import LayaBrain  # an optional dependency
+        from jevmanic.laya_brain import LayaBrain  # optional dependency
 
         brain = LayaBrain()
     else:
