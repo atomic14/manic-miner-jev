@@ -1,0 +1,4506 @@
+{
+ "horizon": 60,
+ "rollouts": 6,
+ "rows": [
+  {
+   "file": "20260928-172609-cavern-06-processing-plant-promptD.jsonl",
+   "n": 44,
+   "jev_move": "jump_right",
+   "jev": {
+    "keys": 0.6666666666666666,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 1.3333333333333333,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173618-cavern-17-the-warehouse-promptD.jsonl",
+   "n": 15,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-172314-cavern-02-the-cold-room-promptD.jsonl",
+   "n": 60,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 0.8333333333333334,
+    "dead": 0,
+    "complete": 0.6666666666666666
+   },
+   "rule": {
+    "keys": 0.6666666666666666,
+    "dead": 0.16666666666666666,
+    "complete": 0.6666666666666666
+   }
+  },
+  {
+   "file": "20260928-172924-cavern-10-the-endorian-forest-promptD-2.jsonl",
+   "n": 58,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 0.8333333333333334,
+    "dead": 0.16666666666666666,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0.8333333333333334,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-172509-cavern-04-abandoned-uranium-workings-promptD.jsonl",
+   "n": 168,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 0,
+    "dead": 1,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 1,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173356-cavern-14-skylab-landing-bay-promptD.jsonl",
+   "n": 101,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0.16666666666666666,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173313-cavern-14-skylab-landing-bay-promptD.jsonl",
+   "n": 145,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 0,
+    "dead": 1,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 1,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173334-cavern-14-skylab-landing-bay-promptD.jsonl",
+   "n": 123,
+   "jev_move": "jump_left",
+   "jev": {
+    "keys": 0,
+    "dead": 1,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 1,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173755-cavern-19-solar-power-generator-promptD.jsonl",
+   "n": 58,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 0,
+    "dead": 0.16666666666666666,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173130-cavern-11-attack-of-the-mutant-telephones-promptD.jsonl",
+   "n": 78,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 0.3333333333333333,
+    "dead": 0.5,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0.6666666666666666,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-172755-cavern-07-the-vat-promptD.jsonl",
+   "n": 65,
+   "jev_move": "jump_left",
+   "jev": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-172440-cavern-04-abandoned-uranium-workings-promptD.jsonl",
+   "n": 29,
+   "jev_move": "jump_left",
+   "jev": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173352-cavern-14-skylab-landing-bay-promptD.jsonl",
+   "n": 126,
+   "jev_move": "jump_right",
+   "jev": {
+    "keys": 0,
+    "dead": 1,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 1,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-172259-cavern-02-the-cold-room-promptD.jsonl",
+   "n": 106,
+   "jev_move": "wait",
+   "jev": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0.8333333333333334
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0.8333333333333334
+   }
+  },
+  {
+   "file": "20260928-173130-cavern-11-attack-of-the-mutant-telephones-promptD.jsonl",
+   "n": 130,
+   "jev_move": "wait",
+   "jev": {
+    "keys": 0,
+    "dead": 0.16666666666666666,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0.5,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173257-cavern-14-skylab-landing-bay-promptD.jsonl",
+   "n": 88,
+   "jev_move": "jump_left",
+   "jev": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173635-cavern-17-the-warehouse-promptD.jsonl",
+   "n": 21,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 0.16666666666666666,
+    "dead": 0.16666666666666666,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0.16666666666666666,
+    "dead": 0.16666666666666666,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-171913-cavern-01-central-cavern-promptD-4.jsonl",
+   "n": 41,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 1
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 1
+   }
+  },
+  {
+   "file": "20260928-173313-cavern-14-skylab-landing-bay-promptD.jsonl",
+   "n": 122,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 0,
+    "dead": 0.8333333333333334,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 1,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-172924-cavern-10-the-endorian-forest-promptD.jsonl",
+   "n": 88,
+   "jev_move": "jump_left",
+   "jev": {
+    "keys": 2,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 2,
+    "dead": 0,
+    "complete": 0.16666666666666666
+   }
+  },
+  {
+   "file": "20260928-172808-cavern-08-miner-willy-meets-the-kong-beast-promptD-2.jsonl",
+   "n": 125,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173630-cavern-17-the-warehouse-promptD.jsonl",
+   "n": 13,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 2,
+    "dead": 0.16666666666666666,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0.8333333333333334,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-172455-cavern-04-abandoned-uranium-workings-promptD.jsonl",
+   "n": 34,
+   "jev_move": "jump_right",
+   "jev": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173018-cavern-10-the-endorian-forest-promptD.jsonl",
+   "n": 66,
+   "jev_move": "wait",
+   "jev": {
+    "keys": 0,
+    "dead": 0.5,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0.6666666666666666,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-172259-cavern-02-the-cold-room-promptD.jsonl",
+   "n": 113,
+   "jev_move": "wait",
+   "jev": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 1
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 1
+   }
+  },
+  {
+   "file": "20260928-172216-cavern-01-central-cavern-promptD.jsonl",
+   "n": 41,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 1
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 1
+   }
+  },
+  {
+   "file": "20260928-172259-cavern-02-the-cold-room-promptD.jsonl",
+   "n": 91,
+   "jev_move": "wait",
+   "jev": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0.6666666666666666
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 1
+   }
+  },
+  {
+   "file": "20260928-173745-cavern-19-solar-power-generator-promptD.jsonl",
+   "n": 60,
+   "jev_move": "wait",
+   "jev": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0.16666666666666666,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173540-cavern-16-the-sixteenth-cavern-promptD.jsonl",
+   "n": 28,
+   "jev_move": "wait",
+   "jev": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0.16666666666666666,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-171913-cavern-01-central-cavern-promptD-5.jsonl",
+   "n": 125,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 1.8333333333333333,
+    "dead": 1,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 2.6666666666666665,
+    "dead": 1,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173130-cavern-11-attack-of-the-mutant-telephones-promptD.jsonl",
+   "n": 84,
+   "jev_move": "wait",
+   "jev": {
+    "keys": 0,
+    "dead": 1,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0.3333333333333333,
+    "dead": 0.5,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-172759-cavern-07-the-vat-promptD.jsonl",
+   "n": 42,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173225-cavern-13-ore-refinery-promptD.jsonl",
+   "n": 5,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 1,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 1,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-172259-cavern-02-the-cold-room-promptD.jsonl",
+   "n": 107,
+   "jev_move": "wait",
+   "jev": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 1
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0.8333333333333334
+   }
+  },
+  {
+   "file": "20260928-173515-cavern-16-the-sixteenth-cavern-promptD.jsonl",
+   "n": 20,
+   "jev_move": "jump_left",
+   "jev": {
+    "keys": 0,
+    "dead": 0.3333333333333333,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0.6666666666666666,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-172804-cavern-07-the-vat-promptD.jsonl",
+   "n": 26,
+   "jev_move": "jump_left",
+   "jev": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173306-cavern-14-skylab-landing-bay-promptD.jsonl",
+   "n": 85,
+   "jev_move": "jump_right",
+   "jev": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173356-cavern-14-skylab-landing-bay-promptD.jsonl",
+   "n": 113,
+   "jev_move": "jump_left",
+   "jev": {
+    "keys": 0,
+    "dead": 0.16666666666666666,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173546-cavern-16-the-sixteenth-cavern-promptD.jsonl",
+   "n": 28,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 0,
+    "dead": 0.3333333333333333,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0.3333333333333333,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-172820-cavern-08-miner-willy-meets-the-kong-beast-promptD.jsonl",
+   "n": 124,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173047-cavern-11-attack-of-the-mutant-telephones-promptD.jsonl",
+   "n": 29,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 0.3333333333333333,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0.5,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-172808-cavern-08-miner-willy-meets-the-kong-beast-promptD.jsonl",
+   "n": 33,
+   "jev_move": "jump_left",
+   "jev": {
+    "keys": 1,
+    "dead": 0.3333333333333333,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0.8333333333333334,
+    "dead": 0.3333333333333333,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-172759-cavern-07-the-vat-promptD.jsonl",
+   "n": 81,
+   "jev_move": "wait",
+   "jev": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0.6666666666666666,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173322-cavern-14-skylab-landing-bay-promptD.jsonl",
+   "n": 74,
+   "jev_move": "jump_left",
+   "jev": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-172940-cavern-10-the-endorian-forest-promptD.jsonl",
+   "n": 46,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 0,
+    "dead": 0.6666666666666666,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 1,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-172214-cavern-01-central-cavern-promptD.jsonl",
+   "n": 49,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 1
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 1
+   }
+  },
+  {
+   "file": "20260928-173212-cavern-12-return-of-the-alien-kong-beast-promptD.jsonl",
+   "n": 31,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 0,
+    "dead": 0.3333333333333333,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0.16666666666666666,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173606-cavern-16-the-sixteenth-cavern-promptD.jsonl",
+   "n": 29,
+   "jev_move": "walk_right",
+   "jev": {
+    "keys": 0,
+    "dead": 0.5,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0.16666666666666666,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173735-cavern-19-solar-power-generator-promptD.jsonl",
+   "n": 58,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-172442-cavern-04-abandoned-uranium-workings-promptD.jsonl",
+   "n": 127,
+   "jev_move": "jump_right",
+   "jev": {
+    "keys": 0.6666666666666666,
+    "dead": 0.3333333333333333,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 1,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-172733-cavern-07-the-vat-promptD.jsonl",
+   "n": 94,
+   "jev_move": "jump_left",
+   "jev": {
+    "keys": 0,
+    "dead": 1,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 1,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173653-cavern-18-amoebatrons-revenge-promptD.jsonl",
+   "n": 188,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 0,
+    "dead": 1,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 1,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-172940-cavern-10-the-endorian-forest-promptD.jsonl",
+   "n": 114,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 0,
+    "dead": 0.16666666666666666,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0.5,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-172515-cavern-04-abandoned-uranium-workings-promptD.jsonl",
+   "n": 24,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173034-cavern-11-attack-of-the-mutant-telephones-promptD.jsonl",
+   "n": 109,
+   "jev_move": "jump_left",
+   "jev": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173400-cavern-14-skylab-landing-bay-promptD.jsonl",
+   "n": 78,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173412-cavern-15-the-bank-promptD.jsonl",
+   "n": 25,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 1.3333333333333333,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 1.1666666666666667,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173805-cavern-19-solar-power-generator-promptD.jsonl",
+   "n": 129,
+   "jev_move": "wait",
+   "jev": {
+    "keys": 0,
+    "dead": 1,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 1,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-172734-cavern-07-the-vat-promptD.jsonl",
+   "n": 83,
+   "jev_move": "jump_left",
+   "jev": {
+    "keys": 0,
+    "dead": 1,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0.8333333333333334,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173012-cavern-10-the-endorian-forest-promptD.jsonl",
+   "n": 38,
+   "jev_move": "jump_left",
+   "jev": {
+    "keys": 0,
+    "dead": 0.8333333333333334,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 1,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-172928-cavern-10-the-endorian-forest-promptD.jsonl",
+   "n": 171,
+   "jev_move": "jump_right",
+   "jev": {
+    "keys": 0,
+    "dead": 1,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 1,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173624-cavern-17-the-warehouse-promptD.jsonl",
+   "n": 31,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 0.5,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173400-cavern-14-skylab-landing-bay-promptD.jsonl",
+   "n": 42,
+   "jev_move": "jump_right",
+   "jev": {
+    "keys": 0.5,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173400-cavern-14-skylab-landing-bay-promptD.jsonl",
+   "n": 122,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 0,
+    "dead": 1,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 1,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173130-cavern-11-attack-of-the-mutant-telephones-promptD.jsonl",
+   "n": 156,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 0,
+    "dead": 1,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0.5,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173630-cavern-17-the-warehouse-promptD.jsonl",
+   "n": 5,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 0.5,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0.5,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-172259-cavern-02-the-cold-room-promptD.jsonl",
+   "n": 140,
+   "jev_move": "jump_left",
+   "jev": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0.8333333333333334
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0.3333333333333333
+   }
+  },
+  {
+   "file": "20260928-173343-cavern-14-skylab-landing-bay-promptD.jsonl",
+   "n": 107,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 0,
+    "dead": 0.16666666666666666,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0.6666666666666666,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-172843-cavern-08-miner-willy-meets-the-kong-beast-promptD.jsonl",
+   "n": 129,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173143-cavern-12-return-of-the-alien-kong-beast-promptD.jsonl",
+   "n": 41,
+   "jev_move": "jump_right",
+   "jev": {
+    "keys": 0,
+    "dead": 0.3333333333333333,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173210-cavern-12-return-of-the-alien-kong-beast-promptD.jsonl",
+   "n": 48,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173805-cavern-19-solar-power-generator-promptD.jsonl",
+   "n": 94,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 0,
+    "dead": 1,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 1,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-172712-cavern-07-the-vat-promptD.jsonl",
+   "n": 71,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173120-cavern-11-attack-of-the-mutant-telephones-promptD.jsonl",
+   "n": 88,
+   "jev_move": "wait",
+   "jev": {
+    "keys": 0,
+    "dead": 0.3333333333333333,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0.6666666666666666,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173542-cavern-16-the-sixteenth-cavern-promptD.jsonl",
+   "n": 101,
+   "jev_move": "wait",
+   "jev": {
+    "keys": 0.8333333333333334,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0.8333333333333334,
+    "dead": 0.16666666666666666,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173125-cavern-11-attack-of-the-mutant-telephones-promptD.jsonl",
+   "n": 103,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 1,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 1,
+    "dead": 0.16666666666666666,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-172433-cavern-03-the-menagerie-promptD.jsonl",
+   "n": 52,
+   "jev_move": "wait",
+   "jev": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0.3333333333333333,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173306-cavern-14-skylab-landing-bay-promptD.jsonl",
+   "n": 102,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 0,
+    "dead": 0.6666666666666666,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0.16666666666666666,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173805-cavern-19-solar-power-generator-promptD.jsonl",
+   "n": 90,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 0,
+    "dead": 1,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 1,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173412-cavern-15-the-bank-promptD.jsonl",
+   "n": 88,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-172502-cavern-04-abandoned-uranium-workings-promptD.jsonl",
+   "n": 130,
+   "jev_move": "walk_right",
+   "jev": {
+    "keys": 1.6666666666666667,
+    "dead": 1,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-172705-cavern-06-processing-plant-promptD.jsonl",
+   "n": 17,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173439-cavern-15-the-bank-promptD.jsonl",
+   "n": 61,
+   "jev_move": "jump_right",
+   "jev": {
+    "keys": 0.5,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0.5,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173125-cavern-11-attack-of-the-mutant-telephones-promptD.jsonl",
+   "n": 27,
+   "jev_move": "jump_left",
+   "jev": {
+    "keys": 0.16666666666666666,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0.3333333333333333,
+    "dead": 0.16666666666666666,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173352-cavern-14-skylab-landing-bay-promptD.jsonl",
+   "n": 148,
+   "jev_move": "jump_left",
+   "jev": {
+    "keys": 0,
+    "dead": 1,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 1,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-172259-cavern-02-the-cold-room-promptD.jsonl",
+   "n": 108,
+   "jev_move": "wait",
+   "jev": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0.8333333333333334
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 1
+   }
+  },
+  {
+   "file": "20260928-173334-cavern-14-skylab-landing-bay-promptD.jsonl",
+   "n": 81,
+   "jev_move": "jump_right",
+   "jev": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-172259-cavern-02-the-cold-room-promptD.jsonl",
+   "n": 180,
+   "jev_move": "wait",
+   "jev": {
+    "keys": 0,
+    "dead": 0.3333333333333333,
+    "complete": 0.6666666666666666
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 1
+   }
+  },
+  {
+   "file": "20260928-173012-cavern-10-the-endorian-forest-promptD.jsonl",
+   "n": 101,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 0,
+    "dead": 0.3333333333333333,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0.16666666666666666,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173653-cavern-18-amoebatrons-revenge-promptD.jsonl",
+   "n": 13,
+   "jev_move": "walk_right",
+   "jev": {
+    "keys": 0,
+    "dead": 0.3333333333333333,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173630-cavern-17-the-warehouse-promptD.jsonl",
+   "n": 21,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 0.6666666666666666,
+    "dead": 0.16666666666666666,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173620-cavern-17-the-warehouse-promptD.jsonl",
+   "n": 23,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 0.6666666666666666,
+    "dead": 0.16666666666666666,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0.8333333333333334,
+    "dead": 0.16666666666666666,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173138-cavern-12-return-of-the-alien-kong-beast-promptD.jsonl",
+   "n": 39,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 0,
+    "dead": 0.16666666666666666,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0.3333333333333333,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173737-cavern-19-solar-power-generator-promptD.jsonl",
+   "n": 66,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 0,
+    "dead": 0.5,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0.16666666666666666,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-172712-cavern-07-the-vat-promptD.jsonl",
+   "n": 24,
+   "jev_move": "jump_left",
+   "jev": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-172710-cavern-07-the-vat-promptD.jsonl",
+   "n": 33,
+   "jev_move": "jump_left",
+   "jev": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173400-cavern-14-skylab-landing-bay-promptD.jsonl",
+   "n": 100,
+   "jev_move": "jump_left",
+   "jev": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-172808-cavern-08-miner-willy-meets-the-kong-beast-promptD-2.jsonl",
+   "n": 33,
+   "jev_move": "jump_left",
+   "jev": {
+    "keys": 1,
+    "dead": 0.6666666666666666,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0.8333333333333334,
+    "dead": 0.3333333333333333,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-171913-cavern-01-central-cavern-promptD.jsonl",
+   "n": 36,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 2.3333333333333335,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 2.6666666666666665,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-172743-cavern-07-the-vat-promptD.jsonl",
+   "n": 33,
+   "jev_move": "jump_left",
+   "jev": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173538-cavern-16-the-sixteenth-cavern-promptD.jsonl",
+   "n": 88,
+   "jev_move": "jump_right",
+   "jev": {
+    "keys": 1,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 1,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173542-cavern-16-the-sixteenth-cavern-promptD.jsonl",
+   "n": 96,
+   "jev_move": "jump_right",
+   "jev": {
+    "keys": 1,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0.6666666666666666,
+    "dead": 0.3333333333333333,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-172820-cavern-08-miner-willy-meets-the-kong-beast-promptD.jsonl",
+   "n": 110,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173143-cavern-12-return-of-the-alien-kong-beast-promptD.jsonl",
+   "n": 44,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173430-cavern-15-the-bank-promptD.jsonl",
+   "n": 89,
+   "jev_move": "jump_left",
+   "jev": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173039-cavern-11-attack-of-the-mutant-telephones-promptD.jsonl",
+   "n": 22,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 0.5,
+    "dead": 0.16666666666666666,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0.16666666666666666,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173620-cavern-17-the-warehouse-promptD.jsonl",
+   "n": 21,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 1,
+    "dead": 0.3333333333333333,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 1.5,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173114-cavern-11-attack-of-the-mutant-telephones-promptD.jsonl",
+   "n": 53,
+   "jev_move": "jump_left",
+   "jev": {
+    "keys": 1.1666666666666667,
+    "dead": 0.3333333333333333,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 1,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173322-cavern-14-skylab-landing-bay-promptD.jsonl",
+   "n": 73,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-172928-cavern-10-the-endorian-forest-promptD.jsonl",
+   "n": 14,
+   "jev_move": "jump_up",
+   "jev": {
+    "keys": 0,
+    "dead": 0.5,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0.8333333333333334,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173757-cavern-19-solar-power-generator-promptD-2.jsonl",
+   "n": 100,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 0,
+    "dead": 1,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 1,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173635-cavern-17-the-warehouse-promptD.jsonl",
+   "n": 27,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 1.1666666666666667,
+    "dead": 0.16666666666666666,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-171913-cavern-01-central-cavern-promptD-5.jsonl",
+   "n": 45,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 2,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 2.6666666666666665,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173130-cavern-11-attack-of-the-mutant-telephones-promptD.jsonl",
+   "n": 106,
+   "jev_move": "wait",
+   "jev": {
+    "keys": 0.16666666666666666,
+    "dead": 0.3333333333333333,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0.3333333333333333,
+    "dead": 0.3333333333333333,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173430-cavern-15-the-bank-promptD.jsonl",
+   "n": 28,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 1.1666666666666667,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 1.3333333333333333,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-172609-cavern-06-processing-plant-promptD-2.jsonl",
+   "n": 96,
+   "jev_move": "jump_left",
+   "jev": {
+    "keys": 1,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 1.3333333333333333,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173433-cavern-15-the-bank-promptD.jsonl",
+   "n": 98,
+   "jev_move": "jump_left",
+   "jev": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173613-cavern-16-the-sixteenth-cavern-promptD.jsonl",
+   "n": 82,
+   "jev_move": "jump_right",
+   "jev": {
+    "keys": 0.8333333333333334,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0.8333333333333334,
+    "dead": 0.16666666666666666,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-172743-cavern-07-the-vat-promptD.jsonl",
+   "n": 85,
+   "jev_move": "wait",
+   "jev": {
+    "keys": 0,
+    "dead": 0.16666666666666666,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0.16666666666666666,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173252-cavern-13-ore-refinery-promptD.jsonl",
+   "n": 5,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 1,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 1,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-172301-cavern-02-the-cold-room-promptD.jsonl",
+   "n": 76,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 1,
+    "dead": 0,
+    "complete": 0.8333333333333334
+   },
+   "rule": {
+    "keys": 1,
+    "dead": 0,
+    "complete": 1
+   }
+  },
+  {
+   "file": "20260928-173343-cavern-14-skylab-landing-bay-promptD.jsonl",
+   "n": 130,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 0,
+    "dead": 1,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 1,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173120-cavern-11-attack-of-the-mutant-telephones-promptD.jsonl",
+   "n": 77,
+   "jev_move": "wait",
+   "jev": {
+    "keys": 0,
+    "dead": 0.3333333333333333,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0.3333333333333333,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173618-cavern-17-the-warehouse-promptD.jsonl",
+   "n": 19,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 0.6666666666666666,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0.3333333333333333,
+    "dead": 0.3333333333333333,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173546-cavern-16-the-sixteenth-cavern-promptD.jsonl",
+   "n": 36,
+   "jev_move": "walk_right",
+   "jev": {
+    "keys": 0,
+    "dead": 0.16666666666666666,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0.16666666666666666,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-172743-cavern-07-the-vat-promptD.jsonl",
+   "n": 44,
+   "jev_move": "jump_right",
+   "jev": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0.16666666666666666,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173400-cavern-14-skylab-landing-bay-promptD.jsonl",
+   "n": 119,
+   "jev_move": "jump_left",
+   "jev": {
+    "keys": 0,
+    "dead": 1,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 1,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173210-cavern-12-return-of-the-alien-kong-beast-promptD-2.jsonl",
+   "n": 38,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 0,
+    "dead": 0.3333333333333333,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0.16666666666666666,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173352-cavern-14-skylab-landing-bay-promptD.jsonl",
+   "n": 52,
+   "jev_move": "jump_left",
+   "jev": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173114-cavern-11-attack-of-the-mutant-telephones-promptD.jsonl",
+   "n": 70,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 1.5,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 1.6666666666666667,
+    "dead": 0.5,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173047-cavern-11-attack-of-the-mutant-telephones-promptD.jsonl",
+   "n": 33,
+   "jev_move": "jump_left",
+   "jev": {
+    "keys": 1.1666666666666667,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0.8333333333333334,
+    "dead": 0.16666666666666666,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-171913-cavern-01-central-cavern-promptD-3.jsonl",
+   "n": 49,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 1
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 1
+   }
+  },
+  {
+   "file": "20260928-173538-cavern-16-the-sixteenth-cavern-promptD.jsonl",
+   "n": 36,
+   "jev_move": "walk_right",
+   "jev": {
+    "keys": 0,
+    "dead": 0.16666666666666666,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0.16666666666666666,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173538-cavern-16-the-sixteenth-cavern-promptD.jsonl",
+   "n": 100,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 0.6666666666666666,
+    "dead": 0.3333333333333333,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0.8333333333333334,
+    "dead": 0.16666666666666666,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173653-cavern-18-amoebatrons-revenge-promptD.jsonl",
+   "n": 159,
+   "jev_move": "wait",
+   "jev": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 1
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 1
+   }
+  },
+  {
+   "file": "20260928-173648-cavern-18-amoebatrons-revenge-promptD.jsonl",
+   "n": 81,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 0.16666666666666666,
+    "dead": 0.16666666666666666,
+    "complete": 0.16666666666666666
+   },
+   "rule": {
+    "keys": 0.3333333333333333,
+    "dead": 0,
+    "complete": 0.3333333333333333
+   }
+  },
+  {
+   "file": "20260928-173034-cavern-11-attack-of-the-mutant-telephones-promptD.jsonl",
+   "n": 102,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 0,
+    "dead": 1,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 1,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173322-cavern-14-skylab-landing-bay-promptD.jsonl",
+   "n": 35,
+   "jev_move": "jump_right",
+   "jev": {
+    "keys": 0.6666666666666666,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173633-cavern-17-the-warehouse-promptD.jsonl",
+   "n": 19,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0.3333333333333333,
+    "dead": 0.3333333333333333,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-172259-cavern-02-the-cold-room-promptD.jsonl",
+   "n": 105,
+   "jev_move": "wait",
+   "jev": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0.8333333333333334
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0.8333333333333334
+   }
+  },
+  {
+   "file": "20260928-172808-cavern-08-miner-willy-meets-the-kong-beast-promptD-2.jsonl",
+   "n": 129,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173713-cavern-18-amoebatrons-revenge-promptD.jsonl",
+   "n": 14,
+   "jev_move": "walk_right",
+   "jev": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-172723-cavern-07-the-vat-promptD.jsonl",
+   "n": 65,
+   "jev_move": "jump_left",
+   "jev": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173542-cavern-16-the-sixteenth-cavern-promptD.jsonl",
+   "n": 105,
+   "jev_move": "wait",
+   "jev": {
+    "keys": 0.6666666666666666,
+    "dead": 0.16666666666666666,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 1,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173624-cavern-17-the-warehouse-promptD.jsonl",
+   "n": 17,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 1.1666666666666667,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-172733-cavern-07-the-vat-promptD.jsonl",
+   "n": 35,
+   "jev_move": "jump_left",
+   "jev": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-172438-cavern-04-abandoned-uranium-workings-promptD.jsonl",
+   "n": 25,
+   "jev_move": "jump_right",
+   "jev": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173542-cavern-16-the-sixteenth-cavern-promptD.jsonl",
+   "n": 106,
+   "jev_move": "wait",
+   "jev": {
+    "keys": 1,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 1,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-172259-cavern-02-the-cold-room-promptD.jsonl",
+   "n": 128,
+   "jev_move": "jump_right",
+   "jev": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 1
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0.8333333333333334
+   }
+  },
+  {
+   "file": "20260928-172350-cavern-03-the-menagerie-promptD.jsonl",
+   "n": 122,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-172433-cavern-03-the-menagerie-promptD.jsonl",
+   "n": 45,
+   "jev_move": "wait",
+   "jev": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-172212-cavern-01-central-cavern-promptD.jsonl",
+   "n": 41,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 1
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 1
+   }
+  },
+  {
+   "file": "20260928-173317-cavern-14-skylab-landing-bay-promptD.jsonl",
+   "n": 60,
+   "jev_move": "jump_right",
+   "jev": {
+    "keys": 1,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-171913-cavern-01-central-cavern-promptD.jsonl",
+   "n": 45,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 4,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 3.3333333333333335,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-172928-cavern-10-the-endorian-forest-promptD.jsonl",
+   "n": 160,
+   "jev_move": "jump_right",
+   "jev": {
+    "keys": 0,
+    "dead": 1,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 1,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-172906-cavern-09-wacky-amoebatrons-promptD.jsonl",
+   "n": 95,
+   "jev_move": "jump_left",
+   "jev": {
+    "keys": 0,
+    "dead": 0.3333333333333333,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0.16666666666666666,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-172924-cavern-10-the-endorian-forest-promptD.jsonl",
+   "n": 116,
+   "jev_move": "jump_right",
+   "jev": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0.16666666666666666
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0.16666666666666666
+   }
+  },
+  {
+   "file": "20260928-172502-cavern-04-abandoned-uranium-workings-promptD.jsonl",
+   "n": 188,
+   "jev_move": "wait",
+   "jev": {
+    "keys": 0,
+    "dead": 1,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 1,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173653-cavern-18-amoebatrons-revenge-promptD.jsonl",
+   "n": 162,
+   "jev_move": "wait",
+   "jev": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 1
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 1
+   }
+  },
+  {
+   "file": "20260928-172733-cavern-07-the-vat-promptD.jsonl",
+   "n": 92,
+   "jev_move": "wait",
+   "jev": {
+    "keys": 0,
+    "dead": 1,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0.8333333333333334,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173039-cavern-11-attack-of-the-mutant-telephones-promptD.jsonl",
+   "n": 26,
+   "jev_move": "jump_left",
+   "jev": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-172940-cavern-10-the-endorian-forest-promptD.jsonl",
+   "n": 53,
+   "jev_move": "jump_left",
+   "jev": {
+    "keys": 0,
+    "dead": 0.3333333333333333,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0.8333333333333334,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-172350-cavern-03-the-menagerie-promptD.jsonl",
+   "n": 98,
+   "jev_move": "jump_left",
+   "jev": {
+    "keys": 0,
+    "dead": 0.16666666666666666,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-172710-cavern-07-the-vat-promptD.jsonl",
+   "n": 24,
+   "jev_move": "jump_left",
+   "jev": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-172654-cavern-06-processing-plant-promptD.jsonl",
+   "n": 7,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-172710-cavern-07-the-vat-promptD.jsonl",
+   "n": 30,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173757-cavern-19-solar-power-generator-promptD-2.jsonl",
+   "n": 30,
+   "jev_move": "jump_left",
+   "jev": {
+    "keys": 1,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 1,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-172928-cavern-10-the-endorian-forest-promptD.jsonl",
+   "n": 54,
+   "jev_move": "jump_up",
+   "jev": {
+    "keys": 0,
+    "dead": 0.16666666666666666,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0.6666666666666666,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173745-cavern-19-solar-power-generator-promptD.jsonl",
+   "n": 12,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 1,
+    "dead": 0.16666666666666666,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 1,
+    "dead": 0.16666666666666666,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-172940-cavern-10-the-endorian-forest-promptD.jsonl",
+   "n": 105,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 0.16666666666666666,
+    "dead": 0.16666666666666666,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0.5,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173317-cavern-14-skylab-landing-bay-promptD.jsonl",
+   "n": 116,
+   "jev_move": "jump_left",
+   "jev": {
+    "keys": 0,
+    "dead": 1,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0.6666666666666666,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173020-cavern-11-attack-of-the-mutant-telephones-promptD.jsonl",
+   "n": 18,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 1.1666666666666667,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0.16666666666666666,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173356-cavern-14-skylab-landing-bay-promptD.jsonl",
+   "n": 118,
+   "jev_move": "jump_left",
+   "jev": {
+    "keys": 0,
+    "dead": 0.8333333333333334,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0.5,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173334-cavern-14-skylab-landing-bay-promptD.jsonl",
+   "n": 140,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 0,
+    "dead": 1,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 1,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-172509-cavern-04-abandoned-uranium-workings-promptD.jsonl",
+   "n": 155,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 0,
+    "dead": 1,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 1,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-172253-cavern-02-the-cold-room-promptD.jsonl",
+   "n": 46,
+   "jev_move": "walk_right",
+   "jev": {
+    "keys": 1,
+    "dead": 0,
+    "complete": 1
+   },
+   "rule": {
+    "keys": 1,
+    "dead": 0,
+    "complete": 1
+   }
+  },
+  {
+   "file": "20260928-173016-cavern-10-the-endorian-forest-promptD.jsonl",
+   "n": 52,
+   "jev_move": "jump_left",
+   "jev": {
+    "keys": 0,
+    "dead": 0.16666666666666666,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0.5,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173130-cavern-11-attack-of-the-mutant-telephones-promptD.jsonl",
+   "n": 116,
+   "jev_move": "jump_left",
+   "jev": {
+    "keys": 1,
+    "dead": 0.3333333333333333,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0.16666666666666666,
+    "dead": 0.5,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173039-cavern-11-attack-of-the-mutant-telephones-promptD.jsonl",
+   "n": 19,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0.5,
+    "dead": 0.5,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173217-cavern-13-ore-refinery-promptD.jsonl",
+   "n": 85,
+   "jev_move": "jump_left",
+   "jev": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-172734-cavern-07-the-vat-promptD.jsonl",
+   "n": 45,
+   "jev_move": "jump_right",
+   "jev": {
+    "keys": 0,
+    "dead": 0.3333333333333333,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0.16666666666666666,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-172924-cavern-10-the-endorian-forest-promptD-2.jsonl",
+   "n": 145,
+   "jev_move": "walk_right",
+   "jev": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0.16666666666666666
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-172502-cavern-04-abandoned-uranium-workings-promptD.jsonl",
+   "n": 184,
+   "jev_move": "jump_left",
+   "jev": {
+    "keys": 0,
+    "dead": 1,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 1,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-172909-cavern-09-wacky-amoebatrons-promptD.jsonl",
+   "n": 54,
+   "jev_move": "jump_right",
+   "jev": {
+    "keys": 0.8333333333333334,
+    "dead": 0.3333333333333333,
+    "complete": 0.6666666666666666
+   },
+   "rule": {
+    "keys": 0.3333333333333333,
+    "dead": 0.5,
+    "complete": 0.3333333333333333
+   }
+  },
+  {
+   "file": "20260928-173422-cavern-15-the-bank-promptD.jsonl",
+   "n": 77,
+   "jev_move": "jump_right",
+   "jev": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-172755-cavern-07-the-vat-promptD.jsonl",
+   "n": 61,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173635-cavern-17-the-warehouse-promptD.jsonl",
+   "n": 13,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 0.8333333333333334,
+    "dead": 0.16666666666666666,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 1.1666666666666667,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173257-cavern-14-skylab-landing-bay-promptD.jsonl",
+   "n": 82,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-172214-cavern-01-central-cavern-promptD-2.jsonl",
+   "n": 77,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 4,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 4,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-172804-cavern-07-the-vat-promptD.jsonl",
+   "n": 78,
+   "jev_move": "wait",
+   "jev": {
+    "keys": 0,
+    "dead": 0.5,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0.6666666666666666,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-172214-cavern-01-central-cavern-promptD-2.jsonl",
+   "n": 33,
+   "jev_move": "jump_left",
+   "jev": {
+    "keys": 3,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 4,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173140-cavern-12-return-of-the-alien-kong-beast-promptD.jsonl",
+   "n": 41,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0.5,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-172623-cavern-06-processing-plant-promptD.jsonl",
+   "n": 119,
+   "jev_move": "jump_right",
+   "jev": {
+    "keys": 0.3333333333333333,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-172259-cavern-02-the-cold-room-promptD.jsonl",
+   "n": 154,
+   "jev_move": "wait",
+   "jev": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 1
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0.16666666666666666,
+    "complete": 0.5
+   }
+  },
+  {
+   "file": "20260928-172654-cavern-06-processing-plant-promptD.jsonl",
+   "n": 69,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 1,
+    "dead": 0.16666666666666666,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0.3333333333333333,
+    "dead": 0.16666666666666666,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173400-cavern-14-skylab-landing-bay-promptD.jsonl",
+   "n": 125,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 0,
+    "dead": 1,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 1,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173252-cavern-13-ore-refinery-promptD.jsonl",
+   "n": 83,
+   "jev_move": "jump_right",
+   "jev": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173540-cavern-16-the-sixteenth-cavern-promptD.jsonl",
+   "n": 83,
+   "jev_move": "jump_right",
+   "jev": {
+    "keys": 0.8333333333333334,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 1,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-172804-cavern-07-the-vat-promptD.jsonl",
+   "n": 17,
+   "jev_move": "jump_left",
+   "jev": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173653-cavern-18-amoebatrons-revenge-promptD.jsonl",
+   "n": 191,
+   "jev_move": "wait",
+   "jev": {
+    "keys": 0,
+    "dead": 1,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 1,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173433-cavern-15-the-bank-promptD.jsonl",
+   "n": 27,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 1.1666666666666667,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 1.5,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173317-cavern-14-skylab-landing-bay-promptD.jsonl",
+   "n": 38,
+   "jev_move": "jump_left",
+   "jev": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-172804-cavern-07-the-vat-promptD.jsonl",
+   "n": 34,
+   "jev_move": "jump_left",
+   "jev": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173510-cavern-15-the-bank-promptD.jsonl",
+   "n": 100,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173745-cavern-19-solar-power-generator-promptD.jsonl",
+   "n": 58,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 0,
+    "dead": 0.16666666666666666,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173138-cavern-12-return-of-the-alien-kong-beast-promptD.jsonl",
+   "n": 59,
+   "jev_move": "jump_left",
+   "jev": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0.16666666666666666,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173620-cavern-17-the-warehouse-promptD.jsonl",
+   "n": 13,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 1.1666666666666667,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 1,
+    "dead": 0.3333333333333333,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173018-cavern-10-the-endorian-forest-promptD.jsonl",
+   "n": 97,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 0,
+    "dead": 0.16666666666666666,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0.3333333333333333,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173757-cavern-19-solar-power-generator-promptD.jsonl",
+   "n": 12,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 1,
+    "dead": 0.3333333333333333,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 1,
+    "dead": 0.3333333333333333,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173708-cavern-18-amoebatrons-revenge-promptD.jsonl",
+   "n": 69,
+   "jev_move": "wait",
+   "jev": {
+    "keys": 0.16666666666666666,
+    "dead": 0,
+    "complete": 0.16666666666666666
+   },
+   "rule": {
+    "keys": 0.3333333333333333,
+    "dead": 0.16666666666666666,
+    "complete": 0.16666666666666666
+   }
+  },
+  {
+   "file": "20260928-172301-cavern-02-the-cold-room-promptD.jsonl",
+   "n": 120,
+   "jev_move": "jump_left",
+   "jev": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0.8333333333333334
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0.8333333333333334
+   }
+  },
+  {
+   "file": "20260928-173000-cavern-10-the-endorian-forest-promptD.jsonl",
+   "n": 44,
+   "jev_move": "jump_up",
+   "jev": {
+    "keys": 0,
+    "dead": 0.3333333333333333,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0.5,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-172555-cavern-05-eugene-s-lair-promptD.jsonl",
+   "n": 28,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 0.6666666666666666,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 1.3333333333333333,
+    "dead": 0.3333333333333333,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-172755-cavern-07-the-vat-promptD.jsonl",
+   "n": 80,
+   "jev_move": "wait",
+   "jev": {
+    "keys": 0,
+    "dead": 0.5,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0.8333333333333334,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-172259-cavern-02-the-cold-room-promptD.jsonl",
+   "n": 191,
+   "jev_move": "wait",
+   "jev": {
+    "keys": 0,
+    "dead": 0.6666666666666666,
+    "complete": 0.3333333333333333
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0.3333333333333333,
+    "complete": 0.6666666666666666
+   }
+  },
+  {
+   "file": "20260928-173012-cavern-10-the-endorian-forest-promptD.jsonl",
+   "n": 94,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 0,
+    "dead": 0.5,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0.16666666666666666,
+    "dead": 0.5,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-172432-cavern-03-the-menagerie-promptD.jsonl",
+   "n": 73,
+   "jev_move": "wait",
+   "jev": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0.16666666666666666,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173016-cavern-10-the-endorian-forest-promptD.jsonl",
+   "n": 48,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 0,
+    "dead": 0.16666666666666666,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0.5,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173000-cavern-10-the-endorian-forest-promptD.jsonl",
+   "n": 41,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 0,
+    "dead": 0.3333333333333333,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0.8333333333333334,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-172653-cavern-06-processing-plant-promptD.jsonl",
+   "n": 69,
+   "jev_move": "walk_right",
+   "jev": {
+    "keys": 0.5,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173615-cavern-16-the-sixteenth-cavern-promptD.jsonl",
+   "n": 44,
+   "jev_move": "jump_left",
+   "jev": {
+    "keys": 0,
+    "dead": 0.3333333333333333,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0.16666666666666666,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-172906-cavern-09-wacky-amoebatrons-promptD.jsonl",
+   "n": 106,
+   "jev_move": "jump_left",
+   "jev": {
+    "keys": 0,
+    "dead": 0.5,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0.3333333333333333,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-172609-cavern-06-processing-plant-promptD-2.jsonl",
+   "n": 117,
+   "jev_move": "walk_right",
+   "jev": {
+    "keys": 0.8333333333333334,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-171913-cavern-01-central-cavern-promptD-5.jsonl",
+   "n": 99,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 3.3333333333333335,
+    "dead": 0.3333333333333333,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 3.6666666666666665,
+    "dead": 0.3333333333333333,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173613-cavern-16-the-sixteenth-cavern-promptD.jsonl",
+   "n": 57,
+   "jev_move": "jump_right",
+   "jev": {
+    "keys": 1,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0.3333333333333333,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-172259-cavern-02-the-cold-room-promptD.jsonl",
+   "n": 159,
+   "jev_move": "wait",
+   "jev": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 1
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0.16666666666666666,
+    "complete": 0.8333333333333334
+   }
+  },
+  {
+   "file": "20260928-173630-cavern-17-the-warehouse-promptD.jsonl",
+   "n": 11,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 1,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 1.8333333333333333,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-172759-cavern-07-the-vat-promptD.jsonl",
+   "n": 58,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 0,
+    "dead": 0.16666666666666666,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173322-cavern-14-skylab-landing-bay-promptD.jsonl",
+   "n": 85,
+   "jev_move": "jump_left",
+   "jev": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-172712-cavern-07-the-vat-promptD.jsonl",
+   "n": 33,
+   "jev_move": "jump_left",
+   "jev": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173653-cavern-18-amoebatrons-revenge-promptD.jsonl",
+   "n": 154,
+   "jev_move": "jump_left",
+   "jev": {
+    "keys": 0,
+    "dead": 0.16666666666666666,
+    "complete": 0.8333333333333334
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 1
+   }
+  },
+  {
+   "file": "20260928-173422-cavern-15-the-bank-promptD.jsonl",
+   "n": 54,
+   "jev_move": "jump_left",
+   "jev": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-172259-cavern-02-the-cold-room-promptD.jsonl",
+   "n": 158,
+   "jev_move": "wait",
+   "jev": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 1
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 1
+   }
+  },
+  {
+   "file": "20260928-173130-cavern-11-attack-of-the-mutant-telephones-promptD.jsonl",
+   "n": 54,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 1.5,
+    "dead": 0.16666666666666666,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0.5,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-172743-cavern-07-the-vat-promptD.jsonl",
+   "n": 64,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173050-cavern-11-attack-of-the-mutant-telephones-promptD.jsonl",
+   "n": 29,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0.5,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-172442-cavern-04-abandoned-uranium-workings-promptD.jsonl",
+   "n": 107,
+   "jev_move": "jump_left",
+   "jev": {
+    "keys": 0.5,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0.16666666666666666,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-172743-cavern-07-the-vat-promptD.jsonl",
+   "n": 86,
+   "jev_move": "wait",
+   "jev": {
+    "keys": 0,
+    "dead": 0.3333333333333333,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0.5,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173618-cavern-17-the-warehouse-promptD.jsonl",
+   "n": 33,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 0.16666666666666666,
+    "dead": 0.16666666666666666,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 1.1666666666666667,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173630-cavern-17-the-warehouse-promptD.jsonl",
+   "n": 15,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 1,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 1.3333333333333333,
+    "dead": 0.16666666666666666,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-172734-cavern-07-the-vat-promptD.jsonl",
+   "n": 108,
+   "jev_move": "wait",
+   "jev": {
+    "keys": 0,
+    "dead": 1,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 1,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173356-cavern-14-skylab-landing-bay-promptD.jsonl",
+   "n": 51,
+   "jev_move": "jump_right",
+   "jev": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-172502-cavern-04-abandoned-uranium-workings-promptD.jsonl",
+   "n": 29,
+   "jev_move": "jump_left",
+   "jev": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173805-cavern-19-solar-power-generator-promptD.jsonl",
+   "n": 106,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 0,
+    "dead": 1,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 1,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-172940-cavern-10-the-endorian-forest-promptD.jsonl",
+   "n": 111,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 0,
+    "dead": 0.3333333333333333,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0.3333333333333333,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173400-cavern-14-skylab-landing-bay-promptD.jsonl",
+   "n": 114,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 0,
+    "dead": 0.5,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0.3333333333333333,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173400-cavern-14-skylab-landing-bay-promptD.jsonl",
+   "n": 51,
+   "jev_move": "jump_right",
+   "jev": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-172212-cavern-01-central-cavern-promptD.jsonl",
+   "n": 49,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 1
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 1
+   }
+  },
+  {
+   "file": "20260928-173020-cavern-11-attack-of-the-mutant-telephones-promptD.jsonl",
+   "n": 65,
+   "jev_move": "jump_left",
+   "jev": {
+    "keys": 1.3333333333333333,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0.5,
+    "dead": 0.16666666666666666,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173642-cavern-17-the-warehouse-promptD.jsonl",
+   "n": 2,
+   "jev_move": "jump_right",
+   "jev": {
+    "keys": 1,
+    "dead": 0.3333333333333333,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 1.5,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173143-cavern-12-return-of-the-alien-kong-beast-promptD.jsonl",
+   "n": 24,
+   "jev_move": "jump_left",
+   "jev": {
+    "keys": 0,
+    "dead": 0.16666666666666666,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-172928-cavern-10-the-endorian-forest-promptD.jsonl",
+   "n": 161,
+   "jev_move": "walk_right",
+   "jev": {
+    "keys": 0,
+    "dead": 1,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0.8333333333333334,
+    "complete": 0.16666666666666666
+   }
+  },
+  {
+   "file": "20260928-172214-cavern-01-central-cavern-promptD-2.jsonl",
+   "n": 36,
+   "jev_move": "jump_left",
+   "jev": {
+    "keys": 2,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 3.1666666666666665,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-172653-cavern-06-processing-plant-promptD.jsonl",
+   "n": 7,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 0.16666666666666666,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-172743-cavern-07-the-vat-promptD.jsonl",
+   "n": 67,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173020-cavern-11-attack-of-the-mutant-telephones-promptD.jsonl",
+   "n": 127,
+   "jev_move": "jump_left",
+   "jev": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173615-cavern-16-the-sixteenth-cavern-promptD.jsonl",
+   "n": 29,
+   "jev_move": "walk_right",
+   "jev": {
+    "keys": 0,
+    "dead": 0.16666666666666666,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0.6666666666666666,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-172609-cavern-06-processing-plant-promptD.jsonl",
+   "n": 48,
+   "jev_move": "jump_right",
+   "jev": {
+    "keys": 0.3333333333333333,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0.5,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173034-cavern-11-attack-of-the-mutant-telephones-promptD.jsonl",
+   "n": 174,
+   "jev_move": "wait",
+   "jev": {
+    "keys": 0,
+    "dead": 1,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0.8333333333333334,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173257-cavern-14-skylab-landing-bay-promptD.jsonl",
+   "n": 32,
+   "jev_move": "jump_right",
+   "jev": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-172755-cavern-07-the-vat-promptD.jsonl",
+   "n": 87,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 0,
+    "dead": 0.8333333333333334,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 1,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-172442-cavern-04-abandoned-uranium-workings-promptD.jsonl",
+   "n": 48,
+   "jev_move": "jump_right",
+   "jev": {
+    "keys": 0,
+    "dead": 0.16666666666666666,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173130-cavern-11-attack-of-the-mutant-telephones-promptD.jsonl",
+   "n": 64,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 0.6666666666666666,
+    "dead": 0.3333333333333333,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0.16666666666666666,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173542-cavern-16-the-sixteenth-cavern-promptD.jsonl",
+   "n": 82,
+   "jev_move": "jump_right",
+   "jev": {
+    "keys": 0.8333333333333334,
+    "dead": 0.16666666666666666,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 1,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173537-cavern-16-the-sixteenth-cavern-promptD.jsonl",
+   "n": 20,
+   "jev_move": "jump_left",
+   "jev": {
+    "keys": 0,
+    "dead": 0.16666666666666666,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0.6666666666666666,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173352-cavern-14-skylab-landing-bay-promptD.jsonl",
+   "n": 48,
+   "jev_move": "jump_left",
+   "jev": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173516-cavern-16-the-sixteenth-cavern-promptD.jsonl",
+   "n": 34,
+   "jev_move": "jump_left",
+   "jev": {
+    "keys": 0,
+    "dead": 0.16666666666666666,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0.3333333333333333,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-172820-cavern-08-miner-willy-meets-the-kong-beast-promptD.jsonl",
+   "n": 136,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-172350-cavern-03-the-menagerie-promptD.jsonl",
+   "n": 15,
+   "jev_move": "jump_right",
+   "jev": {
+    "keys": 2.5,
+    "dead": 0.6666666666666666,
+    "complete": 0.16666666666666666
+   },
+   "rule": {
+    "keys": 2.1666666666666665,
+    "dead": 0.3333333333333333,
+    "complete": 0.3333333333333333
+   }
+  },
+  {
+   "file": "20260928-172259-cavern-02-the-cold-room-promptD.jsonl",
+   "n": 166,
+   "jev_move": "jump_left",
+   "jev": {
+    "keys": 0,
+    "dead": 0.16666666666666666,
+    "complete": 0.8333333333333334
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0.6666666666666666,
+    "complete": 0.3333333333333333
+   }
+  },
+  {
+   "file": "20260928-172433-cavern-03-the-menagerie-promptD.jsonl",
+   "n": 48,
+   "jev_move": "wait",
+   "jev": {
+    "keys": 0.5,
+    "dead": 0,
+    "complete": 0.16666666666666666
+   },
+   "rule": {
+    "keys": 0.3333333333333333,
+    "dead": 0.16666666666666666,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-172609-cavern-06-processing-plant-promptD-2.jsonl",
+   "n": 169,
+   "jev_move": "jump_left",
+   "jev": {
+    "keys": 0,
+    "dead": 1,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 1,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-172710-cavern-07-the-vat-promptD.jsonl",
+   "n": 66,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-172705-cavern-06-processing-plant-promptD.jsonl",
+   "n": 123,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 0,
+    "dead": 1,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 1,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-172924-cavern-10-the-endorian-forest-promptD.jsonl",
+   "n": 111,
+   "jev_move": "walk_right",
+   "jev": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0.3333333333333333
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173034-cavern-11-attack-of-the-mutant-telephones-promptD.jsonl",
+   "n": 107,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173633-cavern-17-the-warehouse-promptD.jsonl",
+   "n": 21,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 1.3333333333333333,
+    "dead": 0.16666666666666666,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173125-cavern-11-attack-of-the-mutant-telephones-promptD.jsonl",
+   "n": 15,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 1,
+    "dead": 0.16666666666666666,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0.16666666666666666,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173034-cavern-11-attack-of-the-mutant-telephones-promptD.jsonl",
+   "n": 162,
+   "jev_move": "wait",
+   "jev": {
+    "keys": 0,
+    "dead": 0.16666666666666666,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0.16666666666666666,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173034-cavern-11-attack-of-the-mutant-telephones-promptD.jsonl",
+   "n": 176,
+   "jev_move": "wait",
+   "jev": {
+    "keys": 0,
+    "dead": 1,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 1,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-172940-cavern-10-the-endorian-forest-promptD.jsonl",
+   "n": 80,
+   "jev_move": "jump_left",
+   "jev": {
+    "keys": 0,
+    "dead": 0.5,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 1,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-172820-cavern-08-miner-willy-meets-the-kong-beast-promptD.jsonl",
+   "n": 138,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173635-cavern-17-the-warehouse-promptD.jsonl",
+   "n": 5,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 0.3333333333333333,
+    "dead": 0.3333333333333333,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0.6666666666666666,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173352-cavern-14-skylab-landing-bay-promptD.jsonl",
+   "n": 145,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 0,
+    "dead": 1,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 1,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-172609-cavern-06-processing-plant-promptD.jsonl",
+   "n": 66,
+   "jev_move": "jump_left",
+   "jev": {
+    "keys": 1.3333333333333333,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 1.1666666666666667,
+    "dead": 0.16666666666666666,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173620-cavern-17-the-warehouse-promptD.jsonl",
+   "n": 29,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 0.6666666666666666,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173018-cavern-10-the-endorian-forest-promptD.jsonl",
+   "n": 96,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 0,
+    "dead": 0.3333333333333333,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0.16666666666666666,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-172259-cavern-02-the-cold-room-promptD.jsonl",
+   "n": 162,
+   "jev_move": "wait",
+   "jev": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0.8333333333333334
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 1
+   }
+  },
+  {
+   "file": "20260928-173154-cavern-12-return-of-the-alien-kong-beast-promptD.jsonl",
+   "n": 38,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 0,
+    "dead": 0.5,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0.16666666666666666,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-172432-cavern-03-the-menagerie-promptD.jsonl",
+   "n": 50,
+   "jev_move": "wait",
+   "jev": {
+    "keys": 0,
+    "dead": 0.16666666666666666,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173130-cavern-11-attack-of-the-mutant-telephones-promptD.jsonl",
+   "n": 80,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 0.16666666666666666,
+    "dead": 0.5,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0.3333333333333333,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-172623-cavern-06-processing-plant-promptD.jsonl",
+   "n": 128,
+   "jev_move": "jump_right",
+   "jev": {
+    "keys": 1.1666666666666667,
+    "dead": 0.16666666666666666,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-172515-cavern-04-abandoned-uranium-workings-promptD.jsonl",
+   "n": 148,
+   "jev_move": "walk_right",
+   "jev": {
+    "keys": 1.1666666666666667,
+    "dead": 1,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 1,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173034-cavern-11-attack-of-the-mutant-telephones-promptD.jsonl",
+   "n": 178,
+   "jev_move": "wait",
+   "jev": {
+    "keys": 0,
+    "dead": 1,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 1,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-172509-cavern-04-abandoned-uranium-workings-promptD.jsonl",
+   "n": 156,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 0,
+    "dead": 1,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 1,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173618-cavern-17-the-warehouse-promptD.jsonl",
+   "n": 21,
+   "jev_move": "walk_left",
+   "jev": {
+    "keys": 1.5,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0.16666666666666666,
+    "dead": 0.16666666666666666,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173542-cavern-16-the-sixteenth-cavern-promptD.jsonl",
+   "n": 104,
+   "jev_move": "wait",
+   "jev": {
+    "keys": 1,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 1,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-172804-cavern-07-the-vat-promptD.jsonl",
+   "n": 47,
+   "jev_move": "jump_right",
+   "jev": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-173615-cavern-16-the-sixteenth-cavern-promptD.jsonl",
+   "n": 97,
+   "jev_move": "wait",
+   "jev": {
+    "keys": 1,
+    "dead": 0,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0.8333333333333334,
+    "dead": 0,
+    "complete": 0
+   }
+  },
+  {
+   "file": "20260928-172432-cavern-03-the-menagerie-promptD.jsonl",
+   "n": 89,
+   "jev_move": "wait",
+   "jev": {
+    "keys": 0,
+    "dead": 0.16666666666666666,
+    "complete": 0
+   },
+   "rule": {
+    "keys": 0,
+    "dead": 0.16666666666666666,
+    "complete": 0
+   }
+  }
+ ]
+}

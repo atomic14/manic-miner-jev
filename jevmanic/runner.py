@@ -73,6 +73,11 @@ class Settings:
     forced_key_order: str = ""  # a fixed key order instead of key decisions, for example "EACDB"
     random_moves: bool = False  # a random valid move instead of jev's move decision
     rule: str = ""  # a rule from RULES instead of jev's move decision. "" = jev.
+    key_rule: str = ""  # a rule from KEY_RULES instead of jev's key decision. "" = jev.
+    # Play a move sampled from jev's probabilities, instead of jev's selected move.
+    sample_moves: bool = False
+    # False: the move decision's state has no `guardians` field. The look-ahead still removes deadly moves.
+    guardian_facts: bool = True
 
 
 # -- The list of recorded runs ---------------------------------------------------------
@@ -150,9 +155,11 @@ def run_mode(header: dict) -> str:
         return maker
     if settings.get("random_moves"):
         return "random moves"
+    keys = f", key rule: {settings['key_rule']}" if settings.get("key_rule") else ""
+    keys += ", no guardian facts" if settings.get("guardian_facts") is False else ""
     if settings.get("rule"):
-        return f"rule: {settings['rule']}"
-    return settings["instructions"]
+        return f"rule: {settings['rule']}{keys}"
+    return settings["instructions"] + (" sampled" if settings.get("sample_moves") else "") + keys
 
 
 def list_run_groups(runs: list[dict]) -> list[dict]:
@@ -206,10 +213,30 @@ def _nearer(f):
 # that at least one move passes, and selects at random from those moves. If no
 # move passes a test, it selects at random from all valid moves. The rules use
 # only facts that jev also gets.
+def _untried(f):
+    return f.get("tried_from_here") == "no"
+
+
+def _nearer_untried(f):
+    return _nearer(f) and _untried(f)
+
+
 RULES = {
     # A move that completes the cavern or collects a key, else a move that goes nearer.
     "nearer": (_goal, _nearer),
+    # The same, but it also reads the memory facts: it prefers a move that Willy
+    # did not try from this place before.
+    "nearer-memory": (_goal, _nearer_untried, _nearer, _untried),
 }
+
+
+def _nearest_key(snap, goals):
+    """The key or switch with the smallest distance in cells (across plus up or down) from Willy."""
+    return min(goals, key=lambda k: abs(k[0] - snap.willy_x) + abs(k[1] - snap.willy_y))
+
+
+# Simple key rules for comparison. Each one returns the next target from `goals`.
+KEY_RULES = {"nearest": _nearest_key}
 
 
 def rule_moves(rule: str, offered: list[str], facts: dict) -> list[str]:
@@ -242,7 +269,8 @@ def _result(game: Game, n: int, ticks: int, keys_at_start: int) -> dict:
         "willy": [snap.willy_x, snap.willy_y],
         "dead": game.is_dead(),
         "complete": game.is_complete(),
-        "keys_collected": keys_at_start - len(snap.keys),
+        # After the portal, the game can already show the next cavern and its keys.
+        "keys_collected": keys_at_start if game.is_complete() else keys_at_start - len(snap.keys),
         "air": round(snap.air, 2),
         "score": snap.score,
     }
@@ -315,10 +343,14 @@ class _LiveRun:
                       "forced_reason": "the code sets the key order (a test)"}
         elif not self._key_decision_is_due(snap, goals, n):
             return None
-        elif len(goals) == 1:
-            self.target = goals[0]
-            record = {"type": "target", "n": n, "forced": True, "choice": self.names[goals[0]],
-                      "forced_reason": "only one key is left"}
+        elif len(goals) == 1 or self.settings.key_rule:
+            if len(goals) == 1:
+                wanted, reason = goals[0], "only one key is left"
+            else:
+                wanted, reason = KEY_RULES[self.settings.key_rule](snap, goals), f"key rule: {self.settings.key_rule}"
+            self.target = wanted
+            record = {"type": "target", "n": n, "forced": True, "choice": self.names[wanted],
+                      "forced_reason": reason}
         else:
             memory = {"current": self.target, "used": self.used_for, "gave_up": self.gave_up}
             state = describe.key_request_state(snap, self.names, memory, self.settings.map_key_decision)
@@ -340,7 +372,8 @@ class _LiveRun:
     async def move_decision(self, snap, n: int) -> dict:
         """Select one of the valid moves. Returns the log record."""
         outcomes = self.game.look_ahead(self.settings.survival_depth)
-        state = describe.move_request_state(snap, outcomes, self.target, self.visited, self.tried)
+        state = describe.move_request_state(snap, outcomes, self.target, self.visited, self.tried,
+                                            self.settings.guardian_facts)
         removed = {} if state["moves_not_offered"] == "none" else state["moves_not_offered"]
         offered = list(state["moves"])
         if not offered:
@@ -381,7 +414,13 @@ class _LiveRun:
             answer = await self.brain.ask(state, question, "move")
             self.tokens += answer.input_tokens
             data = answer.to_json()
-            record.update(macro=data.pop("choice"), **data)
+            choice = data.pop("choice")
+            if self.settings.sample_moves:
+                # Keep jev's own choice in the log, and play a move drawn from its probabilities.
+                names = list(data["probabilities"])
+                record["jev_choice"] = choice
+                choice = random.choices(names, weights=[data["probabilities"][m] for m in names])[0]
+            record.update(macro=choice, **data)
         self.tried.add((snap.willy_x, snap.willy_y, record["macro"]))
         if self.target is not None:
             self.used_for[self.target] += 1
@@ -418,7 +457,11 @@ async def play_live(game: Game, brain, cavern: int = 0, settings: Settings | Non
     elif maker != "jev":
         mode = brain.mode
     else:
-        mode = settings.instructions
+        mode = settings.instructions + ("-sampled" if settings.sample_moves else "")
+    if settings.key_rule:
+        mode += f"-keys-{settings.key_rule}"
+    if not settings.guardian_facts:
+        mode += "-no-guardians"
     cavern_name = game.snapshot().cavern_name
     path = _log_path(folder, cavern, cavern_name, mode)
     header = {

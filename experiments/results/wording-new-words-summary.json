@@ -1,0 +1,287 @@
+{
+  "label": "z-new-words",
+  "settings": {
+    "instructions": "promptA",
+    "map_key_decision": true,
+    "key_decision_every": 25,
+    "survival_depth": 4,
+    "forced_key_order": "OPTIMUM",
+    "random_moves": false,
+    "rule": "",
+    "key_rule": "",
+    "sample_moves": false
+  },
+  "caverns": [
+    {
+      "cavern": 9,
+      "name": "Wacky Amoebatrons",
+      "runs": 10,
+      "complete": 8,
+      "mean_keys": 0.8,
+      "mean_decisions_complete": 67,
+      "tokens_per_call": 1317,
+      "low_confidence_rate": 0.3,
+      "mean_cost_usd": 0.0032,
+      "other_outcomes": {
+        "Willy died": 2
+      }
+    },
+    {
+      "cavern": 18,
+      "name": "Amoebatrons' Revenge",
+      "runs": 10,
+      "complete": 6,
+      "mean_keys": 0.6,
+      "mean_decisions_complete": 87,
+      "tokens_per_call": 1400,
+      "low_confidence_rate": 0.44,
+      "mean_cost_usd": 0.0046,
+      "other_outcomes": {
+        "Willy died": 3,
+        "stuck: no progress": 1
+      }
+    }
+  ],
+  "runs": [
+    {
+      "cavern": 8,
+      "file": "z-new-words/20260928-182959-cavern-09-wacky-amoebatrons-promptA.jsonl",
+      "outcome": "cavern complete",
+      "keys": 1,
+      "decisions": 65,
+      "tokens": 75260,
+      "cost_usd": 0.003161,
+      "mean_latency_ms": 275,
+      "low_confidence": 18,
+      "jev_calls": 57
+    },
+    {
+      "cavern": 8,
+      "file": "z-new-words/20260928-182959-cavern-09-wacky-amoebatrons-promptA-2.jsonl",
+      "outcome": "Willy died",
+      "keys": 0,
+      "decisions": 66,
+      "tokens": 73387,
+      "cost_usd": 0.003082,
+      "mean_latency_ms": 258,
+      "low_confidence": 16,
+      "jev_calls": 56
+    },
+    {
+      "cavern": 8,
+      "file": "z-new-words/20260928-182959-cavern-09-wacky-amoebatrons-promptA-3.jsonl",
+      "outcome": "cavern complete",
+      "keys": 1,
+      "decisions": 65,
+      "tokens": 75180,
+      "cost_usd": 0.003158,
+      "mean_latency_ms": 252,
+      "low_confidence": 17,
+      "jev_calls": 57
+    },
+    {
+      "cavern": 8,
+      "file": "z-new-words/20260928-182959-cavern-09-wacky-amoebatrons-promptA-4.jsonl",
+      "outcome": "cavern complete",
+      "keys": 1,
+      "decisions": 65,
+      "tokens": 75154,
+      "cost_usd": 0.003156,
+      "mean_latency_ms": 245,
+      "low_confidence": 16,
+      "jev_calls": 57
+    },
+    {
+      "cavern": 8,
+      "file": "z-new-words/20260928-182959-cavern-09-wacky-amoebatrons-promptA-5.jsonl",
+      "outcome": "cavern complete",
+      "keys": 1,
+      "decisions": 65,
+      "tokens": 75154,
+      "cost_usd": 0.003156,
+      "mean_latency_ms": 273,
+      "low_confidence": 17,
+      "jev_calls": 57
+    },
+    {
+      "cavern": 8,
+      "file": "z-new-words/20260928-183014-cavern-09-wacky-amoebatrons-promptA.jsonl",
+      "outcome": "cavern complete",
+      "keys": 1,
+      "decisions": 73,
+      "tokens": 83851,
+      "cost_usd": 0.003522,
+      "mean_latency_ms": 266,
+      "low_confidence": 18,
+      "jev_calls": 64
+    },
+    {
+      "cavern": 8,
+      "file": "z-new-words/20260928-183015-cavern-09-wacky-amoebatrons-promptA.jsonl",
+      "outcome": "cavern complete",
+      "keys": 1,
+      "decisions": 65,
+      "tokens": 75154,
+      "cost_usd": 0.003156,
+      "mean_latency_ms": 274,
+      "low_confidence": 16,
+      "jev_calls": 57
+    },
+    {
+      "cavern": 8,
+      "file": "z-new-words/20260928-183016-cavern-09-wacky-amoebatrons-promptA.jsonl",
+      "outcome": "cavern complete",
+      "keys": 1,
+      "decisions": 76,
+      "tokens": 88313,
+      "cost_usd": 0.003709,
+      "mean_latency_ms": 247,
+      "low_confidence": 23,
+      "jev_calls": 67
+    },
+    {
+      "cavern": 8,
+      "file": "z-new-words/20260928-183016-cavern-09-wacky-amoebatrons-promptA-2.jsonl",
+      "outcome": "Willy died",
+      "keys": 0,
+      "decisions": 60,
+      "tokens": 66947,
+      "cost_usd": 0.002812,
+      "mean_latency_ms": 245,
+      "low_confidence": 12,
+      "jev_calls": 51
+    },
+    {
+      "cavern": 8,
+      "file": "z-new-words/20260928-183016-cavern-09-wacky-amoebatrons-promptA-3.jsonl",
+      "outcome": "cavern complete",
+      "keys": 1,
+      "decisions": 65,
+      "tokens": 75260,
+      "cost_usd": 0.003161,
+      "mean_latency_ms": 252,
+      "low_confidence": 19,
+      "jev_calls": 57
+    },
+    {
+      "cavern": 17,
+      "file": "z-new-words/20260928-183030-cavern-18-amoebatrons-revenge-promptA.jsonl",
+      "outcome": "cavern complete",
+      "keys": 1,
+      "decisions": 103,
+      "tokens": 127404,
+      "cost_usd": 0.005351,
+      "mean_latency_ms": 244,
+      "low_confidence": 43,
+      "jev_calls": 92
+    },
+    {
+      "cavern": 17,
+      "file": "z-new-words/20260928-183031-cavern-18-amoebatrons-revenge-promptA.jsonl",
+      "outcome": "Willy died",
+      "keys": 0,
+      "decisions": 74,
+      "tokens": 88166,
+      "cost_usd": 0.003703,
+      "mean_latency_ms": 245,
+      "low_confidence": 25,
+      "jev_calls": 63
+    },
+    {
+      "cavern": 17,
+      "file": "z-new-words/20260928-183031-cavern-18-amoebatrons-revenge-promptA-2.jsonl",
+      "outcome": "cavern complete",
+      "keys": 1,
+      "decisions": 92,
+      "tokens": 114145,
+      "cost_usd": 0.004794,
+      "mean_latency_ms": 247,
+      "low_confidence": 31,
+      "jev_calls": 82
+    },
+    {
+      "cavern": 17,
+      "file": "z-new-words/20260928-183033-cavern-18-amoebatrons-revenge-promptA.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 0,
+      "decisions": 133,
+      "tokens": 177270,
+      "cost_usd": 0.007445,
+      "mean_latency_ms": 240,
+      "low_confidence": 71,
+      "jev_calls": 124
+    },
+    {
+      "cavern": 17,
+      "file": "z-new-words/20260928-183034-cavern-18-amoebatrons-revenge-promptA.jsonl",
+      "outcome": "cavern complete",
+      "keys": 1,
+      "decisions": 75,
+      "tokens": 95335,
+      "cost_usd": 0.004004,
+      "mean_latency_ms": 244,
+      "low_confidence": 24,
+      "jev_calls": 68
+    },
+    {
+      "cavern": 17,
+      "file": "z-new-words/20260928-183048-cavern-18-amoebatrons-revenge-promptA.jsonl",
+      "outcome": "Willy died",
+      "keys": 0,
+      "decisions": 74,
+      "tokens": 88166,
+      "cost_usd": 0.003703,
+      "mean_latency_ms": 242,
+      "low_confidence": 29,
+      "jev_calls": 63
+    },
+    {
+      "cavern": 17,
+      "file": "z-new-words/20260928-183052-cavern-18-amoebatrons-revenge-promptA.jsonl",
+      "outcome": "Willy died",
+      "keys": 0,
+      "decisions": 74,
+      "tokens": 88166,
+      "cost_usd": 0.003703,
+      "mean_latency_ms": 235,
+      "low_confidence": 25,
+      "jev_calls": 63
+    },
+    {
+      "cavern": 17,
+      "file": "z-new-words/20260928-183053-cavern-18-amoebatrons-revenge-promptA.jsonl",
+      "outcome": "cavern complete",
+      "keys": 1,
+      "decisions": 92,
+      "tokens": 114145,
+      "cost_usd": 0.004794,
+      "mean_latency_ms": 235,
+      "low_confidence": 33,
+      "jev_calls": 82
+    },
+    {
+      "cavern": 17,
+      "file": "z-new-words/20260928-183054-cavern-18-amoebatrons-revenge-promptA.jsonl",
+      "outcome": "cavern complete",
+      "keys": 1,
+      "decisions": 75,
+      "tokens": 95335,
+      "cost_usd": 0.004004,
+      "mean_latency_ms": 237,
+      "low_confidence": 26,
+      "jev_calls": 68
+    },
+    {
+      "cavern": 17,
+      "file": "z-new-words/20260928-183104-cavern-18-amoebatrons-revenge-promptA.jsonl",
+      "outcome": "cavern complete",
+      "keys": 1,
+      "decisions": 87,
+      "tokens": 112020,
+      "cost_usd": 0.004705,
+      "mean_latency_ms": 235,
+      "low_confidence": 36,
+      "jev_calls": 81
+    }
+  ]
+}

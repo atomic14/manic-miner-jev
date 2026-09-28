@@ -84,15 +84,15 @@ We corrected three phrases that jev reads:
 | 1 Central Cavern | 9 of 10 | 10 of 10 |
 | 2 The Cold Room | 1 of 10 | 3 of 9 |
 | 3 The Menagerie, first measurement | 7 of 10 | 1 of 2 |
-| 3 The Menagerie, repeat in the afternoon | 2 of 10 | 2 of 10 |
+| 3 The Menagerie, second measurement | 2 of 10 | 2 of 10 |
 
 In the first measurement, jev API errors (timeouts and 503 responses) ended
 9 runs of the new text: 8 in The Menagerie and 1 in The Cold Room. The table
 leaves them out. The repeat of The Menagerie gave 2 of 10 for the old text,
 2 of 10 for all three corrections, and 2 of 10 for the two move-side
 corrections alone. So the corrections have no effect that 10 runs can show,
-and we kept them. The drop from 7 to 2 with the same text is described in
-"The spread of the results".
+and we kept them. The old text itself gave 7 of 10 and then 2 of 10 in The
+Menagerie: 10 runs of one cavern can spread this widely.
 
 ### Instructions of the form "select X when Y" fit only the caverns they come from
 
@@ -130,6 +130,18 @@ nasty. It asks "are there exactly 2 empty cells?".
 
 A jump over a nasty is safe only when the gap is exactly 2 cells. So the
 code gives distances as numbers.
+
+We repeated the test on 28 September 2026, with one request for each gap
+and each form. The map row was the packed form of the real map (`WW..X..`).
+
+| N | 0 | 1 | 2 | 3 | 4 | 5 | 6 |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| From the map row | 0.45 | 0.60 | 0.63 | 0.56 | 0.32 | 0.19 | 0.20 |
+| From a number | 0.02 | 0.03 | 0.89 | 0.03 | 0.03 | 0.02 | 0.03 |
+
+This time the correct gap did not stand out from the map row. The two
+measurements agree that the map row separates near from far, but not an
+exact count. Each value comes from a single request.
 
 ### One reference from the code can be better than two facts
 
@@ -431,8 +443,9 @@ gives the table for each cavern.
 The rule `nearer` selects a move that completes the cavern or collects a
 key, else a move that goes nearer, else any valid move. In 15086 move
 decisions (jev with its own key order), jev selected a move that the rule
-could also select in 13986 (93 %). The share is 85 % to 100 % in each
-cavern. When jev did not follow the rule, its move went farther:
+could also select in 13986 (93 %). A random valid move would do this in
+54 % of the same decisions. The share is 85 % to 100 % in each cavern.
+`experiments/agreement.py` computes both numbers from the log files. When jev did not follow the rule, its move went farther:
 
 - to a new place (417 decisions);
 - to a place visited before (384);
@@ -446,6 +459,128 @@ With the same key order (the optimum order), jev completed 26 of 200 runs
 The rule `nearer-new` also prefers a new place: first a nearer move to a new
 place, then any nearer move, then a move to a new place. It completed only
 18 of 200 runs. A preference for new places does not help the rule.
+
+## Jev and the rules: a like-for-like comparison
+
+Settings: promptD, key decision with the map, dead-end check of 4 moves, 10
+runs of each cavern for each arm. Measured on 28 September 2026, with the
+same code for all arms. We ran every arm twice. No run had an API error.
+
+The measurement in "Jev and the simple rules" gave the rule a fixed key
+order that jev did not need, and it ran each arm once. Here the new setting
+`--key-rule nearest` lets a rule choose the keys too: it selects the key
+nearest to Willy, in cells. With it, jev and the rule get the same key rule,
+and only the move decision differs. The rule `nearer-memory` is the rule
+`nearer` plus the memory facts: it prefers a nearer move that Willy did not
+try from this place, then any nearer move, then any move not tried from this
+place. It ran once.
+
+| Arm | Complete runs of 200: first run | Second run |
+| --- | --- | --- |
+| jev, its own key decisions | 32 | 35 |
+| jev, the optimum key order | 39 | 33 |
+| rule `nearer`, the optimum key order | 19 | 20 |
+| rule `nearer-memory`, the optimum key order | - | 19 |
+| jev, key rule `nearest` | 34 | 27 |
+| rule `nearer`, key rule `nearest` | 16 | 18 |
+| rule `nearer-memory`, key rule `nearest` | - | 25 |
+| jev, move sampled from its probabilities (`--sample-moves`) | 5 | 7 |
+| random valid move, the optimum key order | 0 | 0 |
+
+Over the two runs, jev completes about twice as many runs as the rule
+`nearer` with the same key choice: 72 of 400 against 39 with the optimum
+order (Fisher p = 0.001), and 61 of 400 against 34 with the key rule
+`nearest` (p = 0.004). All of the difference is in two caverns:
+
+| Cavern | jev, optimum order | rule `nearer`, optimum order | rule `nearer-memory`, optimum order |
+| --- | --- | --- | --- |
+| 9 Wacky Amoebatrons | 9, 8 | 1, 2 | 4 |
+| 18 Amoebatrons' Revenge | 6, 7 | 0, 1 | 2 |
+
+In the other 18 caverns there is no measurable difference: 42 of 360
+against 35 (p = 0.47) with the optimum order, and 38 against 32 (p = 0.53)
+with the key rule `nearest`. The rule `nearer-memory` does better than
+`nearer` in the two caverns, but not nearly as well as jev, and not better
+in total.
+
+In Wacky Amoebatrons, the rule `nearer` died in 6 of 10 runs of the first
+run (key rule `nearest`: 7 of 10). It reached column 20, row 13 of the
+bottom floor in 9 or 10 of its 10 runs, and moved back and forth there until
+no move was safe. The dead-end check of 4 moves did not see this trap early
+enough. Jev also reached that place in 3 to 5 of its runs, but it moved on
+and did not die there. The state has no facts about the vertical guardians
+(see "Facts about vertical guardians made the results worse"), but both
+caverns also have horizontal guardians, and jev gets facts about those (see
+"Jev without the guardian facts"). In Amoebatrons' Revenge, the rule
+`nearer` ended with "stuck: no progress" in 7 of 10 runs (key rule
+`nearest`: 10 of 10).
+
+A move sampled from jev's probabilities completes only 5 and 7 runs. Jev's
+selected move is much better than its probability distribution suggests.
+
+With jev's moves from the first run, `experiments/agreement.py` gives 91.5 %
+agreement with the rule `nearer` (optimum order) and 92.1 % (jev's own key
+decisions). A random valid move gives 55.5 %.
+
+### Jev without the guardian facts
+
+Settings: the same, with the optimum key order and `--no-guardian-facts`:
+the move decision's state has no `guardians` field. The look-ahead still
+removes each deadly move. Two runs of each cavern. (Caverns 13 to 20 of the
+first attempt ended with a jev API error, "no available credits", and we
+ran them again.)
+
+| Cavern (2 × 10 runs) | jev, no guardian facts | jev, with guardian facts | rule `nearer` |
+| --- | --- | --- | --- |
+| 1 Central Cavern | 20 | 19 | 17 |
+| 2 The Cold Room | 15 | 12 | 15 |
+| 3 The Menagerie | 7 | 7 | 3 |
+| 9 Wacky Amoebatrons | 7 | 17 | 3 |
+| 18 Amoebatrons' Revenge | 6 | 13 | 1 |
+| All 20 caverns | 56 of 400 | 72 of 400 | 39 of 400 |
+
+In 18 caverns, the guardian facts make no measurable difference: the
+look-ahead removes the deadly moves. In the two caverns where jev does
+better than the rule, the guardian facts about double jev's result (Wacky
+Amoebatrons: Fisher p = 0.003; Amoebatrons' Revenge: p = 0.06). Without
+them, jev still does better than the rule in these two caverns (7 against 3,
+and 6 against 1).
+
+### A difference from the first measurement
+
+On 26 September, jev with the optimum order completed 26 runs, and the rule
+24. Most of the difference from 28 September is in Wacky Amoebatrons: jev
+with the optimum order completed 1 of 10 runs on 26 September, and 6 to 9 of
+10 in each arm on 28 September. The rule, which makes no jev request, gave 2
+and then 1 and 2 of 10 in the same cavern. Two measurements on 28 September
+looked for the cause, and found none:
+
+- The instruction set: promptA and promptD gave 36 and 34 complete runs.
+- The move wording ("1 cell" instead of "1 cells", see "Plain-English
+  corrections to promptD made no measurable difference"): caverns 9 and 18,
+  promptA, 13 of 20 with the old wording and 14 of 20 with the new wording.
+
+The model version was `jev-1.13.0` on both days. We do not know the cause.
+
+### Are jev's single decisions better where it disagrees with the rule?
+
+`experiments/paired_rollouts.py` takes 300 decisions where jev's move was
+not a move of the rule `nearer`. At each one, it plays two branches from the
+same game state: jev's move, or a move of the rule. After that first move,
+the rule plays both branches for 60 decisions, 6 times each. A branch counts
+the keys collected while Willy is alive. (A first version counted the keys
+after a death, when the game had already put them back. Its numbers were
+wrong, and we removed them.)
+
+| Decisions from | Mean keys: jev's move first | Rule's move first | Difference (95 % interval) | Willy died: jev / rule |
+| --- | --- | --- | --- | --- |
+| 26 September runs (jev's own key decisions) | 0.286 | 0.253 | +0.033 (+0.003 to +0.068) | 16.7 % / 15.3 % |
+| 28 September runs (the optimum key order) | 0.322 | 0.283 | +0.039 (+0.001 to +0.078) | 24.1 % / 26.2 % |
+
+In both sets, jev's move leads to slightly more keys, and the interval is
+just above zero. The death rates differ in opposite directions, and neither
+difference is significant. One different decision changes little; the
+effect of jev builds up over a full run.
 
 ## Jev without `progress`
 
@@ -620,13 +755,6 @@ with the same code, Central Cavern gave 6 of 10 in one measurement and 19 of
 chance. This weakens some conclusions in this document, for example "the
 second key decision is the cause". Large differences, such as 10 of 10
 against 1 of 10, are real.
-
-Even a large difference can come from the time of the measurement. On 28
-September 2026, The Menagerie gave 7 of 10 in the morning and 2 of 10 in the
-afternoon, with the same code, the same text, and the same model version
-(`jev-1.13.0`). The jev API had an outage between the two measurements. We
-do not know whether jev behaved differently after it. Compare two
-configurations only when they were measured at the same time.
 
 ## Other decision makers
 

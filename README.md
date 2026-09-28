@@ -14,60 +14,68 @@ make the decisions? The harness runs the game in an emulator and gives jev
 the facts of each situation. Jev selects every move Willy makes, and the key
 he goes for next.
 
-## The answer in short: you do not need jev to play this game
+## The answer in short: the harness does most of the work, but not all of it
 
-We replaced jev with a three-line rule that reads the same facts. With the
-same key order, the rule completes almost as many runs as jev, with no model
-and at no cost. Each row is 10 runs of each of the 20 caverns:
+We compared jev with a three-line rule that reads the same facts. Each arm
+below is 10 runs of each of the 20 caverns, and we ran every arm twice
+(28 September 2026):
 
-| Decision maker | Key order | Complete runs | Caverns with a complete run | Mean keys per run | Cost of 200 runs |
-| --- | --- | --- | --- | --- | --- |
-| jev | jev selects | 31 of 200 | 5 | 1.4 | $0.91 |
-| jev | the optimum order | 26 of 200 | 6 | 1.5 | $0.85 |
-| rule `nearer` | the optimum order | 24 of 200 | 4 | 1.3 | $0 |
-| jev, without the fact `progress` | jev selects | 5 of 200 | 3 | 1.3 | $0.84 |
-| random valid move | the optimum order | 0 of 200 | 0 | 0.3 | $0 |
+| Decision maker for moves | Key choice | Complete runs of 200 (two runs) | Mean keys per run | Cost of 200 runs |
+| --- | --- | --- | --- | --- |
+| jev | the optimum order | 39, 33 | 1.8 | $0.95 |
+| jev | jev selects | 32, 35 | 1.4 | $1.03 |
+| jev | key rule `nearest` | 34, 27 | 1.5 | $0.86 |
+| rule `nearer-memory` | key rule `nearest` | 25 | - | $0 |
+| rule `nearer` | the optimum order | 19, 20 | 1.4 | $0 |
+| rule `nearer-memory` | the optimum order | 19 | - | $0 |
+| rule `nearer` | key rule `nearest` | 16, 18 | 1.1 | $0 |
+| jev, move sampled from its probabilities | jev selects | 5, 7 | 1.0 | $1.10 |
+| random valid move | the optimum order | 0, 0 | 0.3 | $0 |
 
 The rule `nearer` picks a move that completes the cavern or collects a key.
 If there is none, it picks a move whose `progress` is "nearer". If there is
 none of those either, it picks any valid move. When several moves qualify,
-it picks one of them at random.
+it picks one of them at random. The rule `nearer-memory` also prefers a move
+that Willy did not try from this place. The key rule `nearest` picks the key
+nearest to Willy.
 
 What the table shows:
 
-- With the same key order, jev completes 26 runs and the rule 24. With 10
-  runs per cavern, that difference can be chance. In 93 % of its decisions,
-  jev picks a move that the rule could also pick.
-- Without `progress`, jev completes only 5 runs. The harness computes
-  `progress` toward the target, the way up, or the way down, so the route
-  knowledge lives in the harness, not in jev.
-- Random choice among the same valid moves completes nothing. The facts
-  matter, not just the removal of bad moves.
-- The rule depends on its random choice. When two moves are "nearer", or
-  none is, chance breaks the loop. Without it, the rule completes 0 of 20
-  runs in Central Cavern; with it, 17 of 20.
-- Jev needs more than `progress`. Given `progress` alone, it follows
-  "nearer" every time, loops, and completes 0 of 20 runs in Central Cavern.
-  The memory facts (`place`, `tried_from_here`) get it out of loops, and the
-  other facts plus one sentence about loops get it to the portal. A map
-  after each move does not replace `progress`. See "What jev needs: tests in
-  Central Cavern" in [docs/findings.md](docs/findings.md).
+- The harness does the route-finding. It removes every move that kills
+  Willy, and `progress` says which moves go nearer to the target, the way
+  up, or the way down. A three-line rule on these facts completes 16 to 20
+  runs, and random choice among the same valid moves completes none.
+- Jev adds value in two caverns. Over both runs, jev completes 72 of 400
+  against the rule's 39 with the same key order (Fisher p = 0.001). All of
+  the difference is in Wacky Amoebatrons (jev 9 and 8 of 10, the rule 1 and
+  2) and Amoebatrons' Revenge (jev 6 and 7, the rule 0 and 1). In the other
+  18 caverns there is no measurable difference.
+- In Wacky Amoebatrons the rule moves back and forth at one place on the
+  bottom floor until it is trapped, and jev moves on. Jev uses the guardian
+  facts, which the rule ignores: without them, jev's result in the two
+  caverns falls by about half (17 to 7, and 13 to 6 of 20). In the other 18
+  caverns, jev does as well without the guardian facts. A rule that also
+  reads the memory facts does a little better in the two caverns, but not
+  nearly as well as jev.
+- Jev's selected move matters. A move sampled from jev's probabilities
+  completes only 5 to 7 runs.
+- Without `progress`, jev completed only 5 of 200 runs (an earlier
+  measurement, see "Results"). The route knowledge is in the harness.
 
-So the harness does most of the work. It removes every move that kills
-Willy, and it says which moves go nearer. That direction, plus a coin flip
-to break loops, does almost as well as jev. Jev adds a little: it beats the
-rule in some caverns (Amoebatrons' Revenge: 6 or 8 of 10 against 0 of 10)
-and loses in others.
+An earlier measurement, on 26 September, gave the rule a key order that jev
+did not need, and ran each arm once. It found 26 runs for jev against 24 for
+the rule, and we first concluded that jev added almost nothing. The
+like-for-like comparison, run twice, does not support that conclusion. See
+"Jev and the rules: a like-for-like comparison" in
+[docs/findings.md](docs/findings.md).
 
 This is one game and one harness, and we did not test other people's demos.
 But the test is easy to repeat for any demo: replace the model with a simple
-rule over the same facts, and compare. If the results are close, the harness
-is doing the work.
+rule over the same facts, like for like, repeat it, and compare. If the
+results are close, the harness is doing the work.
 
-The results in this README were measured with the instruction set
-`promptA`. The default set is now `promptD` (see "Instruction sets" in
-[docs/design.md](docs/design.md)). Some measurements need older code, kept
-in the git tag `research-2026-09` (see [docs/findings.md](docs/findings.md)).
+Some measurements need older code, kept in the git tag `research-2026-09`
+(see [docs/findings.md](docs/findings.md)).
 
 ![A replay of The Cold Room, paused before decision 37](docs/screenshots/hero.jpg)
 
@@ -148,25 +156,57 @@ has 0.62 and the confidence is 0.52. In a key decision of the same run,
 
 ## Results
 
-Settings for all columns: the key decision uses the map, the dead-end check
-looks 4 moves ahead, and each cavern gets 10 live runs. Columns marked
-"(tag)" need the code in the tag `research-2026-09`.
+Settings for all columns: promptD, the key decision uses the map, the
+dead-end check looks 4 moves ahead, and each cavern gets 10 live runs. The
+table gives the first of the two runs on 28 September 2026.
 
-- **jev**: jev selects every move and every key, with promptA.
+- **jev**: jev selects every move and every key.
 - **jev, optimum order**: the harness fixes the key order
   (`--key-order optimum`), and jev selects every move.
-- **jev, no `progress`** (tag): the state has no `progress` or
-  `progress_measures`, and the text does not mention them (`--no-progress
-  --instructions promptA-no-progress`). Jev selects every move and key.
-- **rule `nearer`**: described above (`--rule nearer`), with the optimum key
-  order. No jev requests.
-- **rule `nearer-new`** (tag): like `nearer`, but it prefers a nearer move
-  to a new place, then any nearer move, then any move to a new place
-  (`--rule nearer-new`). Optimum key order, no jev requests.
-- **random**: a random valid move (`--random-moves`). Optimum key order, no
-  jev requests.
+- **rule `nearer`, optimum order**: the rule instead of jev (`--rule
+  nearer --key-order optimum`). No jev requests.
+- **jev, key rule `nearest`**: the key nearest to Willy is the target
+  (`--key-rule nearest`), and jev selects every move.
+- **rule `nearer`, key rule `nearest`**: `--rule nearer --key-rule
+  nearest`. No jev requests.
+- **jev, sampled moves**: the move is drawn from jev's probabilities
+  (`--sample-moves`).
+- **random, optimum order**: a random valid move (`--random-moves
+  --key-order optimum`). No jev requests.
 
 Each cell shows complete runs out of 10 · mean keys per run.
+
+| Cavern | jev | jev, optimum order | rule `nearer`, optimum order | jev, key rule `nearest` | rule `nearer`, key rule `nearest` | jev, sampled moves | random, optimum order |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| 1 Central Cavern (5 keys) | 10 · 5.0 | 9 · 4.5 | 7 · 5.0 | 10 · 5.0 | 9 · 4.5 | 0 · 2.0 | 0 · 0.1 |
+| 2 The Cold Room (5 keys) | 1 · 2.6 | 8 · 4.8 | 9 · 4.6 | 6 · 4.6 | 4 · 3.3 | 1 · 2.3 | 0 · 1.3 |
+| 3 The Menagerie (5 keys) | 2 · 2.8 | 5 · 3.9 | 2 · 1.6 | 1 · 2.3 | 1 · 2.6 | 0 · 1.3 | 0 · 0.2 |
+| 4 Abandoned Uranium Workings (5 keys) | 1 · 0.9 | 0 · 0.4 | 0 · 0.0 | 0 · 3.0 | 0 · 2.2 | 0 · 1.5 | 0 · 0.2 |
+| 5 Eugene's Lair (5 keys) | 0 · 2.2 | 0 · 2.0 | 0 · 2.3 | 0 · 2.1 | 0 · 2.0 | 0 · 0.6 | 0 · 0.2 |
+| 6 Processing Plant (5 keys) | 0 · 2.8 | 0 · 3.4 | 0 · 0.0 | 0 · 2.0 | 0 · 0.0 | 0 · 2.0 | 0 · 0.7 |
+| 7 The Vat (5 keys) | 0 · 0.0 | 0 · 0.0 | 0 · 0.0 | 0 · 0.0 | 0 · 0.0 | 0 · 0.0 | 0 · 0.0 |
+| 8 Miner Willy meets the Kong Beast (4 keys) | 0 · 0.2 | 0 · 1.6 | 0 · 0.8 | 0 · 1.0 | 0 · 0.2 | 0 · 0.2 | 0 · 0.4 |
+| 9 Wacky Amoebatrons (1 key) | 9 · 0.9 | 9 · 0.9 | 1 · 0.1 | 8 · 0.8 | 0 · 0.0 | 1 · 0.2 | 0 · 0.0 |
+| 10 The Endorian Forest (5 keys) | 0 · 1.0 | 2 · 2.4 | 0 · 2.3 | 0 · 1.9 | 0 · 1.4 | 0 · 0.9 | 0 · 1.1 |
+| 11 Attack of the Mutant Telephones (5 keys) | 0 · 0.0 | 0 · 3.2 | 0 · 2.1 | 0 · 0.0 | 0 · 0.0 | 2 · 1.0 | 0 · 0.0 |
+| 12 Return of the Alien Kong Beast (5 keys) | 0 · 1.3 | 0 · 1.0 | 0 · 0.7 | 0 · 1.6 | 0 · 1.4 | 0 · 0.9 | 0 · 0.0 |
+| 13 Ore Refinery (5 keys) | 0 · 1.5 | 0 · 1.8 | 0 · 1.0 | 0 · 0.4 | 0 · 0.0 | 0 · 1.2 | 0 · 0.4 |
+| 14 Skylab Landing Bay (4 keys) | 0 · 1.6 | 0 · 0.2 | 0 · 0.9 | 0 · 1.0 | 0 · 0.0 | 0 · 0.8 | 0 · 0.2 |
+| 15 The Bank (3 keys) | 0 · 1.0 | 0 · 1.1 | 0 · 1.0 | 0 · 0.0 | 0 · 0.0 | 0 · 1.3 | 0 · 0.1 |
+| 16 The Sixteenth Cavern (4 keys) | 0 · 1.5 | 0 · 2.9 | 0 · 0.5 | 0 · 1.8 | 0 · 0.5 | 0 · 0.4 | 0 · 0.0 |
+| 17 The Warehouse (5 keys) | 3 · 2.6 | 0 · 0.2 | 0 · 1.5 | 4 · 2.9 | 2 · 1.5 | 0 · 1.4 | 0 · 0.1 |
+| 18 Amoebatrons' Revenge (1 key) | 6 · 0.6 | 6 · 0.7 | 0 · 0.0 | 5 · 0.5 | 0 · 0.0 | 1 · 0.1 | 0 · 0.0 |
+| 19 Solar Power Generator (3 keys) | 0 · 0.0 | 0 · 0.8 | 0 · 1.0 | 0 · 0.0 | 0 · 0.0 | 0 · 0.0 | 0 · 0.0 |
+| 20 The Final Barrier (5 keys) | 0 · 0.0 | 0 · 0.0 | 0 · 1.6 | 0 · 0.0 | 0 · 1.7 | 0 · 2.1 | 0 · 0.1 |
+| All caverns | 32 · 1.4 | 39 · 1.8 | 19 · 1.4 | 34 · 1.5 | 16 · 1.1 | 5 · 1.0 | 0 · 0.3 |
+
+### An earlier measurement (26 September 2026)
+
+These arms ran at different times, with promptA. The columns marked (tag)
+need the code in the tag `research-2026-09`. The "no `progress`" arm has no
+`progress` and no `progress_measures` in the state, and its text does not
+name them. The rule `nearer-new` prefers a nearer move to a new place, then
+any nearer move, then any move to a new place.
 
 | Cavern | jev | jev, optimum order | jev, no `progress` | rule `nearer` | rule `nearer-new` | random |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -196,9 +236,10 @@ What this shows:
 
 - Random choice among the valid moves completes no cavern, so the choice
   between valid moves matters.
-- The rule `nearer` does almost as well as jev. `nearer-new`, which also
-  prefers new places, does worse (18 complete runs). `progress` alone is a
-  strong guide.
+- In this measurement, the rule `nearer` did almost as well as jev (24
+  against 26). The like-for-like comparison does not confirm this (19
+  against 39, and 20 against 33). `nearer-new`, which also prefers new places, did worse (18
+  complete runs).
 - The key order affects each cavern differently. With the optimum order,
   jev completes The Cold Room 7 times in 10 (1 with its own order), but The
   Menagerie only once (8 with its own order).
@@ -223,6 +264,11 @@ which setting made the difference. See "Open work" in
 
 ### What we learned
 
+- The harness finds the route. Jev adds value where a simple rule gets
+  trapped: in two caverns, jev completes most runs and the rule almost none.
+  In the other 18 caverns, jev and the rule do equally well.
+- Compare like for like, and repeat the comparison. The first comparison
+  gave the rule a key order and ran once, and its conclusion was wrong.
 - Jev makes good single decisions but does not plan a route. When some move
   goes nearer to the target, jev picks one in 85 % of decisions. It fails
   when the direct way is blocked and Willy must first move away from the
@@ -247,7 +293,7 @@ of the time. They show each model's character, not an exact ranking.
 
 | Decision maker | What it is | Test | Result | One decision | One run |
 | --- | --- | --- | --- | --- | --- |
-| jev (`jev-1.13.0`) | TypeSafe's System One model, through its API | 10 runs of each cavern (see "Results") | 31 of 200 complete | 0.27 s | $0.005 |
+| jev (`jev-1.13.0`) | TypeSafe's System One model, through its API | 10 runs of each cavern (see "Results") | 32 of 200 complete | 0.27 s | $0.005 |
 | Claude Haiku | an LLM that reasons before each answer, through the `claude` command | 1 run of Central Cavern | complete in 123 decisions (jev: 70 to 75) | 17.8 s | $1.30 |
 | Qwen3-8B, 4-bit | an open LLM on this computer; the answer is read from its logits | 1 run each of caverns 1 to 3 | The Menagerie complete (64 decisions); 0 and 2 keys in caverns 1 and 2 | 1.2 s | $0 |
 | Laya | a small typed decision model (421 million parameters) on this computer | 10 runs each of caverns 1 to 3, with jev's request | no complete run; it cannot read the whole request | 0.05 s | $0 |
@@ -263,14 +309,15 @@ good key order from the planner did not produce more complete runs.
 Questions that people ask about game demos with jev, with answers from our
 measurements.
 
-**Is the code doing the work instead of jev?** Mostly, yes (see "The answer
+**Is the code doing the work instead of jev?** Most of it (see "The answer
 in short"). The harness removes every move that kills Willy or leads into a
 dead end, and it computes `progress` toward the target, the way up, or the
-way down. With the same key order, a rule over these facts completes 24 runs
-and jev 26. Without `progress`, jev completes 5. The rule also needs random
-choice to break loops. In the 7 % of decisions where jev disagrees with the
-rule, it mostly picks a move that goes farther, often to a place Willy has
-already visited.
+way down. Without `progress`, jev completes 5 of 200 runs. But a rule that
+reads only `progress` and the goal facts completes about half as many runs
+as jev (39 against 72 over two runs), and all of that difference is in two
+caverns. Jev picks a move that the rule could
+also pick in 93 % of its decisions; a random valid move would do this in
+54 %.
 
 **Does the state mark the correct answer?** Not directly, but `progress`
 comes close. The state never says which move is best. However, `progress`
@@ -383,7 +430,10 @@ one changes a single part of the design, so you can measure its effect:
 | `--depth N` | how many moves the dead-end check looks ahead (default 4; 0 = off) |
 | `--key-order LETTERS` | the harness fixes the key order, and there is no key decision. `optimum` uses the cavern's optimum order. |
 | `--random-moves` | a random valid move, for comparison |
-| `--rule nearer` | the rule `nearer` instead of jev, for comparison (no jev requests) |
+| `--rule NAME` | a rule instead of jev, for comparison (no jev requests): `nearer`, or `nearer-memory`, which also prefers a move not tried from this place |
+| `--key-rule nearest` | the key nearest to Willy instead of jev's key decision, for comparison (no jev request) |
+| `--no-guardian-facts` | the move decision's state has no guardian facts, for comparison |
+| `--sample-moves` | play a move drawn from jev's probabilities instead of jev's selected move, for comparison |
 | `--llm MODEL`, `--local [MODEL]`, `--laya` | another decision maker, for comparison (see "Other decision makers"). Only the terminal runner has `--llm`. |
 
 With `--facts-only-keys`, jev also gets a key decision after 12 decisions
@@ -507,7 +557,7 @@ last column lists them.
 | `jevmanic/key_orders.py` | the optimum key order of each cavern |
 | `jevmanic/cli.py` | live runs in the terminal |
 | `jevmanic/checks.py` | the request checks |
-| `experiments/` | the measurement tool, the diagnosis script, and the option-order test |
+| `experiments/` | the measurement tool, the diagnosis script, the option-order test, the agreement count (`agreement.py`), and the paired test (`paired_rollouts.py`) |
 | `experiments/results/` | the summaries behind this README's tables (other summaries are in the tag `research-2026-09`) |
 | `docs/design.md` | the present design, the exact data that jev receives, and the log file format |
 | `docs/findings.md` | the measurements behind the design |

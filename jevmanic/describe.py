@@ -659,9 +659,12 @@ def _public(way):
 # these functions, so the checks test the state that jev gets.
 
 
-def move_request_state(snap: Snapshot, outcomes: dict, target, visited, tried) -> dict:
-    """The complete state of a move decision."""
-    return {**words(snap, target), **moves_state(snap, outcomes, target, visited, tried)}
+def move_request_state(snap: Snapshot, outcomes: dict, target, visited, tried, guardian_facts: bool = True) -> dict:
+    """The complete state of a move decision. `guardian_facts=False` leaves out the `guardians` field."""
+    state = {**words(snap, target), **moves_state(snap, outcomes, target, visited, tried)}
+    if not guardian_facts:
+        del state["guardians"]
+    return state
 
 
 def key_request_state(snap: Snapshot, names: dict, memory: dict | None, with_map: bool) -> dict:

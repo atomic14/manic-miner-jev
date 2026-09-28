@@ -267,8 +267,9 @@ def test_default_settings():
     assert settings.key_decision_every == 25 and settings.survival_depth == 4
     assert settings.forced_key_order == "" and not settings.random_moves
     assert Settings(instructions="promptA").map_key_decision  # each set gets the same state
-    assert settings.rule == ""
-    assert len(fields(Settings)) == 7  # a new setting needs a reason and a measurement
+    assert settings.rule == "" and settings.key_rule == "" and not settings.sample_moves
+    assert settings.guardian_facts
+    assert len(fields(Settings)) == 10  # a new setting needs a reason and a measurement
 
 
 def test_nearer_rule():
