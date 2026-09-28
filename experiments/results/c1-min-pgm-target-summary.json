@@ -1,0 +1,272 @@
+{
+  "label": "c1-min-pgm-target",
+  "settings": {
+    "instructions": "promptM-pgm-target",
+    "map_key_decision": true,
+    "key_decision_every": 25,
+    "survival_depth": 4,
+    "forced_key_order": "",
+    "random_moves": false,
+    "rule": "",
+    "progress_facts": "route",
+    "move_facts": "pgm-target"
+  },
+  "caverns": [
+    {
+      "cavern": 1,
+      "name": "Central Cavern",
+      "runs": 20,
+      "complete": 0,
+      "mean_keys": 5,
+      "mean_decisions_complete": null,
+      "tokens_per_call": 937,
+      "low_confidence_rate": 0.57,
+      "mean_cost_usd": 0.0022,
+      "other_outcomes": {
+        "stuck: no progress": 20
+      }
+    }
+  ],
+  "runs": [
+    {
+      "cavern": 0,
+      "file": "c1-min-pgm-target/20260927-230317-cavern-01-central-cavern-promptM-pgm-target.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 5,
+      "decisions": 69,
+      "tokens": 47781,
+      "cost_usd": 0.002007,
+      "mean_latency_ms": 250,
+      "low_confidence": 32,
+      "jev_calls": 51
+    },
+    {
+      "cavern": 0,
+      "file": "c1-min-pgm-target/20260927-230317-cavern-01-central-cavern-promptM-pgm-target-2.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 5,
+      "decisions": 121,
+      "tokens": 87935,
+      "cost_usd": 0.003693,
+      "mean_latency_ms": 253,
+      "low_confidence": 52,
+      "jev_calls": 95
+    },
+    {
+      "cavern": 0,
+      "file": "c1-min-pgm-target/20260927-230317-cavern-01-central-cavern-promptM-pgm-target-3.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 5,
+      "decisions": 67,
+      "tokens": 44288,
+      "cost_usd": 0.00186,
+      "mean_latency_ms": 256,
+      "low_confidence": 26,
+      "jev_calls": 47
+    },
+    {
+      "cavern": 0,
+      "file": "c1-min-pgm-target/20260927-230317-cavern-01-central-cavern-promptM-pgm-target-4.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 5,
+      "decisions": 67,
+      "tokens": 44288,
+      "cost_usd": 0.00186,
+      "mean_latency_ms": 250,
+      "low_confidence": 28,
+      "jev_calls": 47
+    },
+    {
+      "cavern": 0,
+      "file": "c1-min-pgm-target/20260927-230317-cavern-01-central-cavern-promptM-pgm-target-5.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 5,
+      "decisions": 69,
+      "tokens": 47781,
+      "cost_usd": 0.002007,
+      "mean_latency_ms": 261,
+      "low_confidence": 30,
+      "jev_calls": 51
+    },
+    {
+      "cavern": 0,
+      "file": "c1-min-pgm-target/20260927-230331-cavern-01-central-cavern-promptM-pgm-target.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 5,
+      "decisions": 67,
+      "tokens": 44288,
+      "cost_usd": 0.00186,
+      "mean_latency_ms": 252,
+      "low_confidence": 25,
+      "jev_calls": 47
+    },
+    {
+      "cavern": 0,
+      "file": "c1-min-pgm-target/20260927-230331-cavern-01-central-cavern-promptM-pgm-target-2.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 5,
+      "decisions": 69,
+      "tokens": 47781,
+      "cost_usd": 0.002007,
+      "mean_latency_ms": 257,
+      "low_confidence": 31,
+      "jev_calls": 51
+    },
+    {
+      "cavern": 0,
+      "file": "c1-min-pgm-target/20260927-230332-cavern-01-central-cavern-promptM-pgm-target.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 5,
+      "decisions": 69,
+      "tokens": 47781,
+      "cost_usd": 0.002007,
+      "mean_latency_ms": 257,
+      "low_confidence": 29,
+      "jev_calls": 51
+    },
+    {
+      "cavern": 0,
+      "file": "c1-min-pgm-target/20260927-230333-cavern-01-central-cavern-promptM-pgm-target.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 5,
+      "decisions": 69,
+      "tokens": 47781,
+      "cost_usd": 0.002007,
+      "mean_latency_ms": 255,
+      "low_confidence": 31,
+      "jev_calls": 51
+    },
+    {
+      "cavern": 0,
+      "file": "c1-min-pgm-target/20260927-230345-cavern-01-central-cavern-promptM-pgm-target.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 5,
+      "decisions": 67,
+      "tokens": 44288,
+      "cost_usd": 0.00186,
+      "mean_latency_ms": 259,
+      "low_confidence": 25,
+      "jev_calls": 47
+    },
+    {
+      "cavern": 0,
+      "file": "c1-min-pgm-target/20260927-230345-cavern-01-central-cavern-promptM-pgm-target-2.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 5,
+      "decisions": 69,
+      "tokens": 47781,
+      "cost_usd": 0.002007,
+      "mean_latency_ms": 260,
+      "low_confidence": 29,
+      "jev_calls": 51
+    },
+    {
+      "cavern": 0,
+      "file": "c1-min-pgm-target/20260927-230346-cavern-01-central-cavern-promptM-pgm-target.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 5,
+      "decisions": 69,
+      "tokens": 47781,
+      "cost_usd": 0.002007,
+      "mean_latency_ms": 259,
+      "low_confidence": 30,
+      "jev_calls": 51
+    },
+    {
+      "cavern": 0,
+      "file": "c1-min-pgm-target/20260927-230347-cavern-01-central-cavern-promptM-pgm-target.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 5,
+      "decisions": 69,
+      "tokens": 47705,
+      "cost_usd": 0.002004,
+      "mean_latency_ms": 272,
+      "low_confidence": 30,
+      "jev_calls": 51
+    },
+    {
+      "cavern": 0,
+      "file": "c1-min-pgm-target/20260927-230347-cavern-01-central-cavern-promptM-pgm-target-2.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 5,
+      "decisions": 92,
+      "tokens": 66245,
+      "cost_usd": 0.002782,
+      "mean_latency_ms": 269,
+      "low_confidence": 39,
+      "jev_calls": 71
+    },
+    {
+      "cavern": 0,
+      "file": "c1-min-pgm-target/20260927-230359-cavern-01-central-cavern-promptM-pgm-target.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 5,
+      "decisions": 69,
+      "tokens": 47781,
+      "cost_usd": 0.002007,
+      "mean_latency_ms": 260,
+      "low_confidence": 29,
+      "jev_calls": 51
+    },
+    {
+      "cavern": 0,
+      "file": "c1-min-pgm-target/20260927-230400-cavern-01-central-cavern-promptM-pgm-target.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 5,
+      "decisions": 115,
+      "tokens": 83145,
+      "cost_usd": 0.003492,
+      "mean_latency_ms": 259,
+      "low_confidence": 47,
+      "jev_calls": 89
+    },
+    {
+      "cavern": 0,
+      "file": "c1-min-pgm-target/20260927-230401-cavern-01-central-cavern-promptM-pgm-target.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 5,
+      "decisions": 69,
+      "tokens": 47705,
+      "cost_usd": 0.002004,
+      "mean_latency_ms": 267,
+      "low_confidence": 30,
+      "jev_calls": 51
+    },
+    {
+      "cavern": 0,
+      "file": "c1-min-pgm-target/20260927-230403-cavern-01-central-cavern-promptM-pgm-target.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 5,
+      "decisions": 67,
+      "tokens": 44288,
+      "cost_usd": 0.00186,
+      "mean_latency_ms": 265,
+      "low_confidence": 28,
+      "jev_calls": 47
+    },
+    {
+      "cavern": 0,
+      "file": "c1-min-pgm-target/20260927-230409-cavern-01-central-cavern-promptM-pgm-target.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 5,
+      "decisions": 67,
+      "tokens": 44288,
+      "cost_usd": 0.00186,
+      "mean_latency_ms": 265,
+      "low_confidence": 28,
+      "jev_calls": 47
+    },
+    {
+      "cavern": 0,
+      "file": "c1-min-pgm-target/20260927-230414-cavern-01-central-cavern-promptM-pgm-target.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 5,
+      "decisions": 69,
+      "tokens": 47781,
+      "cost_usd": 0.002007,
+      "mean_latency_ms": 261,
+      "low_confidence": 31,
+      "jev_calls": 51
+    }
+  ]
+}

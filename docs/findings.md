@@ -387,6 +387,43 @@ Central Cavern") gives the table.
   almost the same answer each time in the same situation, needs the memory
   facts for this.
 
+## The smallest state in Central Cavern
+
+Settings: the key decision with the map, a dead end check of 4 moves, 20 runs
+of Central Cavern for each test. The README gives the tables.
+
+- The runs of the states between `progress-goal-memory` and the full state
+  collected all 5 keys, and then stopped with no progress at the top right of
+  the cavern. The way to the portal goes down there.
+- The full state without `guardians` and `air` completed 20 of 20, with 75
+  decisions (the full state: 18 of 20, 107 decisions).
+- With the same state and a text that explains only the fields: 0 of 20.
+  With only the sentence about crumbling floors added: 0 of 20. With only
+  the sentence about loops added: 20 of 20, 73 decisions, and 21 % of the
+  decisions with a confidence below 0.5.
+- `progress`, the goal facts, the memory facts, and the sentence about loops:
+  0 of 20, and no key. With so few facts, the permission to leave "nearer"
+  takes Willy the wrong way.
+
+## A map after each move
+
+Settings: the same. Each valid move gets the map of the cavern at the end of
+the move. The map comes from the snapshot that the look-ahead makes at the
+end of the move: Willy, the guardians, and the keys where they are then, and
+the condition of each crumbling tile (`~` new, `-` partly gone, `_` almost
+gone, `.` gone). The state also names the target key, and it has the goal and
+memory facts. The text has the sentence about loops. A request has a median of
+1773 tokens (the maps and `progress`: 1834).
+
+- The maps with no `progress`: 1 of 20. 9 runs got no key, and 8 runs got
+  only 1 key. 6 runs ended when the air ran out, after 156 to 196 decisions.
+  85 % of the decisions had a confidence below 0.5.
+- The maps and `progress`: 11 of 20. 75 % of the decisions had a confidence
+  below 0.5.
+- A first version of this test drew the guardians where they were before the
+  move, and it showed no erosion. It gave 1 and 12 of 20. We removed its
+  results. The checks in `jevmanic/checks.py` now find both errors.
+
 ## The order of the options
 
 `experiments/probe_option_order.py` asks jev 200 recorded move decisions

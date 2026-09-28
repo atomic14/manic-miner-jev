@@ -345,9 +345,7 @@ class _LiveRun:
                       "forced_reason": "only one key is left"}
         else:
             memory = {"current": self.target, "used": self.used_for, "gave_up": self.gave_up}
-            state = describe.keys_state(snap, self.names, memory)
-            if self.settings.uses_map:
-                state = {**describe.cavern_map(snap), **state}
+            state = describe.key_request_state(snap, self.names, memory, self.settings.uses_map)
             names = [self.names[k] for k in goals]
             question = key_question(names, self.settings.instructions, self.settings.uses_map)
             answer = await self.brain.ask(state, question, "key")
@@ -366,10 +364,8 @@ class _LiveRun:
     async def move_decision(self, snap, n: int) -> dict:
         """Select one macro from the valid moves. Gives the log record."""
         outcomes = self.game.look_ahead(self.settings.survival_depth)
-        moves = describe.moves_state(snap, outcomes, self.target, self.visited, self.tried,
-                                     self.settings.progress_facts)
-        state = describe.reduced_move_state({**describe.words(snap, self.target), **moves},
-                                            self.settings.move_facts)
+        state, moves = describe.move_request_state(snap, outcomes, self.target, self.visited, self.tried,
+                                                   self.settings.progress_facts, self.settings.move_facts)
         removed = {} if moves["moves_not_offered"] == "none" else moves["moves_not_offered"]
         offered = list(moves["moves"])
         if not offered:

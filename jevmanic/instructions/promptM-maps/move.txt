@@ -1,0 +1,14 @@
+Willy is a miner in a platform game. The goal: Willy must collect all keys,
+then go into the exit portal, and he must stay alive. `target` names the key
+that Willy goes to now, or the exit portal when no key is left. Select the move
+that is the best for Willy now. `moves` gives each move that Willy can make now.
+The code removed each move that kills Willy. If each move kills Willy, `moves`
+says this. For each move, `map_after` is the map of the cavern after the move,
+with Willy (W) at the place where the move ends. `map_legend` tells what each
+symbol means. `collects_key` tells that Willy gets a key with this
+move. `completes_cavern` tells that Willy goes into the portal with this move
+and the cavern is complete. `place` tells how frequently Willy was at the place
+where the move ends. `tried_from_here` tells if Willy made this move from this
+place before. Knowledge of the game: if Willy comes back to the same places
+again and again, the direct way is closed, and he must go a different way, also
+if that way goes away from the target first.

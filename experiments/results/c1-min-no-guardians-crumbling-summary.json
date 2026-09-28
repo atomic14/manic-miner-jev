@@ -1,0 +1,272 @@
+{
+  "label": "c1-min-no-guardians-crumbling",
+  "settings": {
+    "instructions": "promptM-no-guardians-crumbling",
+    "map_key_decision": true,
+    "key_decision_every": 25,
+    "survival_depth": 4,
+    "forced_key_order": "",
+    "random_moves": false,
+    "rule": "",
+    "progress_facts": "route",
+    "move_facts": "no-guardians"
+  },
+  "caverns": [
+    {
+      "cavern": 1,
+      "name": "Central Cavern",
+      "runs": 20,
+      "complete": 0,
+      "mean_keys": 5,
+      "mean_decisions_complete": null,
+      "tokens_per_call": 1291,
+      "low_confidence_rate": 0.47,
+      "mean_cost_usd": 0.0039,
+      "other_outcomes": {
+        "stuck: no progress": 20
+      }
+    }
+  ],
+  "runs": [
+    {
+      "cavern": 0,
+      "file": "c1-min-no-guardians-crumbling/20260927-230624-cavern-01-central-cavern-promptM-no-guardians-crumbling.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 5,
+      "decisions": 78,
+      "tokens": 94402,
+      "cost_usd": 0.003965,
+      "mean_latency_ms": 261,
+      "low_confidence": 30,
+      "jev_calls": 73
+    },
+    {
+      "cavern": 0,
+      "file": "c1-min-no-guardians-crumbling/20260927-230624-cavern-01-central-cavern-promptM-no-guardians-crumbling-2.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 5,
+      "decisions": 80,
+      "tokens": 96782,
+      "cost_usd": 0.004065,
+      "mean_latency_ms": 261,
+      "low_confidence": 32,
+      "jev_calls": 75
+    },
+    {
+      "cavern": 0,
+      "file": "c1-min-no-guardians-crumbling/20260927-230624-cavern-01-central-cavern-promptM-no-guardians-crumbling-3.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 5,
+      "decisions": 78,
+      "tokens": 94465,
+      "cost_usd": 0.003968,
+      "mean_latency_ms": 253,
+      "low_confidence": 30,
+      "jev_calls": 73
+    },
+    {
+      "cavern": 0,
+      "file": "c1-min-no-guardians-crumbling/20260927-230624-cavern-01-central-cavern-promptM-no-guardians-crumbling-4.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 5,
+      "decisions": 78,
+      "tokens": 94402,
+      "cost_usd": 0.003965,
+      "mean_latency_ms": 257,
+      "low_confidence": 30,
+      "jev_calls": 73
+    },
+    {
+      "cavern": 0,
+      "file": "c1-min-no-guardians-crumbling/20260927-230624-cavern-01-central-cavern-promptM-no-guardians-crumbling-5.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 5,
+      "decisions": 77,
+      "tokens": 92563,
+      "cost_usd": 0.003888,
+      "mean_latency_ms": 255,
+      "low_confidence": 44,
+      "jev_calls": 72
+    },
+    {
+      "cavern": 0,
+      "file": "c1-min-no-guardians-crumbling/20260927-230624-cavern-01-central-cavern-promptM-no-guardians-crumbling-6.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 5,
+      "decisions": 80,
+      "tokens": 96782,
+      "cost_usd": 0.004065,
+      "mean_latency_ms": 260,
+      "low_confidence": 31,
+      "jev_calls": 75
+    },
+    {
+      "cavern": 0,
+      "file": "c1-min-no-guardians-crumbling/20260927-230624-cavern-01-central-cavern-promptM-no-guardians-crumbling-7.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 5,
+      "decisions": 73,
+      "tokens": 89545,
+      "cost_usd": 0.003761,
+      "mean_latency_ms": 267,
+      "low_confidence": 27,
+      "jev_calls": 69
+    },
+    {
+      "cavern": 0,
+      "file": "c1-min-no-guardians-crumbling/20260927-230624-cavern-01-central-cavern-promptM-no-guardians-crumbling-8.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 5,
+      "decisions": 75,
+      "tokens": 90166,
+      "cost_usd": 0.003787,
+      "mean_latency_ms": 261,
+      "low_confidence": 42,
+      "jev_calls": 70
+    },
+    {
+      "cavern": 0,
+      "file": "c1-min-no-guardians-crumbling/20260927-230624-cavern-01-central-cavern-promptM-no-guardians-crumbling-9.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 5,
+      "decisions": 78,
+      "tokens": 94465,
+      "cost_usd": 0.003968,
+      "mean_latency_ms": 264,
+      "low_confidence": 30,
+      "jev_calls": 73
+    },
+    {
+      "cavern": 0,
+      "file": "c1-min-no-guardians-crumbling/20260927-230624-cavern-01-central-cavern-promptM-no-guardians-crumbling-10.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 5,
+      "decisions": 78,
+      "tokens": 94465,
+      "cost_usd": 0.003968,
+      "mean_latency_ms": 263,
+      "low_confidence": 30,
+      "jev_calls": 73
+    },
+    {
+      "cavern": 0,
+      "file": "c1-min-no-guardians-crumbling/20260927-230645-cavern-01-central-cavern-promptM-no-guardians-crumbling.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 5,
+      "decisions": 75,
+      "tokens": 90252,
+      "cost_usd": 0.003791,
+      "mean_latency_ms": 265,
+      "low_confidence": 43,
+      "jev_calls": 70
+    },
+    {
+      "cavern": 0,
+      "file": "c1-min-no-guardians-crumbling/20260927-230645-cavern-01-central-cavern-promptM-no-guardians-crumbling-2.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 5,
+      "decisions": 78,
+      "tokens": 94402,
+      "cost_usd": 0.003965,
+      "mean_latency_ms": 263,
+      "low_confidence": 30,
+      "jev_calls": 73
+    },
+    {
+      "cavern": 0,
+      "file": "c1-min-no-guardians-crumbling/20260927-230645-cavern-01-central-cavern-promptM-no-guardians-crumbling-3.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 5,
+      "decisions": 78,
+      "tokens": 94465,
+      "cost_usd": 0.003968,
+      "mean_latency_ms": 265,
+      "low_confidence": 30,
+      "jev_calls": 73
+    },
+    {
+      "cavern": 0,
+      "file": "c1-min-no-guardians-crumbling/20260927-230645-cavern-01-central-cavern-promptM-no-guardians-crumbling-4.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 5,
+      "decisions": 78,
+      "tokens": 94402,
+      "cost_usd": 0.003965,
+      "mean_latency_ms": 254,
+      "low_confidence": 30,
+      "jev_calls": 73
+    },
+    {
+      "cavern": 0,
+      "file": "c1-min-no-guardians-crumbling/20260927-230645-cavern-01-central-cavern-promptM-no-guardians-crumbling-5.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 5,
+      "decisions": 85,
+      "tokens": 102140,
+      "cost_usd": 0.00429,
+      "mean_latency_ms": 256,
+      "low_confidence": 48,
+      "jev_calls": 80
+    },
+    {
+      "cavern": 0,
+      "file": "c1-min-no-guardians-crumbling/20260927-230645-cavern-01-central-cavern-promptM-no-guardians-crumbling-6.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 5,
+      "decisions": 73,
+      "tokens": 90929,
+      "cost_usd": 0.003819,
+      "mean_latency_ms": 259,
+      "low_confidence": 30,
+      "jev_calls": 70
+    },
+    {
+      "cavern": 0,
+      "file": "c1-min-no-guardians-crumbling/20260927-230645-cavern-01-central-cavern-promptM-no-guardians-crumbling-7.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 5,
+      "decisions": 77,
+      "tokens": 91331,
+      "cost_usd": 0.003836,
+      "mean_latency_ms": 267,
+      "low_confidence": 35,
+      "jev_calls": 71
+    },
+    {
+      "cavern": 0,
+      "file": "c1-min-no-guardians-crumbling/20260927-230645-cavern-01-central-cavern-promptM-no-guardians-crumbling-8.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 5,
+      "decisions": 76,
+      "tokens": 91329,
+      "cost_usd": 0.003836,
+      "mean_latency_ms": 262,
+      "low_confidence": 35,
+      "jev_calls": 71
+    },
+    {
+      "cavern": 0,
+      "file": "c1-min-no-guardians-crumbling/20260927-230646-cavern-01-central-cavern-promptM-no-guardians-crumbling.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 5,
+      "decisions": 76,
+      "tokens": 92624,
+      "cost_usd": 0.00389,
+      "mean_latency_ms": 266,
+      "low_confidence": 46,
+      "jev_calls": 72
+    },
+    {
+      "cavern": 0,
+      "file": "c1-min-no-guardians-crumbling/20260927-230646-cavern-01-central-cavern-promptM-no-guardians-crumbling-2.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 5,
+      "decisions": 78,
+      "tokens": 94465,
+      "cost_usd": 0.003968,
+      "mean_latency_ms": 263,
+      "low_confidence": 30,
+      "jev_calls": 73
+    }
+  ]
+}

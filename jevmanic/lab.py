@@ -87,9 +87,7 @@ def request_for(snap: Snapshot, with_map: bool = True, instructions: str = DEFAU
     names = {cell: f"key_{snap.key_letters[cell]}" for cell in snap.keys}
     names.update({cell: f"switch_{i + 1}" for i, cell in enumerate(snap.switches)})
     memory = {"current": None, "used": {}, "gave_up": {}}
-    state = describe.keys_state(snap, names, memory)
-    if with_map:
-        state = {**describe.cavern_map(snap), **state}
+    state = describe.key_request_state(snap, names, memory, with_map)
     question = key_question(list(names.values()), instructions, with_map)
     if custom_text.strip():
         question["key"].instructions = " ".join(custom_text.split())  # one paragraph, as from a file

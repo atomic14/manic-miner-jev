@@ -56,7 +56,14 @@ def instruction_sets() -> list[str]:
 # the README come from these sets, thus a change must be a new set.
 SET_FILES = ("move.txt", "key.txt", "key_facts_only.txt")
 FIXED_SETS = ("promptA", "promptB", "promptC", "promptA-no-progress", "promptD", "promptD-plain",
-              "promptM-progress", "promptM-progress-goal", "promptM-progress-goal-memory")
+              "promptM-progress", "promptM-progress-goal", "promptM-progress-goal-memory",
+              "promptM-pgm-target", "promptM-pgm-target-sides", "promptM-pgm-target-sides-result",
+              "promptM-no-guardians",
+              "promptM-no-guardians-no-knowledge",
+              "promptM-no-guardians-crumbling",
+              "promptM-no-guardians-loop",
+              "promptM-progress-goal-memory-loop",
+              "promptM-maps", "promptM-maps-progress")
 SET_NAME = re.compile(r"[A-Za-z0-9_-]{1,40}")
 
 

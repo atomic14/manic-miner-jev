@@ -46,7 +46,8 @@ and at no cost. 10 runs of each of the 20 caverns, 200 runs for each line:
   "nearer" in each decision, but it goes around in a loop and completes 0 of
   20 runs in Central Cavern. Jev leaves loops with the memory facts (`place`,
   `tried_from_here`), and it finds the portal with the other facts of the
-  state (see "What jev needs: tests in Central Cavern").
+  state and one sentence of the text about loops (see "What jev needs: tests
+  in Central Cavern"). A map after each move does not replace `progress`.
 
 The code (the "harness") does most of the work: it removes each move that
 kills Willy, and it tells which move goes nearer. The direction from the code
@@ -326,21 +327,50 @@ measure which of the two settings causes the difference. See "Open work" in
 
 These tests change one thing at a time, in Central Cavern, with 20 runs each.
 The key decision is the same in each test. The measurement of today's
-defaults gave 20 of 20 on the same day.
+defaults gave 20 of 20 on the same day. The goal facts are `collects_key` and
+`completes_cavern`. The memory facts are `place` and `tried_from_here`. Each
+test has its own text, which explains only the fields of its state (the text
+sets `promptD-plain` and `promptM-...`).
+
+**The direction of each move.**
 
 | Test | Complete runs | Mean keys |
 | --- | --- | --- |
 | The full state, with the text `promptD` (see below) | 18 of 20 | 4.5 |
 | Plain distances in place of `progress` (`--progress plain`) | 0 of 20 | 1.7 |
 | The rule `plain` on the plain distances (no jev call) | 0 of 20 | 0.3 |
-| Only `progress`, the goal facts, and the memory facts (`--move-facts progress-goal-memory`) | 2 of 20 | 5.0 |
-| Only `progress` and the goal facts (`--move-facts progress-goal`) | 0 of 20 | 0.9 |
-| Only `progress` (`--move-facts progress`) | 0 of 20 | 0.0 |
 | The rule `nearer` (no jev call) | 17 of 20 | 4.6 |
 | The rule `nearer` with no random choice (`--rule nearer-fixed`) | 0 of 20 | 0.0 |
 
-The goal facts are `collects_key` and `completes_cavern`. The memory facts
-are `place` and `tried_from_here`.
+**Fewer facts** (`--move-facts NAME`).
+
+| Test | Complete runs | Mean keys | Decisions |
+| --- | --- | --- | --- |
+| Only `progress` | 0 of 20 | 0.0 | - |
+| `progress` and the goal facts | 0 of 20 | 0.9 | - |
+| `progress`, the goal facts, and the memory facts | 2 of 20 | 5.0 | - |
+| The same, and `target` | 0 of 20 | 5.0 | - |
+| The same, and `to_the_left`, `to_the_right` | 0 of 20 | 4.6 | - |
+| The same, and the result of each move (`movement`, `ends_on`, `warning`, `moves_not_offered`) | 1 of 20 | 5.0 | 79 |
+| The full state without `guardians` and `air`, with the full text | 20 of 20 | 5.0 | 75 |
+| The same state, with a text that explains the fields and has no knowledge of the game | 0 of 20 | 5.0 | - |
+| The same, and only the sentence about crumbling floors | 0 of 20 | 5.0 | - |
+| The same, and only the sentence about loops | 20 of 20 | 5.0 | 73 |
+| `progress`, the goal facts, the memory facts, and only the sentence about loops | 0 of 20 | 0.0 | - |
+
+**A map after each move** (`--move-facts maps`). Each valid move gets the map
+of the cavern at the end of the move, from the snapshot that the look-ahead
+makes: Willy, the guardians, the keys that are left, and the condition of each
+crumbling tile. The state also names the target key, and it has the goal and
+memory facts, and the sentence about loops.
+
+| Test | Complete runs | Mean keys | Decisions | Confidence below 0.5 |
+| --- | --- | --- | --- | --- |
+| The maps, no `progress` | 1 of 20 | 1.1 | 137 | 85 % |
+| The maps and `progress` | 11 of 20 | 3.2 | 118 | 75 % |
+| For comparison: no guardians, the sentence about loops | 20 of 20 | 5.0 | 73 | 21 % |
+
+What these tests show:
 
 - `progress` is not a plain measurement. It has two rules of the code: a
   move that uses the way up or the way down is "nearer", and a move that
@@ -352,10 +382,25 @@ are `place` and `tried_from_here`.
 - With `progress` only, jev follows "nearer" in each decision, and it goes
   around in a loop. The rule with no random choice does the same. The random
   choice of the rule, or the memory facts for jev, take Willy out of a loop.
-- With `progress`, the goal facts, and the memory facts, jev collected all 5
-  keys in each run. But 18 of 20 runs then stopped at the top right, because
-  jev did not find the way down to the portal. The other facts of the state
-  let jev find it: the full state completes 18 of 20.
+- One sentence of the text decides the result in this cavern: "If Willy
+  comes back to the same places again and again, the direct way is closed,
+  and he must go a different way, also if that way goes away from the target
+  first." Without it, jev collects all keys but does not find the way down to
+  the portal (0 of 20). With it, 20 of 20. The other knowledge of the game in
+  the text is not necessary here. This sentence is near to the limit of the
+  rule of this project: it tells jev when it can leave "nearer".
+- The sentence about loops needs the other facts. With only `progress`, the
+  goal facts, and the memory facts, it makes the result worse (0 keys).
+- The facts about the guardians are not necessary in this cavern. Without
+  them, jev completes each run with 75 decisions in place of 107. The
+  look-ahead already removes each move that a guardian makes deadly. We did
+  not test this in the other caverns.
+- A map after each move does not replace `progress`. Without `progress`,
+  jev does not find the route in the maps (1 of 20). With `progress`, the
+  maps make the result worse than the compact facts (11 of 20, against 20 of
+  20). With the maps, jev is uncertain: 75 % to 85 % of its decisions have a
+  confidence below 0.5. A route over several floors is a task of several
+  steps, and jev does not do it from a map.
 - The text `promptD` is promptA with correct statements about the moves in
   `moves` (see "The rule of this project"). It gave 18 of 20, against 20 of
   20 for promptA. This difference can be chance.
@@ -546,7 +591,7 @@ part:
 | `--random-moves` | a random choice from the valid moves, for comparison |
 | `--rule NAME` | a simple rule in the place of jev, for comparison (no jev call): `nearer`, `nearer-new`, `nearer-fixed` (no random choice), or `plain` (for `--progress plain`) (see "Result") |
 | `--progress route\|plain\|none` | the facts about the direction of each move: `progress` with the two rules of the code (default), plain distances (`to_target`, `to_way_up`, `to_way_down`; use `--instructions promptD-plain`), or none (use `--instructions promptA-no-progress`). `--no-progress` is the same as `--progress none`. |
-| `--move-facts NAME` | the move state: `full` (default), or only some facts of each move: `progress`, `progress-goal`, `progress-goal-memory`. Use `--instructions promptM-NAME`. |
+| `--move-facts NAME` | the move state: `full` (default), or a smaller state for a test: `progress`, `progress-goal`, `progress-goal-memory`, `pgm-target`, `pgm-target-sides`, `pgm-target-sides-result`, `no-guardians`, `maps` (a map after each move), or `maps-progress`. Use the text set `promptM-NAME` (the table `TEXT_STATE` in `jevmanic/checks.py` gives each pair). |
 
 The **optimum order** of each cavern is in `jevmanic/key_orders.py`. It is a
 good key order that we use as a reference. The project does not prove that
@@ -554,6 +599,20 @@ it is the best order.
 
 With the facts only (`--facts-only-keys`), jev also gets the key decision
 after 12 decisions with no new place, and after a change of floor level.
+
+Before the runs start, the measurement tool checks the requests
+(`jevmanic/checks.py`). It replays three recorded runs, builds the request
+states with the settings of the measurement, and stops with no run if:
+
+- a text names a field in back quotes that the state never has;
+- a fact of a move (`movement`, `collects_key`, or a map after the move) does
+  not agree with the game at the end of that move.
+
+The tests (`tests/test_checks.py`) run the same checks for each text set, and
+they prove that each check finds a known problem. The checks have two limits.
+They check the names of the fields, not their place in the state: `warning`
+passes if any part of the state has it. They also cannot check that a sentence
+of a text is true. `--skip-checks` starts a measurement with no checks.
 
 The log files go to `runs/<label>/`. The viewer shows them as the group
 "Measurement: label". `experiments/diagnose.py` prints the map, the last
@@ -829,6 +888,7 @@ call when all valid macros have the same result (Willy is in the air).
 | `jevmanic/lab.py` | the key decision lab of the viewer |
 | `jevmanic/key_orders.py` | the optimum key order of each cavern |
 | `jevmanic/cli.py` | a live run in the terminal |
+| `jevmanic/checks.py` | the checks of the requests before a measurement |
 | `experiments/` | measurement, diagnosis, and tests of how well jev reads a state |
 | `experiments/results/` | the summaries of the measurements |
 | `docs/findings.md` | the measurements behind the design |

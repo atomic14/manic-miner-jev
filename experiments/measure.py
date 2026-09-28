@@ -38,6 +38,8 @@ def parse():
                         help="a local LLM makes the decisions: the code reads the answer from its logits, as jevfire "
                              "and SemIf do (for comparison, needs `uv sync --extra local`). MODEL is an mlx-community "
                              "model name; the default is Qwen3-4B in 4-bit form")
+    parser.add_argument("--skip-checks", action="store_true",
+                        help="do not check the requests before the measurement (see jevmanic/checks.py)")
     parser.add_argument("--laya", action="store_true", help="Laya makes the decisions: a typed decision model "
                         "that runs on this computer (for comparison, needs `uv sync --extra laya`)")
     add_run_options(parser)
@@ -129,6 +131,17 @@ async def main():
     args = parse()
     settings = settings_from(args)
     print(f"label={args.label} caverns={[c + 1 for c in args.cavern_list]} runs={args.runs} {settings}")
+    if not args.skip_checks:
+        # Check the requests before the measurement costs money (see jevmanic/checks.py).
+        from jevmanic.checks import measurement_problems
+
+        problems = measurement_problems(settings)
+        if problems:
+            print("The requests have problems. No run started. (--skip-checks starts the runs anyway.)")
+            for problem in problems:
+                print("  " + problem)
+            raise SystemExit(1)
+        print("The requests passed the checks.")
     if args.local:
         from jevmanic.local_brain import DEFAULT_MODEL, LocalBrain  # an optional dependency
 

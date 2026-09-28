@@ -37,6 +37,9 @@ SYMBOL_MEANING = {
     "X": "a nasty. It does not move. It kills Willy on contact.",
     "=": "floor. Willy can stand on it. It does not stop a jump from below.",
     "~": "crumbling floor. Willy can stand on it. It breaks a little each time Willy stands on it, and then it is gone.",
+    # Only in the maps after each move (map_move_state), which show the condition of each crumbling tile.
+    "-": "crumbling floor, partly gone. Willy can stand on it. It breaks a little each time Willy stands on it.",
+    "_": "crumbling floor, almost gone. Willy can stand on it one more time, for a short time.",
     "<": "conveyor. Willy can stand on it. It moves Willy to the left.",
     ">": "conveyor. Willy can stand on it. It moves Willy to the right.",
     "#": "wall. It stops Willy. Willy can stand on top of it.",
@@ -66,10 +69,18 @@ MAX_JUMP_ROWS = 2  # a jump can reach a platform that is 2 rows higher
 # -- ASCII maps ---------------------------------------------------------------
 
 
-def _grid(snap: Snapshot) -> list[list[str]]:
-    """The tile map with the keys, switches, guardians, portal, and Willy on it."""
+def _grid(snap: Snapshot, erosion: bool = False) -> list[list[str]]:
+    """The tile map with the keys, switches, guardians, portal, and Willy on it.
+
+    With `erosion`, a crumbling tile shows its condition: `~` new, `-` partly gone,
+    `_` almost gone. A tile that is fully gone is empty in the game itself.
+    """
     conveyor = ">" if snap.conveyor_direction == "right" else "<"
     grid = [[conveyor if ch == TILE_CONVEYOR else ch for ch in row] for row in snap.tiles]
+    if erosion:
+        for (x, y), rows_gone in snap.crumbled.items():
+            if grid[y][x] == TILE_CRUMBLING and rows_gone:
+                grid[y][x] = "_" if rows_gone >= ALMOST_GONE_ROWS else "-"
 
     def put(x, y, ch, size=1):
         for dy in range(size):
@@ -515,25 +526,70 @@ PROGRESS_FACTS = ("route", "plain", "none")
 
 
 # The fields of the move state (the setting `move_facts` of a run). "full" is the
-# normal state. The other sets keep only the facts of each move that they name,
-# and no other part of the state: a test of which facts jev needs.
+# normal state. Each other set gives (the facts of each move, the other parts of
+# the state) that it keeps: a test of which facts jev needs.
+_PGM = ("progress", "collects_key", "completes_cavern", "place", "tried_from_here")
+_RESULT = ("movement", "ends_on", "warning")
 MOVE_FACT_SETS = {
     "full": None,
-    "progress": ("progress",),
-    "progress-goal": ("progress", "collects_key", "completes_cavern"),
-    "progress-goal-memory": ("progress", "collects_key", "completes_cavern", "place", "tried_from_here"),
+    "progress": (("progress",), ()),
+    "progress-goal": (("progress", "collects_key", "completes_cavern"), ()),
+    "progress-goal-memory": (_PGM, ()),
+    "pgm-target": (_PGM, ("target",)),
+    "pgm-target-sides": (_PGM, ("target", "to_the_left", "to_the_right")),
+    "pgm-target-sides-result": (_PGM + _RESULT, ("target", "to_the_left", "to_the_right", "moves_not_offered")),
+    "no-guardians": (None, ("willy", "target", "keys_left", "to_the_left", "to_the_right",
+                            "progress_measures", "moves_not_offered")),
+    # A map of the cavern after each move, in place of the other facts (see map_move_state).
+    "maps": "maps",
+    "maps-progress": "maps",
 }
+
+
+MAP_MOVE_FACTS = ("collects_key", "completes_cavern", "place", "tried_from_here")
+
+
+def map_move_state(snap: Snapshot, outcomes: dict, moves: dict, target, with_progress: bool) -> dict:
+    """The move state as maps: for each valid move, the map of the cavern with Willy at the
+    place where the move ends. The other facts of each move are the goal and memory facts
+    (and `progress` if `with_progress`). The state has no other facts.
+
+    Each map comes from the game after the move (the look-ahead keeps it): Willy, the
+    guardians, the keys that are left, and the floors are where they are then.
+    """
+    keep = MAP_MOVE_FACTS + (("progress",) if with_progress else ())
+    out_moves = moves["moves"]
+    all_rows = []
+    if isinstance(out_moves, dict):
+        out_moves = {}
+        for name, facts in moves["moves"].items():
+            rows = _rows(_grid(outcomes[name].snapshot, erosion=True), 0, COLS - 1, 0, ROWS - 1)
+            all_rows += rows
+            out_moves[name] = {"map_after": rows, **{k: v for k, v in facts.items() if k in keep}}
+    if target is not None and tuple(target) in snap.keys:
+        target_name = f"key {snap.key_letters.get(tuple(target), 'K')}"
+    elif target is not None and tuple(target) in snap.switches:
+        target_name = "the switch S"
+    else:
+        target_name = "the exit portal P"
+    return {
+        "map_legend": map_legend(all_rows or _rows(_grid(snap), 0, COLS - 1, 0, ROWS - 1), snap),
+        "map_note": "Each string is one row. The first row is the top of the cavern. "
+                    "Each map shows the cavern at the end of the move.",
+        "target": target_name,
+        "moves": out_moves,
+    }
 
 
 def reduced_move_state(state: dict, move_facts: str) -> dict:
     """The move state with only the facts of `move_facts`. The full state is returned unchanged."""
-    keep = MOVE_FACT_SETS[move_facts]
-    if keep is None:
+    if MOVE_FACT_SETS[move_facts] is None:
         return state
+    keep_move, keep_top = MOVE_FACT_SETS[move_facts]
     moves = state["moves"]
-    if isinstance(moves, dict):
-        moves = {name: {k: v for k, v in facts.items() if k in keep} for name, facts in moves.items()}
-    return {"moves": moves}
+    if isinstance(moves, dict) and keep_move is not None:
+        moves = {name: {k: v for k, v in facts.items() if k in keep_move} for name, facts in moves.items()}
+    return {**{k: state[k] for k in keep_top if k in state}, "moves": moves}
 
 
 def _compare(before: int, after: int) -> str:
@@ -694,3 +750,25 @@ def _public(way):
 
 
 
+
+
+# -- The states of the two requests ---------------------------------------------------
+# The live run, the lab, and the checks (checks.py) build each state with these
+# functions, thus a check tests the state that jev gets.
+
+
+def move_request_state(snap: Snapshot, outcomes: dict, target, visited, tried,
+                       progress_facts: str = "route", move_facts: str = "full") -> tuple[dict, dict]:
+    """The state of the move request, and the full move facts (the code uses them)."""
+    moves = moves_state(snap, outcomes, target, visited, tried, progress_facts)
+    if move_facts.startswith("maps"):
+        state = map_move_state(snap, outcomes, moves, target, move_facts == "maps-progress")
+    else:
+        state = reduced_move_state({**words(snap, target), **moves}, move_facts)
+    return state, moves
+
+
+def key_request_state(snap: Snapshot, names: dict, memory: dict | None, with_map: bool) -> dict:
+    """The state of the key request: the facts of each key, and the map if `with_map`."""
+    state = keys_state(snap, names, memory)
+    return {**cavern_map(snap), **state} if with_map else state

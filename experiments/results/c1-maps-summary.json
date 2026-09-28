@@ -1,0 +1,273 @@
+{
+  "label": "c1-maps",
+  "settings": {
+    "instructions": "promptM-maps",
+    "map_key_decision": true,
+    "key_decision_every": 25,
+    "survival_depth": 4,
+    "forced_key_order": "",
+    "random_moves": false,
+    "rule": "",
+    "progress_facts": "route",
+    "move_facts": "maps"
+  },
+  "caverns": [
+    {
+      "cavern": 1,
+      "name": "Central Cavern",
+      "runs": 20,
+      "complete": 1,
+      "mean_keys": 1.1,
+      "mean_decisions_complete": 137,
+      "tokens_per_call": 1756,
+      "low_confidence_rate": 0.85,
+      "mean_cost_usd": 0.0092,
+      "other_outcomes": {
+        "Willy died": 6,
+        "stuck: no progress": 13
+      }
+    }
+  ],
+  "runs": [
+    {
+      "cavern": 0,
+      "file": "c1-maps/20260928-091653-cavern-01-central-cavern-promptM-maps.jsonl",
+      "outcome": "Willy died",
+      "keys": 0,
+      "decisions": 176,
+      "tokens": 272418,
+      "cost_usd": 0.011442,
+      "mean_latency_ms": 285,
+      "low_confidence": 126,
+      "jev_calls": 160
+    },
+    {
+      "cavern": 0,
+      "file": "c1-maps/20260928-091653-cavern-01-central-cavern-promptM-maps-2.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 1,
+      "decisions": 99,
+      "tokens": 164552,
+      "cost_usd": 0.006911,
+      "mean_latency_ms": 283,
+      "low_confidence": 88,
+      "jev_calls": 92
+    },
+    {
+      "cavern": 0,
+      "file": "c1-maps/20260928-091653-cavern-01-central-cavern-promptM-maps-3.jsonl",
+      "outcome": "Willy died",
+      "keys": 0,
+      "decisions": 172,
+      "tokens": 282612,
+      "cost_usd": 0.01187,
+      "mean_latency_ms": 296,
+      "low_confidence": 138,
+      "jev_calls": 162
+    },
+    {
+      "cavern": 0,
+      "file": "c1-maps/20260928-091653-cavern-01-central-cavern-promptM-maps-4.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 0,
+      "decisions": 62,
+      "tokens": 109012,
+      "cost_usd": 0.004579,
+      "mean_latency_ms": 288,
+      "low_confidence": 60,
+      "jev_calls": 62
+    },
+    {
+      "cavern": 0,
+      "file": "c1-maps/20260928-091653-cavern-01-central-cavern-promptM-maps-5.jsonl",
+      "outcome": "Willy died",
+      "keys": 0,
+      "decisions": 196,
+      "tokens": 325768,
+      "cost_usd": 0.013682,
+      "mean_latency_ms": 300,
+      "low_confidence": 170,
+      "jev_calls": 186
+    },
+    {
+      "cavern": 0,
+      "file": "c1-maps/20260928-091653-cavern-01-central-cavern-promptM-maps-6.jsonl",
+      "outcome": "Willy died",
+      "keys": 0,
+      "decisions": 159,
+      "tokens": 260468,
+      "cost_usd": 0.01094,
+      "mean_latency_ms": 287,
+      "low_confidence": 120,
+      "jev_calls": 149
+    },
+    {
+      "cavern": 0,
+      "file": "c1-maps/20260928-091653-cavern-01-central-cavern-promptM-maps-7.jsonl",
+      "outcome": "cavern complete",
+      "keys": 5,
+      "decisions": 137,
+      "tokens": 220690,
+      "cost_usd": 0.009269,
+      "mean_latency_ms": 274,
+      "low_confidence": 82,
+      "jev_calls": 127
+    },
+    {
+      "cavern": 0,
+      "file": "c1-maps/20260928-091653-cavern-01-central-cavern-promptM-maps-8.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 0,
+      "decisions": 69,
+      "tokens": 120181,
+      "cost_usd": 0.005048,
+      "mean_latency_ms": 286,
+      "low_confidence": 64,
+      "jev_calls": 69
+    },
+    {
+      "cavern": 0,
+      "file": "c1-maps/20260928-091653-cavern-01-central-cavern-promptM-maps-9.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 0,
+      "decisions": 45,
+      "tokens": 79849,
+      "cost_usd": 0.003354,
+      "mean_latency_ms": 268,
+      "low_confidence": 43,
+      "jev_calls": 45
+    },
+    {
+      "cavern": 0,
+      "file": "c1-maps/20260928-091653-cavern-01-central-cavern-promptM-maps-10.jsonl",
+      "outcome": "Willy died",
+      "keys": 0,
+      "decisions": 156,
+      "tokens": 250481,
+      "cost_usd": 0.01052,
+      "mean_latency_ms": 281,
+      "low_confidence": 114,
+      "jev_calls": 145
+    },
+    {
+      "cavern": 0,
+      "file": "c1-maps/20260928-091707-cavern-01-central-cavern-promptM-maps.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 1,
+      "decisions": 131,
+      "tokens": 225250,
+      "cost_usd": 0.009461,
+      "mean_latency_ms": 301,
+      "low_confidence": 105,
+      "jev_calls": 124
+    },
+    {
+      "cavern": 0,
+      "file": "c1-maps/20260928-091713-cavern-01-central-cavern-promptM-maps.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 1,
+      "decisions": 114,
+      "tokens": 193877,
+      "cost_usd": 0.008143,
+      "mean_latency_ms": 303,
+      "low_confidence": 97,
+      "jev_calls": 107
+    },
+    {
+      "cavern": 0,
+      "file": "c1-maps/20260928-091715-cavern-01-central-cavern-promptM-maps.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 1,
+      "decisions": 127,
+      "tokens": 209925,
+      "cost_usd": 0.008817,
+      "mean_latency_ms": 304,
+      "low_confidence": 110,
+      "jev_calls": 119
+    },
+    {
+      "cavern": 0,
+      "file": "c1-maps/20260928-091722-cavern-01-central-cavern-promptM-maps.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 5,
+      "decisions": 135,
+      "tokens": 212626,
+      "cost_usd": 0.00893,
+      "mean_latency_ms": 292,
+      "low_confidence": 96,
+      "jev_calls": 125
+    },
+    {
+      "cavern": 0,
+      "file": "c1-maps/20260928-091731-cavern-01-central-cavern-promptM-maps.jsonl",
+      "outcome": "Willy died",
+      "keys": 0,
+      "decisions": 180,
+      "tokens": 291615,
+      "cost_usd": 0.012248,
+      "mean_latency_ms": 293,
+      "low_confidence": 143,
+      "jev_calls": 168
+    },
+    {
+      "cavern": 0,
+      "file": "c1-maps/20260928-091739-cavern-01-central-cavern-promptM-maps.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 1,
+      "decisions": 138,
+      "tokens": 233530,
+      "cost_usd": 0.009808,
+      "mean_latency_ms": 286,
+      "low_confidence": 116,
+      "jev_calls": 131
+    },
+    {
+      "cavern": 0,
+      "file": "c1-maps/20260928-091741-cavern-01-central-cavern-promptM-maps.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 1,
+      "decisions": 141,
+      "tokens": 241474,
+      "cost_usd": 0.010142,
+      "mean_latency_ms": 286,
+      "low_confidence": 113,
+      "jev_calls": 134
+    },
+    {
+      "cavern": 0,
+      "file": "c1-maps/20260928-091744-cavern-01-central-cavern-promptM-maps.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 1,
+      "decisions": 141,
+      "tokens": 239092,
+      "cost_usd": 0.010042,
+      "mean_latency_ms": 275,
+      "low_confidence": 117,
+      "jev_calls": 134
+    },
+    {
+      "cavern": 0,
+      "file": "c1-maps/20260928-091746-cavern-01-central-cavern-promptM-maps.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 1,
+      "decisions": 122,
+      "tokens": 204514,
+      "cost_usd": 0.00859,
+      "mean_latency_ms": 276,
+      "low_confidence": 104,
+      "jev_calls": 115
+    },
+    {
+      "cavern": 0,
+      "file": "c1-maps/20260928-091747-cavern-01-central-cavern-promptM-maps.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 5,
+      "decisions": 149,
+      "tokens": 244516,
+      "cost_usd": 0.01027,
+      "mean_latency_ms": 279,
+      "low_confidence": 112,
+      "jev_calls": 142
+    }
+  ]
+}

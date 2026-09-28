@@ -162,6 +162,8 @@ class Outcome:
     y: int
     # The crumbling floor below Willy after the macro: pixel rows that are gone (0 to 7).
     floor_rows_gone: int = 0
+    # The game after the macro: the guardians, the keys, and the floors at that time.
+    snapshot: "Snapshot | None" = field(default=None, repr=False, compare=False)
 
 
 # Characters for the tile map.
@@ -638,6 +640,7 @@ class Game:
                 x=after.willy_x,
                 y=after.willy_y,
                 floor_rows_gone=self._floor_rows_gone(before, after),
+                snapshot=after,
             )
             self.emu.load_state(LOOK_AHEAD_SLOT)
             self.emu.set_joystick(0)

@@ -1,0 +1,272 @@
+{
+  "label": "c1-min-no-guardians-no-knowledge",
+  "settings": {
+    "instructions": "promptM-no-guardians-no-knowledge",
+    "map_key_decision": true,
+    "key_decision_every": 25,
+    "survival_depth": 4,
+    "forced_key_order": "",
+    "random_moves": false,
+    "rule": "",
+    "progress_facts": "route",
+    "move_facts": "no-guardians"
+  },
+  "caverns": [
+    {
+      "cavern": 1,
+      "name": "Central Cavern",
+      "runs": 20,
+      "complete": 0,
+      "mean_keys": 5,
+      "mean_decisions_complete": null,
+      "tokens_per_call": 1252,
+      "low_confidence_rate": 0.44,
+      "mean_cost_usd": 0.0039,
+      "other_outcomes": {
+        "stuck: no progress": 20
+      }
+    }
+  ],
+  "runs": [
+    {
+      "cavern": 0,
+      "file": "c1-min-no-guardians-no-knowledge/20260927-230520-cavern-01-central-cavern-promptM-no-guardians-no-knowledge.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 5,
+      "decisions": 80,
+      "tokens": 93944,
+      "cost_usd": 0.003946,
+      "mean_latency_ms": 252,
+      "low_confidence": 31,
+      "jev_calls": 75
+    },
+    {
+      "cavern": 0,
+      "file": "c1-min-no-guardians-no-knowledge/20260927-230520-cavern-01-central-cavern-promptM-no-guardians-no-knowledge-2.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 5,
+      "decisions": 75,
+      "tokens": 87513,
+      "cost_usd": 0.003676,
+      "mean_latency_ms": 260,
+      "low_confidence": 44,
+      "jev_calls": 70
+    },
+    {
+      "cavern": 0,
+      "file": "c1-min-no-guardians-no-knowledge/20260927-230520-cavern-01-central-cavern-promptM-no-guardians-no-knowledge-3.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 5,
+      "decisions": 77,
+      "tokens": 88808,
+      "cost_usd": 0.00373,
+      "mean_latency_ms": 264,
+      "low_confidence": 30,
+      "jev_calls": 71
+    },
+    {
+      "cavern": 0,
+      "file": "c1-min-no-guardians-no-knowledge/20260927-230520-cavern-01-central-cavern-promptM-no-guardians-no-knowledge-4.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 5,
+      "decisions": 77,
+      "tokens": 89209,
+      "cost_usd": 0.003747,
+      "mean_latency_ms": 265,
+      "low_confidence": 30,
+      "jev_calls": 71
+    },
+    {
+      "cavern": 0,
+      "file": "c1-min-no-guardians-no-knowledge/20260927-230520-cavern-01-central-cavern-promptM-no-guardians-no-knowledge-5.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 5,
+      "decisions": 78,
+      "tokens": 91701,
+      "cost_usd": 0.003851,
+      "mean_latency_ms": 252,
+      "low_confidence": 30,
+      "jev_calls": 73
+    },
+    {
+      "cavern": 0,
+      "file": "c1-min-no-guardians-no-knowledge/20260927-230520-cavern-01-central-cavern-promptM-no-guardians-no-knowledge-6.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 5,
+      "decisions": 77,
+      "tokens": 91762,
+      "cost_usd": 0.003854,
+      "mean_latency_ms": 261,
+      "low_confidence": 30,
+      "jev_calls": 73
+    },
+    {
+      "cavern": 0,
+      "file": "c1-min-no-guardians-no-knowledge/20260927-230520-cavern-01-central-cavern-promptM-no-guardians-no-knowledge-7.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 5,
+      "decisions": 79,
+      "tokens": 94005,
+      "cost_usd": 0.003948,
+      "mean_latency_ms": 264,
+      "low_confidence": 34,
+      "jev_calls": 75
+    },
+    {
+      "cavern": 0,
+      "file": "c1-min-no-guardians-no-knowledge/20260927-230520-cavern-01-central-cavern-promptM-no-guardians-no-knowledge-8.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 5,
+      "decisions": 78,
+      "tokens": 91701,
+      "cost_usd": 0.003851,
+      "mean_latency_ms": 255,
+      "low_confidence": 30,
+      "jev_calls": 73
+    },
+    {
+      "cavern": 0,
+      "file": "c1-min-no-guardians-no-knowledge/20260927-230520-cavern-01-central-cavern-promptM-no-guardians-no-knowledge-9.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 5,
+      "decisions": 90,
+      "tokens": 106577,
+      "cost_usd": 0.004476,
+      "mean_latency_ms": 267,
+      "low_confidence": 43,
+      "jev_calls": 86
+    },
+    {
+      "cavern": 0,
+      "file": "c1-min-no-guardians-no-knowledge/20260927-230520-cavern-01-central-cavern-promptM-no-guardians-no-knowledge-10.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 5,
+      "decisions": 78,
+      "tokens": 91764,
+      "cost_usd": 0.003854,
+      "mean_latency_ms": 269,
+      "low_confidence": 30,
+      "jev_calls": 73
+    },
+    {
+      "cavern": 0,
+      "file": "c1-min-no-guardians-no-knowledge/20260927-230540-cavern-01-central-cavern-promptM-no-guardians-no-knowledge.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 5,
+      "decisions": 78,
+      "tokens": 91701,
+      "cost_usd": 0.003851,
+      "mean_latency_ms": 260,
+      "low_confidence": 30,
+      "jev_calls": 73
+    },
+    {
+      "cavern": 0,
+      "file": "c1-min-no-guardians-no-knowledge/20260927-230540-cavern-01-central-cavern-promptM-no-guardians-no-knowledge-2.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 5,
+      "decisions": 78,
+      "tokens": 93083,
+      "cost_usd": 0.003909,
+      "mean_latency_ms": 264,
+      "low_confidence": 32,
+      "jev_calls": 74
+    },
+    {
+      "cavern": 0,
+      "file": "c1-min-no-guardians-no-knowledge/20260927-230540-cavern-01-central-cavern-promptM-no-guardians-no-knowledge-3.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 5,
+      "decisions": 78,
+      "tokens": 91701,
+      "cost_usd": 0.003851,
+      "mean_latency_ms": 262,
+      "low_confidence": 30,
+      "jev_calls": 73
+    },
+    {
+      "cavern": 0,
+      "file": "c1-min-no-guardians-no-knowledge/20260927-230541-cavern-01-central-cavern-promptM-no-guardians-no-knowledge.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 5,
+      "decisions": 78,
+      "tokens": 91701,
+      "cost_usd": 0.003851,
+      "mean_latency_ms": 261,
+      "low_confidence": 29,
+      "jev_calls": 73
+    },
+    {
+      "cavern": 0,
+      "file": "c1-min-no-guardians-no-knowledge/20260927-230541-cavern-01-central-cavern-promptM-no-guardians-no-knowledge-2.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 5,
+      "decisions": 96,
+      "tokens": 111927,
+      "cost_usd": 0.004701,
+      "mean_latency_ms": 261,
+      "low_confidence": 48,
+      "jev_calls": 91
+    },
+    {
+      "cavern": 0,
+      "file": "c1-min-no-guardians-no-knowledge/20260927-230541-cavern-01-central-cavern-promptM-no-guardians-no-knowledge-3.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 5,
+      "decisions": 78,
+      "tokens": 91701,
+      "cost_usd": 0.003851,
+      "mean_latency_ms": 259,
+      "low_confidence": 29,
+      "jev_calls": 73
+    },
+    {
+      "cavern": 0,
+      "file": "c1-min-no-guardians-no-knowledge/20260927-230541-cavern-01-central-cavern-promptM-no-guardians-no-knowledge-4.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 5,
+      "decisions": 80,
+      "tokens": 94007,
+      "cost_usd": 0.003948,
+      "mean_latency_ms": 265,
+      "low_confidence": 31,
+      "jev_calls": 75
+    },
+    {
+      "cavern": 0,
+      "file": "c1-min-no-guardians-no-knowledge/20260927-230542-cavern-01-central-cavern-promptM-no-guardians-no-knowledge.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 5,
+      "decisions": 78,
+      "tokens": 91701,
+      "cost_usd": 0.003851,
+      "mean_latency_ms": 260,
+      "low_confidence": 30,
+      "jev_calls": 73
+    },
+    {
+      "cavern": 0,
+      "file": "c1-min-no-guardians-no-knowledge/20260927-230542-cavern-01-central-cavern-promptM-no-guardians-no-knowledge-2.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 5,
+      "decisions": 78,
+      "tokens": 91701,
+      "cost_usd": 0.003851,
+      "mean_latency_ms": 266,
+      "low_confidence": 30,
+      "jev_calls": 73
+    },
+    {
+      "cavern": 0,
+      "file": "c1-min-no-guardians-no-knowledge/20260927-230545-cavern-01-central-cavern-promptM-no-guardians-no-knowledge.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 5,
+      "decisions": 88,
+      "tokens": 102951,
+      "cost_usd": 0.004324,
+      "mean_latency_ms": 251,
+      "low_confidence": 40,
+      "jev_calls": 83
+    }
+  ]
+}
