@@ -1074,6 +1074,33 @@ has a different result, and that extra option changes jev's selection in a
 close decision (see also "The order of the options"). The trap itself is
 the deep trap from "The dead-end check".
 
+### A dead-end check of 6 moves in all caverns
+
+Settings: the defaults (jev's own key order), 10 runs of each cavern with a
+dead-end check of 4 moves and of 6 moves, measured at the same time on 29
+September 2026, with both changes above.
+
+| Dead-end check | Complete runs of 200 | Mean keys | Deaths |
+| --- | --- | --- | --- |
+| 4 moves | 34 | 1.49 | 43 |
+| 6 moves | 34 | 1.52 | 36 |
+| for comparison: 4 moves, "Each change alone" (both changes) | 32 | 1.55 | 38 |
+
+The deeper check gives no more complete runs (Fisher p = 1.0), and a few
+fewer deaths. The two runs of 4 moves agree well (34 and 32). Single
+caverns move in both directions:
+
+| Cavern | 4 moves | 6 moves |
+| --- | --- | --- |
+| 3 The Menagerie | 0 complete, 6 deaths | 3 complete, 2 deaths |
+| 2 The Cold Room: deaths | 2 | 6 |
+| 9 Wacky Amoebatrons | 10 complete | 8 complete |
+
+So a deeper check helps The Menagerie, as in "The Menagerie: one close
+decision", but not jev as a whole. This agrees with the check of 8 moves in
+"The present map, a deeper dead-end check, and the ladder". The default
+stays at 4 moves.
+
 ## Open work
 
 - The defaults are worse in some caverns. With the defaults (the key
