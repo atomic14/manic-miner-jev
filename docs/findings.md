@@ -16,7 +16,8 @@ check out that tag. These parts exist only in the tag:
   `probe_target.py`.
 
 On `main`, `experiments/results/` has only the summaries behind the README
-tables and behind "What jev needs: tests in Central Cavern". The summaries
+tables, behind "What jev needs: tests in Central Cavern", and behind the
+last two sections before "Open work". The summaries
 for the other measurements in this document are in the tag.
 
 ## How to read the numbers
@@ -891,6 +892,187 @@ decision, with no cost.
   A temperature of 4 was worse. A random spread of the answers does not give
   jev's result. The spread of jev's probabilities carries information about
   the options.
+
+## The present map, a deeper dead-end check, and the ladder
+
+Settings: promptD, key decision with the map, the optimum key order, a
+dead-end check of 4 moves, unless the table says different. Measured on 28
+and 29 September 2026, with the code of that time. The baseline is the
+like-for-like comparison ("Jev and the rules: a like-for-like comparison"):
+39 and 33 complete runs of 200 for jev, 19 and 20 for the rule `nearer`.
+
+| Arm | Complete runs of 200: first run | Second run | Mean keys |
+| --- | --- | --- | --- |
+| jev, the baseline | 39 | 33 | 1.8 |
+| jev, the present map (`--move-map`, promptD-map) | 29 | 33 | 1.7 |
+| jev, a dead-end check of 8 moves (`--depth 8`) | 35 | 36 | 2.0 |
+| rule `nearer`, a dead-end check of 8 moves | 24 | 25 | 1.5 |
+
+- The present map does not help. It changes single caverns in both
+  directions: Wacky Amoebatrons completes 9 of 20 runs (baseline 17), and
+  The Cold Room 18 of 20 (baseline 12). The map used `·` for empty space.
+- A dead-end check of 8 moves gives jev a few more keys, but not more
+  complete runs. It gives the rule 49 complete runs of 400, against 39. So
+  a deeper check helps a simple decision maker more than it helps jev.
+
+A second test used 5 runs of caverns 1, 3, 4, 8, 9, 12, 14, 15, and 20. Both
+arms had `--ladder-fix` and a soft-lock check (since removed: it removed a
+move when Willy could not leave his place within 5 moves).
+
+| Arm | Complete runs of 45 | Mean keys |
+| --- | --- | --- |
+| jev, ladder and soft-lock check | 11 | 1.5 |
+| jev, the same, with the present map and no `progress` (promptD-map-noprogress) | 3 | 1.5 |
+| for comparison: the first baseline run, the same caverns | 23 of 90 | 1.5 |
+
+- The ladder and the soft-lock check together made no measurable
+  difference. We did not measure the ladder alone. It changes the way up in
+  1 of the 21 recorded failure states (Ore Refinery).
+- Without `progress`, the present map does not give the route. This agrees
+  with "Jev without `progress`" and "A map after each move".
+
+## The target height and the move filter
+
+Settings: promptD, key decision with the map, dead-end check of 4 moves, 10
+runs of caverns 1, 4, and 6 for each arm. Measured on 29 September 2026.
+"Before" is the code of commit 66627f2, and "after" has two changes:
+
+- A key that hangs more than 3 rows above Willy's head is `higher`, even on
+  Willy's floor. Then `progress` measures the distance to the way up. Before,
+  such a key was on "the same level".
+- A move has no effect only if another move gives the same game: the same
+  place to the pixel, the same time, guardians, floors, and facing. Before,
+  a move that left Willy in the same cell had no effect, and the harness
+  made no jev request when all valid moves ended in the same cell. The
+  promptD text changed with it.
+
+| Cavern | jev before: complete, keys | jev after | rule `nearer` before | rule `nearer` after |
+| --- | --- | --- | --- | --- |
+| 1 Central Cavern | 10/10, 5.0 | 10/10, 5.0 | 9/10, 5.0 | 9/10, 5.0 |
+| 4 Abandoned Uranium Workings | 2/10, 1.2 | 3/10, 4.2 | 0/10, 0.0 | 0/10, 1.0 |
+| 6 Processing Plant | 0/10, 3.2 | 0/10, 1.0 | 0/10, 0.0 | 0/10, 0.6 |
+
+The rule arms use the optimum key order. In Central Cavern, jev's complete
+runs needed 82 decisions after the change, against 106 before.
+
+In cavern 4, jev collects 4.2 keys against 1.2. This is the failure that the
+height change is for: Willy stood below a key that he cannot reach, and
+`progress` called the jump onto the higher platform "farther". The rule
+`nearer` also gets more keys there (1.0 against 0.0), and the rule does not
+read the texts.
+
+In cavern 6, jev collects 1.0 keys against 3.2, and 5 runs end with no key
+(before: 2). The difference starts at column 1, row 7, where Willy stands
+against the left wall. Before, the harness removed the four moves that keep
+him there, and jev chose between two moves. After, jev gets all six,
+because they take different times. The routes then differ, and Willy meets
+the guardian near column 6, row 8 at a different time. In each arm, most
+runs follow one of two or three identical routes, so these 10 runs are not
+10 independent results.
+
+### Each change alone, in all caverns
+
+Settings: the same, 10 runs of each cavern, measured on 29 September 2026
+in four arms at the same time. "Height" and "filter" each have only one of
+the two changes. The promptD text matches each arm's filter, so the height arm
+has the old sentence about moves with no effect.
+
+| Arm | Complete runs of 200 | Mean keys | Deaths |
+| --- | --- | --- | --- |
+| before | 25 | 1.35 | 43 |
+| height | 30 | 1.49 | 41 |
+| filter | 31 | 1.34 | 33 |
+| both | 32 | 1.55 | 38 |
+
+No arm differs measurably from "before" in total (Fisher p = 0.39 to 0.56).
+Two single caverns show a clear effect:
+
+| Cavern | before | height | filter | both |
+| --- | --- | --- | --- | --- |
+| 4 Abandoned Uranium Workings: mean keys | 0.4 | 3.8 | 2.2 | 4.0 |
+| 12 Return of the Alien Kong Beast: deaths of 10 | 3 | 7 | 2 | 9 |
+
+- Cavern 4 confirms the height change.
+- Cavern 6 does not confirm the loss in the first test: 2.8 keys before,
+  3.4 with both changes.
+- In cavern 12, the height change corrects a fact in the key decision. Keys
+  A and B hang 11 and 7 rows above the bottom floor. Before, they were on
+  "the same level"; now they are `higher`, and key D is the only key on
+  Willy's level. Jev then selects key D first in 8 and 9 of 10 runs (before:
+  2 of 10). The optimum order starts with key C. On the way to key D, a
+  guardian traps Willy in the bottom left corner, and he dies at decision
+  17. So a true fact made the key order worse here. This belongs to the open
+  problem of the key order (see "Open work").
+
+### Both changes with the optimum key order
+
+Settings: the same, with the optimum key order, 10 runs of each cavern,
+measured on 29 September 2026. The old code is the like-for-like comparison
+("Jev and the rules: a like-for-like comparison"), which ran each arm twice.
+
+| Arm | Complete runs of 200 | Mean keys | Deaths |
+| --- | --- | --- | --- |
+| jev, old code (two runs) | 39, 33 | 1.8 | 51, 60 |
+| jev, both changes | 39 | 1.8 | 59 |
+| rule `nearer`, old code (two runs) | 19, 20 | 1.3 | 51, 59 |
+| rule `nearer`, both changes | 19 | 1.4 | 49 |
+
+In total, the changes make no measurable difference (jev: 39 of 200 against
+72 of 400, Fisher p = 0.66). Jev still completes about twice as many runs as
+the rule (p = 0.007). Single caverns:
+
+| Cavern | jev, old code (two runs) | jev, both changes |
+| --- | --- | --- |
+| 2 The Cold Room | 8, 4 complete | 9 complete |
+| 3 The Menagerie | 5, 2 complete | 0 complete, 8 deaths |
+| 4 Abandoned Uranium Workings: mean keys | 0.4, 1.3 | 3.3 |
+| 9 Wacky Amoebatrons | 9, 8 complete | 10 complete |
+| 12 Return of the Alien Kong Beast: mean keys | 1.0, 1.0 | 2.2 |
+| 18 Amoebatrons' Revenge | 6, 7 complete | 10 complete |
+
+- With the optimum order, cavern 12 loses no keys to the key order (see
+  "Each change alone, in all caverns"). Most runs collect keys C and A, and
+  then fail on the way to key D, at the conveyor in the bottom right.
+- The Menagerie gets worse. In the arms with the new move filter, 8, 7, and
+  8 of 10 runs end with a death there. In the arms without it: 4, 2, 3, and
+  (old code, second run) 8. We do not know yet if the filter causes this.
+  The Menagerie has a trap that is 6 moves deep (see "The dead-end check").
+
+### The Menagerie: one close decision
+
+Settings: the optimum key order, 20 runs of The Menagerie in each arm,
+measured on 29 September 2026. "Old filter" is the present code with the
+old filter and its promptD sentence.
+
+| Filter | Dead-end check of 4 moves | 6 moves |
+| --- | --- | --- |
+| new | 1 complete, 13 deaths | 5 complete, 10 deaths |
+| old | 5 complete, 10 deaths | 8 complete, 9 deaths |
+
+The new filter gives 6 complete runs of 40, the old filter 13 of 40 (Fisher
+p = 0.11). A check of 6 moves helps with both filters.
+
+Most of the difference comes from one decision. At decision 5, Willy is at
+column 24, row 11. The old filter removes `jump_up` and `wait` there; the
+new filter offers them, because `jump_up` takes a different time. Jev's
+choice between `walk_left` and `jump_left` is close with both filters:
+
+| Filter | `walk_left` | `jump_left` | `jump_up` | Runs with `jump_left` |
+| --- | --- | --- | --- | --- |
+| new | 0.38 | 0.49 | 0.11 | 36 of 40 |
+| old | 0.55 | 0.42 | - | 23 of 40 |
+
+The extra option takes most of its probability from `walk_left`, so jev's
+selection changes. The two moves lead to different routes. Over all four
+arms, 11 of 21 runs after `walk_left` completed the cavern, but only 8 of
+59 runs after `jump_left`. After `jump_left`, most deaths happen at column
+21, row 3. There the guardians at the two ends of the top row close the way,
+and the trap starts more than 4 moves earlier.
+
+So the new filter does not give jev a wrong fact here. It offers a move that
+has a different result, and that extra option changes jev's selection in a
+close decision (see also "The order of the options"). The trap itself is
+the deep trap from "The dead-end check".
 
 ## Open work
 

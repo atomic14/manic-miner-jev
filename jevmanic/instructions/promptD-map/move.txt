@@ -1,7 +1,8 @@
 Willy is a miner in a platform game. The goal: Willy must collect all keys,
 then go into the exit portal, and he must stay alive. The target is the key
-that Willy goes to now, or the portal when no key is left. Select the move
-that is the best for Willy now. `moves` gives the true result of each possible
+that Willy goes to now, or the portal when no key is left. The state also has
+the map of the cavern as it is now, with a legend that tells what each symbol
+means. Select the move that is the best for Willy now. `moves` gives the true result of each possible
 move. The code removed each move that kills Willy. It also removed each move
 that gives the same game as another move. If no move is safe, a
 move after which Willy cannot stay alive stays in `moves` with a `warning`.

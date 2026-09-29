@@ -165,6 +165,18 @@ class Outcome:
     floor_rows_gone: int = 0
     # The game after the move: the guardians, keys, and floors at that time.
     snapshot: "Snapshot | None" = field(default=None, repr=False, compare=False)
+    # Willy's pixel position after the move. Two moves can end in one cell at different pixels.
+    pixel: tuple = field(default=(), repr=False, compare=False)
+
+    def same_result(self, other: "Outcome") -> bool:
+        """Is the game after this move the same as after `other`?
+
+        The time, the guardians, the floors, and Willy's facing all count, not
+        only his cell. Without a snapshot the result is unknown, so it is not the same.
+        """
+        if self.snapshot is None or other.snapshot is None:
+            return False
+        return (self.snapshot, self.pixel, self.ticks, self.dead) == (other.snapshot, other.pixel, other.ticks, other.dead)
 
 
 # Characters for the tile map.
@@ -555,24 +567,23 @@ class Game:
                     return "nasty"
         return "fall or other cause"
 
-    def _can_survive(self, depth: int, budget: list) -> bool:
+    def _can_survive(self, depth: int, budget: list) -> bool | None:
         """Can Willy stay alive for `depth` more moves from the current game?
 
         The check stops at the first sequence of moves that keeps Willy
-        alive. It ignores the target.
+        alive. It ignores the target. None: the budget ran out before the
+        answer was known, so the check proves nothing.
         """
         if self.is_dead():
             return False
         if depth == 0 or self.is_complete():
             return True
         if budget[0] <= 0:
-            # In open space the check finds a safe sequence in a few tries.
-            # When the budget is gone, most sequences kill Willy.
-            return False
+            return None
         slot = DEAD_END_SLOT + depth
         ticks_before = self.tick_count
         self.emu.save_state(slot)
-        alive = False
+        unknown = False
         for name in MACROS:
             budget[0] -= 1
             self.run_macro(name)
@@ -581,8 +592,9 @@ class Game:
             self.emu.set_joystick(0)
             self.tick_count = ticks_before
             if alive:
-                break
-        return alive
+                return True
+            unknown = unknown or alive is None
+        return None if unknown else False
 
     def _willy_pixel(self) -> list[int]:
         x, _ = self._cell(self._word(ADDR_WILLY_ATTR))
@@ -626,7 +638,8 @@ class Game:
             dead, cause = self.is_dead(), ""
             if dead:
                 cause = self._death_cause(after)
-            elif survival_depth > 0 and not self._can_survive(survival_depth, [SURVIVAL_BUDGET]):
+            # Only a proof removes a move. A search that stopped (None) proves nothing.
+            elif survival_depth > 0 and self._can_survive(survival_depth, [SURVIVAL_BUDGET]) is False:
                 dead, cause = True, DEAD_END_CAUSE
             outcomes[name] = Outcome(
                 dead=dead,
@@ -640,6 +653,7 @@ class Game:
                 y=after.willy_y,
                 floor_rows_gone=self._floor_rows_gone(before, after),
                 snapshot=after,
+                pixel=tuple(self._willy_pixel()),
             )
             self.emu.load_state(LOOK_AHEAD_SLOT)
             self.emu.set_joystick(0)

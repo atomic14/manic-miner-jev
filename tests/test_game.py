@@ -4,9 +4,10 @@ import asyncio
 import json
 from collections import Counter
 from dataclasses import fields, replace
+from pathlib import Path
 
 from jevmanic import brain, describe, runner
-from jevmanic.game import DEAD_END_CAUSE, MACROS, Game, Outcome
+from jevmanic.game import DEAD_END_CAUSE, MACROS, SURVIVAL_BUDGET, SURVIVAL_DEPTH, Game, Outcome
 from jevmanic.llm_brain import build_prompt, parse_choice
 from jevmanic.runner import Settings
 
@@ -89,6 +90,17 @@ def test_the_look_ahead_does_not_write_over_the_start_of_a_cavern():
     assert game.snapshot() == start
 
 
+def test_a_search_that_runs_out_of_budget_proves_nothing():
+    game = Game()
+    assert game._can_survive(SURVIVAL_DEPTH, [0]) is None
+    assert game._can_survive(SURVIVAL_DEPTH, [SURVIVAL_BUDGET]) is True
+    # A proof still needs the whole search: jump_right from here is a proven death
+    # (see test_a_move_that_kills_willy_is_not_offered), so Willy is dead at depth 0.
+    for name in ["jump_right", "walk_right", "walk_right", "walk_right", "jump_right"]:
+        game.run_macro(name)
+    assert game.is_dead() and game._can_survive(SURVIVAL_DEPTH, [0]) is False
+
+
 def test_willy_stands_still_on_a_conveyor_after_a_drop_with_the_hold():
     from jevmanic.game import JOY_LEFT, JOY_RIGHT
 
@@ -153,13 +165,63 @@ def test_a_move_that_kills_willy_is_not_offered():
     assert state["moves_not_offered"]["jump_right"].startswith("kills Willy")
 
 
-def test_a_move_with_no_effect_is_not_offered():
-    game = Game()  # at the start, Willy is next to the left wall and no guardian is near
+def _review_state(index: int, moves: int | None = None):
+    """A game from tests/fixtures/review_states.json: a recorded run, played up to one decision."""
+    fixture = json.loads((Path(__file__).parent / "fixtures" / "review_states.json").read_text())[index]
+    game = Game(cavern=fixture["cavern"])
+    for name in fixture["moves"][:moves]:
+        game.run_macro(name)
+    return game, tuple(fixture["target"])
+
+
+def test_a_move_with_the_same_result_as_another_move_is_not_offered():
+    # Central Cavern, on a conveyor: walk_left and walk_right give the same game.
+    game, target = _review_state(0)
+    state = _moves(game.snapshot(), game.look_ahead(), target)
+    assert state["moves_not_offered"]["walk_right"] == "no effect: the same result as walk_left"
+    # wait ends in the same cell, but the guardian then moves the other way.
+    assert {"walk_left", "wait"} <= set(state["moves"])
+
+
+def test_a_move_in_the_same_cell_stays_when_it_changes_a_crumbling_floor():
+    game, target = _review_state(0, moves=13)  # Willy stands on a crumbling floor
+    outcomes = game.look_ahead()
+    assert (outcomes["jump_up"].dx, outcomes["jump_up"].dy) == (0, 0)
+    assert outcomes["jump_up"].snapshot.crumbled != outcomes["wait"].snapshot.crumbled
+    assert {"jump_up", "wait"} <= set(_moves(game.snapshot(), outcomes, target)["moves"])
+
+
+def test_in_the_air_only_the_moves_that_change_the_landing_stay():
+    game = Game()
+    game.run_macro("jump_right")
+    for _ in game.macro_ticks("jump_right"):
+        if game.is_airborne():
+            break
+    state = _moves(game.snapshot(), game.look_ahead())
+    # jump_left turns Willy when he lands, and jump_right carries him 2 pixels on.
+    assert list(state["moves"]) == ["jump_left", "jump_right", "wait"]
+    for name in ("walk_left", "walk_right", "jump_up"):
+        assert state["moves_not_offered"][name] == "no effect: the same result as wait"
+
+
+def test_a_key_beyond_the_jump_reach_is_higher_even_on_the_same_floor():
+    # Abandoned Uranium Workings: the key hangs 7 rows above Willy's head.
+    game, target = _review_state(1)
     snap = game.snapshot()
-    state = _moves(snap, game.look_ahead())
-    assert state["moves_not_offered"]["jump_up"].startswith("no effect")
-    assert state["moves_not_offered"]["wait"].startswith("no effect")
-    assert "walk_right" in state["moves"]
+    state = describe.move_request_state(snap, game.look_ahead(), target, Counter(), set())
+    assert state["target"]["height"] == "higher" and state["target"]["floor_rows_apart"] == 0
+    assert state["progress_measures"] == "distance to the way up"
+    assert state["moves"]["jump_right"]["progress"] == "nearer"  # the jump onto the higher platform
+
+
+def test_a_key_within_the_jump_reach_is_on_the_same_level():
+    game = Game()
+    snap = game.snapshot()
+    highest_head_row = min(game._willy_pixel()[1] for _ in game.macro_ticks("jump_up")) // 8
+    assert snap.willy_y - highest_head_row == describe.MAX_JUMP_REACH_ROWS
+    for rows_above, height in ((3, "same level"), (4, "higher")):
+        key = (snap.willy_x + 1, snap.willy_y - rows_above)  # no platform between the key and Willy's floor
+        assert describe._target_relative(replace(snap, keys=[key]), *key)["height"] == height
 
 
 def test_harmless_moves_stay_when_all_other_moves_kill_willy():
@@ -268,8 +330,9 @@ def test_default_settings():
     assert settings.forced_key_order == "" and not settings.random_moves
     assert Settings(instructions="promptA").map_key_decision  # each set gets the same state
     assert settings.rule == "" and settings.key_rule == "" and not settings.sample_moves
-    assert settings.guardian_facts
-    assert len(fields(Settings)) == 10  # a new setting needs a reason and a measurement
+    assert settings.guardian_facts and not settings.move_map and settings.map_empty == "."
+    assert not settings.ladder_fix and settings.progress_facts
+    assert len(fields(Settings)) == 14  # a new setting needs a reason and a measurement
 
 
 def test_nearer_rule():

@@ -24,8 +24,9 @@ the target. The key decision comes at the start, after Willy collects a key
 or flips a switch, and again 25 decisions after the last key decision. It
 has one option for each key and each switch that is left.
 
-The harness makes no jev request when only one move is valid, or when all
-valid moves have the same result (Willy is in the air). The log file and the
+The harness makes no jev request when only one move is valid. This
+includes the case where all other safe moves give the same game as that
+move. The log file and the
 viewer mark such a decision "no jev call".
 
 | The harness | Jev |
@@ -46,13 +47,18 @@ Jev gets only the valid moves. A move is not valid in three cases:
    goes into a dead end. Example: a guardian follows Willy one cell behind
    him toward a wall. Each step is safe, but after 5 steps no move is safe.
    The check asks only "can Willy stay alive?". It ignores the keys and the
-   portal, and it does not select a move.
-3. **It has no effect**: Willy stays in the same place. `wait` is valid
-   only when something can change while Willy waits: a guardian is near,
-   or Willy stands on a crumbling floor or on a conveyor.
+   portal, and it does not select a move. The check has a budget of moves.
+   If the budget runs out before the answer is known, the check proves
+   nothing, and the move stays valid.
+3. **It has no effect**: another valid move gives the same game. The
+   comparison uses the whole game after each move: Willy's pixel position
+   and facing, the guardians, the floors, the keys, and the time. The same
+   cell is not enough. For example, `jump_up` and `wait` both end in
+   Willy's cell, but they leave a crumbling floor in different conditions.
+   When two moves give the same game, `wait` stays, or else the first move.
 
-If no move is valid, jev gets the least bad moves, in this order: the moves
-with no effect, then the dead-end moves (with a warning), then all moves.
+If no move is safe, jev gets the least bad moves: the dead-end moves (with
+a warning), or else all moves.
 
 ## The conveyor hold
 
@@ -80,10 +86,13 @@ difference between two sets.
   X when Y".
 - `promptA` produced the results in the README. It is the same as promptD,
   but it says that each move in `moves` is safe and has an effect. That is
-  not always true. `wait` stays when something can change while Willy waits,
-  and a dead-end move stays when no move is safe. In Central Cavern, promptD
+  not always true: a dead-end move stays when no move is safe. In Central Cavern, promptD
   completed 18 of 20 runs and promptA 20 of 20. This difference can be
   chance. We did not compare the two sets in other caverns.
+- `promptD-map` is promptD with one more sentence: the state also has the
+  present cavern map and its legend. It is for `--move-map`.
+- `promptD-map-noprogress` is promptD-map without the sentence about
+  `progress`. It is for `--move-map --no-progress-facts`.
 - `promptC` is a very short text for Laya, a different decision model (see
   "Laya instead of jev" in [findings.md](findings.md)).
 
@@ -194,7 +203,7 @@ Willy. The legend tells what each symbol means for Willy.
 | --- | --- |
 | `what` | key, or switch (with the fact that a switch changes the cavern) |
 | `side`, `horizontal_cells`, `horizontal_distance` | where the key is, left or right of Willy |
-| `height`, `floor_rows_apart` | the key's floor level, compared with Willy's floor. A key that hangs above Willy's floor is on the same level. |
+| `height`, `floor_rows_apart` | the key's floor level, compared with Willy's floor. A key that hangs above Willy's floor is on the same level if a jump reaches it: at most 3 rows above Willy's head. A key that hangs higher is `higher`, even when `floor_rows_apart` is 0. |
 | `rows_above_its_floor` | how high the key is above its floor |
 | `floor_below_key` | floor, crumbling floor, or conveyor |
 | `between_walls`, `one_way_trip` | the key is in a shaft above a crumbling floor. Willy falls through and cannot go back up. |
@@ -286,6 +295,13 @@ The state of decision 6 of the same run, as the present code builds it:
       "place": "new place",
       "tried_from_here": "no"
     },
+    "jump_up": {
+      "movement": "Willy stays in the same place",
+      "progress": "same",
+      "place": "visited before",
+      "tried_from_here": "no",
+      "ends_on": "crumbling floor, partly gone"
+    },
     "wait": {
       "movement": "Willy stays in the same place",
       "progress": "same",
@@ -295,8 +311,7 @@ The state of decision 6 of the same run, as the present code builds it:
     }
   },
   "moves_not_offered": {
-    "jump_right": "kills Willy: fall or other cause",
-    "jump_up": "no effect: Willy stays in the same place"
+    "jump_right": "kills Willy: fall or other cause"
   }
 }
 ```
@@ -315,7 +330,7 @@ The state of decision 6 of the same run, as the present code builds it:
 | `moves.*.place` | new place, visited before, or visited many times (memory) |
 | `moves.*.tried_from_here` | whether Willy made this move from this place before (memory) |
 | `moves.*.ends_on`, `collects_key`, `completes_cavern`, `warning` | present only when they apply. `ends_on` and `willy.standing_on` give the condition of a crumbling floor: new, partly gone, or almost gone. The code reads it from the tile's pixels. |
-| `moves_not_offered` | each move that jev does not get, with the reason: it kills Willy (guardian, nasty, fall, or dead end), or it has no effect |
+| `moves_not_offered` | each move that jev does not get, with the reason: it kills Willy (guardian, nasty, fall, or dead end), or it has no effect because another move gives the same game |
 
 The request has one question, `move`. It is a Choice, and its options are
 the valid moves. The text of the default set `promptD` follows. The example
@@ -323,7 +338,7 @@ run used `promptA`, which has one sentence instead of the four sentences
 that start with "The code removed": "All moves in `moves` are safe and have
 an effect."
 
-> Willy is a miner in a platform game. The goal: Willy must collect all keys, then go into the exit portal, and he must stay alive. The target is the key that Willy goes to now, or the portal when no key is left. Select the move that is the best for Willy now. `moves` gives the true result of each possible move. The code removed each move that kills Willy. It also removed each move that has no effect, but `wait` stays when something can change while Willy waits, and all moves stay when no move has an effect. If no move is safe, a move after which Willy cannot stay alive stays in `moves` with a `warning`. If each move kills Willy, `moves` says this. `moves_not_offered` gives the moves that Willy cannot make now, with the cause. The meaning of the facts: `progress` tells if a move gets Willy nearer to the place that `progress_measures` names. `place` tells how frequently Willy was at the place where the move ends. `tried_from_here` tells if Willy made this move from this place before. `collects_key` tells that Willy gets a key with this move. `completes_cavern` tells that Willy goes into the portal with this move and the cavern is complete. `ends_on` tells that Willy stands on a crumbling floor after this move, and how much of that floor is left. `warning` tells that no move is safe after this move. Knowledge of the game: Willy can climb only 2 rows with one jump. If Willy comes back to the same places again and again, the direct way is closed, and he must go a different way, even if that way goes away from the target first. A crumbling floor breaks a little each time Willy stands on it. It can be the only way up, and it is also a way down. A nasty does not move: if it stops a jump, a jump from a different cell can go over it. A guardian moves along its patrol area: Willy can wait for it to go away, jump over it, or go out of its patrol area.
+> Willy is a miner in a platform game. The goal: Willy must collect all keys, then go into the exit portal, and he must stay alive. The target is the key that Willy goes to now, or the portal when no key is left. Select the move that is the best for Willy now. `moves` gives the true result of each possible move. The code removed each move that kills Willy. It also removed each move that gives the same game as another move. If no move is safe, a move after which Willy cannot stay alive stays in `moves` with a `warning`. If each move kills Willy, `moves` says this. `moves_not_offered` gives the moves that Willy cannot make now, with the cause. The meaning of the facts: `progress` tells if a move gets Willy nearer to the place that `progress_measures` names. `place` tells how frequently Willy was at the place where the move ends. `tried_from_here` tells if Willy made this move from this place before. `collects_key` tells that Willy gets a key with this move. `completes_cavern` tells that Willy goes into the portal with this move and the cavern is complete. `ends_on` tells that Willy stands on a crumbling floor after this move, and how much of that floor is left. `warning` tells that no move is safe after this move. Knowledge of the game: Willy can climb only 2 rows with one jump. If Willy comes back to the same places again and again, the direct way is closed, and he must go a different way, even if that way goes away from the target first. A crumbling floor breaks a little each time Willy stands on it. It can be the only way up, and it is also a way down. A nasty does not move: if it stops a jump, a jump from a different cell can go over it. A guardian moves along its patrol area: Willy can wait for it to go away, jump over it, or go out of its patrol area.
 
 The options and their criteria:
 

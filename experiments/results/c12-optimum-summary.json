@@ -1,0 +1,158 @@
+{
+  "label": "c12-optimum",
+  "settings": {
+    "instructions": "promptD",
+    "map_key_decision": true,
+    "key_decision_every": 25,
+    "survival_depth": 4,
+    "forced_key_order": "OPTIMUM",
+    "random_moves": false,
+    "rule": "",
+    "key_rule": "",
+    "sample_moves": false,
+    "guardian_facts": true,
+    "move_map": false,
+    "map_empty": ".",
+    "ladder_fix": false,
+    "progress_facts": true
+  },
+  "caverns": [
+    {
+      "cavern": 12,
+      "name": "Return of the Alien Kong Beast",
+      "runs": 10,
+      "complete": 0,
+      "mean_keys": 2.1,
+      "mean_decisions_complete": null,
+      "tokens_per_call": 1467,
+      "low_confidence_rate": 0.6,
+      "mean_cost_usd": 0.0072,
+      "other_outcomes": {
+        "stuck: no progress": 7,
+        "Willy died": 3
+      }
+    }
+  ],
+  "runs": [
+    {
+      "cavern": 11,
+      "file": "c12-optimum/20260929-161947-cavern-12-return-of-the-alien-kong-beast-promptD.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 2,
+      "decisions": 102,
+      "tokens": 152954,
+      "cost_usd": 0.006424,
+      "mean_latency_ms": 253,
+      "low_confidence": 67,
+      "jev_calls": 102
+    },
+    {
+      "cavern": 11,
+      "file": "c12-optimum/20260929-161947-cavern-12-return-of-the-alien-kong-beast-promptD-2.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 2,
+      "decisions": 119,
+      "tokens": 171310,
+      "cost_usd": 0.007195,
+      "mean_latency_ms": 248,
+      "low_confidence": 80,
+      "jev_calls": 117
+    },
+    {
+      "cavern": 11,
+      "file": "c12-optimum/20260929-161947-cavern-12-return-of-the-alien-kong-beast-promptD-3.jsonl",
+      "outcome": "Willy died",
+      "keys": 2,
+      "decisions": 103,
+      "tokens": 147466,
+      "cost_usd": 0.006194,
+      "mean_latency_ms": 248,
+      "low_confidence": 59,
+      "jev_calls": 99
+    },
+    {
+      "cavern": 11,
+      "file": "c12-optimum/20260929-161947-cavern-12-return-of-the-alien-kong-beast-promptD-4.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 3,
+      "decisions": 129,
+      "tokens": 182421,
+      "cost_usd": 0.007662,
+      "mean_latency_ms": 248,
+      "low_confidence": 52,
+      "jev_calls": 127
+    },
+    {
+      "cavern": 11,
+      "file": "c12-optimum/20260929-161947-cavern-12-return-of-the-alien-kong-beast-promptD-5.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 2,
+      "decisions": 133,
+      "tokens": 186258,
+      "cost_usd": 0.007823,
+      "mean_latency_ms": 258,
+      "low_confidence": 89,
+      "jev_calls": 127
+    },
+    {
+      "cavern": 11,
+      "file": "c12-optimum/20260929-162014-cavern-12-return-of-the-alien-kong-beast-promptD.jsonl",
+      "outcome": "Willy died",
+      "keys": 2,
+      "decisions": 154,
+      "tokens": 206210,
+      "cost_usd": 0.008661,
+      "mean_latency_ms": 241,
+      "low_confidence": 94,
+      "jev_calls": 139
+    },
+    {
+      "cavern": 11,
+      "file": "c12-optimum/20260929-162015-cavern-12-return-of-the-alien-kong-beast-promptD.jsonl",
+      "outcome": "Willy died",
+      "keys": 2,
+      "decisions": 149,
+      "tokens": 220563,
+      "cost_usd": 0.009264,
+      "mean_latency_ms": 237,
+      "low_confidence": 107,
+      "jev_calls": 148
+    },
+    {
+      "cavern": 11,
+      "file": "c12-optimum/20260929-162018-cavern-12-return-of-the-alien-kong-beast-promptD.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 2,
+      "decisions": 126,
+      "tokens": 182065,
+      "cost_usd": 0.007647,
+      "mean_latency_ms": 250,
+      "low_confidence": 83,
+      "jev_calls": 124
+    },
+    {
+      "cavern": 11,
+      "file": "c12-optimum/20260929-162021-cavern-12-return-of-the-alien-kong-beast-promptD.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 2,
+      "decisions": 95,
+      "tokens": 134569,
+      "cost_usd": 0.005652,
+      "mean_latency_ms": 239,
+      "low_confidence": 33,
+      "jev_calls": 94
+    },
+    {
+      "cavern": 11,
+      "file": "c12-optimum/20260929-162022-cavern-12-return-of-the-alien-kong-beast-promptD.jsonl",
+      "outcome": "stuck: no progress",
+      "keys": 2,
+      "decisions": 95,
+      "tokens": 134569,
+      "cost_usd": 0.005652,
+      "mean_latency_ms": 241,
+      "low_confidence": 33,
+      "jev_calls": 94
+    }
+  ]
+}

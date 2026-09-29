@@ -31,6 +31,14 @@ def add_run_options(parser: argparse.ArgumentParser):
                              "nearest: the key nearest to Willy, in cells")
     parser.add_argument("--no-guardian-facts", action="store_true",
                         help="for comparison: the move decision's state has no guardian facts")
+    parser.add_argument("--move-map", action="store_true",
+                        help="for comparison: the move decision's state also has the present cavern map")
+    parser.add_argument("--map-empty", default=".", metavar="SYMBOL",
+                        help="the map symbol for empty space (default .)")
+    parser.add_argument("--ladder-fix", action="store_true",
+                        help="the way-up finder lets Willy jump through floor tiles above a landing place")
+    parser.add_argument("--no-progress-facts", action="store_true",
+                        help="for comparison: the move decision's state has no progress facts")
     parser.add_argument("--sample-moves", action="store_true",
                         help="for comparison: play a move drawn from jev's move probabilities, "
                              "instead of jev's selected move")
@@ -48,4 +56,8 @@ def settings_from(args: argparse.Namespace) -> Settings:
         key_rule=args.key_rule,
         sample_moves=args.sample_moves,
         guardian_facts=not args.no_guardian_facts,
+        move_map=args.move_map,
+        map_empty=args.map_empty,
+        ladder_fix=args.ladder_fix,
+        progress_facts=not args.no_progress_facts,
     )

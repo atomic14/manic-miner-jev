@@ -20,14 +20,15 @@ import random
 import re
 import time
 from collections import Counter
-from dataclasses import asdict, dataclass, replace
+from dataclasses import asdict, replace
 from datetime import datetime
 from pathlib import Path
 
 from . import describe
-from .brain import DEFAULT_INSTRUCTIONS, key_question, move_question, questions_as_json
-from .game import MACROS, SURVIVAL_DEPTH, Game
+from .brain import key_question, move_question, questions_as_json
+from .game import MACROS, Game
 from .key_orders import OPTIMUM, OPTIMUM_KEY_ORDER
+from .settings import Settings
 
 RUNS_DIR = Path(__file__).resolve().parent.parent / "runs"
 # Recorded runs that are in git. A demonstration with them makes no jev request.
@@ -53,31 +54,6 @@ def is_current(header: dict) -> bool:
     because their moves were different (the replay would not match) or their
     settings had older names."""
     return header.get("macros", 1) == MACROS_VERSION and "instructions" in header.get("settings", {})
-
-
-@dataclass
-class Settings:
-    """The settings of a live run. The defaults are the normal settings."""
-
-    # The instruction set: a folder in `jevmanic/instructions/`.
-    instructions: str = DEFAULT_INSTRUCTIONS
-    # True: the key decision's state has the cavern map. The key decision
-    # comes at the start, after each collected key or flipped switch, and
-    # again after `key_decision_every` decisions (0 = no repeat).
-    # False: the state has the key facts only, and GIVE_UP_DECISIONS applies.
-    map_key_decision: bool = True
-    key_decision_every: int = 25
-    # How many moves the dead-end check looks ahead. 0 = off.
-    survival_depth: int = SURVIVAL_DEPTH
-    # Settings for comparison. Each one replaces jev in one type of decision.
-    forced_key_order: str = ""  # a fixed key order instead of key decisions, for example "EACDB"
-    random_moves: bool = False  # a random valid move instead of jev's move decision
-    rule: str = ""  # a rule from RULES instead of jev's move decision. "" = jev.
-    key_rule: str = ""  # a rule from KEY_RULES instead of jev's key decision. "" = jev.
-    # Play a move sampled from jev's probabilities, instead of jev's selected move.
-    sample_moves: bool = False
-    # False: the move decision's state has no `guardians` field. The look-ahead still removes deadly moves.
-    guardian_facts: bool = True
 
 
 # -- The list of recorded runs ---------------------------------------------------------
@@ -353,7 +329,7 @@ class _LiveRun:
                       "forced_reason": reason}
         else:
             memory = {"current": self.target, "used": self.used_for, "gave_up": self.gave_up}
-            state = describe.key_request_state(snap, self.names, memory, self.settings.map_key_decision)
+            state = describe.key_request_state(snap, self.names, memory, self.settings)
             names = [self.names[k] for k in goals]
             question = key_question(names, self.settings.instructions, self.settings.map_key_decision)
             answer = await self.brain.ask(state, question, "key")
@@ -372,8 +348,7 @@ class _LiveRun:
     async def move_decision(self, snap, n: int) -> dict:
         """Select one of the valid moves. Returns the log record."""
         outcomes = self.game.look_ahead(self.settings.survival_depth)
-        state = describe.move_request_state(snap, outcomes, self.target, self.visited, self.tried,
-                                            self.settings.guardian_facts)
+        state = describe.move_request_state(snap, outcomes, self.target, self.visited, self.tried, self.settings)
         removed = {} if state["moves_not_offered"] == "none" else state["moves_not_offered"]
         offered = list(state["moves"])
         if not offered:
@@ -390,14 +365,12 @@ class _LiveRun:
             "no_safe_move": len(removed) == len(MACROS),
             "target_cell": list(describe.target_cell(snap, self.target)),
         }
-        same_result = len(offered) > 1 and len(
-            {(o.x, o.y, o.keys_collected, o.complete) for m, o in outcomes.items() if m in offered}
-        ) == 1
-        if len(offered) == 1 or same_result:
-            # A forced decision: only one move is valid, or all valid moves
-            # have the same result (Willy is in the air).
-            macro = "wait" if same_result and "wait" in offered else offered[0]
-            reason = "all valid moves have the same result" if same_result else "only one move is valid"
+        if len(offered) == 1:
+            # A forced decision. The other moves kill Willy, or give the same
+            # game as this move (for example when Willy is in the air).
+            macro = offered[0]
+            same = any(reason.startswith("no effect") for reason in removed.values())
+            reason = "all valid moves have the same result" if same else "only one move is valid"
             record.update(macro=macro, probabilities={macro: 1.0}, confidence=1.0, latency_ms=0,
                           input_tokens=0, model="none", state=state, forced=True, forced_reason=reason)
         elif self.settings.random_moves:
@@ -462,6 +435,12 @@ async def play_live(game: Game, brain, cavern: int = 0, settings: Settings | Non
         mode += f"-keys-{settings.key_rule}"
     if not settings.guardian_facts:
         mode += "-no-guardians"
+    if settings.move_map:
+        mode += "-move-map"
+    if settings.ladder_fix:
+        mode += "-ladder"
+    if not settings.progress_facts:
+        mode += "-no-progress"
     cavern_name = game.snapshot().cavern_name
     path = _log_path(folder, cavern, cavern_name, mode)
     header = {

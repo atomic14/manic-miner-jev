@@ -23,6 +23,7 @@ from .game import (
     Snapshot,
 )
 from .key_orders import OPTIMUM_KEY_ORDER
+from .settings import Settings
 
 
 def cavern_info(game: Game, cavern: int) -> dict:
@@ -82,7 +83,7 @@ def request_for(snap: Snapshot, with_map: bool = True, instructions: str = DEFAU
     """
     names = describe.key_names(snap)
     memory = {"current": None, "used": {}, "gave_up": {}}
-    state = describe.key_request_state(snap, names, memory, with_map)
+    state = describe.key_request_state(snap, names, memory, Settings(map_key_decision=with_map))
     question = key_question(list(names.values()), instructions, with_map)
     if custom_text.strip():
         question["key"].instructions = " ".join(custom_text.split())  # one paragraph, as from a file

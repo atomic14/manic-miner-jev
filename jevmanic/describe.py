@@ -25,6 +25,7 @@ from .game import (
     TILE_WALL,
     Snapshot,
 )
+from .settings import Settings
 
 # What each map symbol means for Willy. `map_legend` keeps only the symbols
 # that are on the map.
@@ -61,6 +62,8 @@ def map_legend(rows: list[str], snap: Snapshot) -> dict:
 
 LOOK_AHEAD_CELLS = 6  # how far `to_the_left` and `to_the_right` look
 MAX_JUMP_ROWS = 2  # a jump can reach a platform that is 2 rows higher
+# Willy rises 20 pixels. His head can touch a key in the third row above him.
+MAX_JUMP_REACH_ROWS = 3
 
 
 # -- ASCII maps ---------------------------------------------------------------
@@ -101,11 +104,15 @@ def _rows(grid, x0, x1, y0, y1):
     return out
 
 
-def cavern_map(snap: Snapshot) -> dict:
-    """The full map of the cavern with its legend. Each string is one row."""
+def cavern_map(snap: Snapshot, empty: str = TILE_EMPTY) -> dict:
+    """The full map of the cavern with its legend. Each string is one row. `empty` is the symbol for empty space."""
     rows = _rows(_grid(snap), 0, COLS - 1, 0, ROWS - 1)
+    legend = map_legend(rows, snap)
+    if empty != TILE_EMPTY:
+        rows = [row.replace(TILE_EMPTY, empty) for row in rows]
+        legend = {(empty if s == TILE_EMPTY else s): m for s, m in legend.items()}
     return {
-        "map_legend": map_legend(rows, snap),
+        "map_legend": legend,
         "map_note": "Each string is one row. The first row is the top of the cavern.",
         "map": rows,
     }
@@ -305,7 +312,19 @@ def _floor_row_under(snap: Snapshot, x: int, y: int, width: int = 1) -> int:
     return ROWS
 
 
-def _find_ways_up(snap: Snapshot) -> dict:
+def _room_above(snap: Snapshot, x: int, y: int, ladder_fix: bool) -> bool:
+    """Is there room for Willy above a landing place?
+
+    With `ladder_fix`, a floor tile leaves room: a floor does not stop a jump
+    from below, so single floor tiles can form a "ladder".
+    """
+    tile = _tile(snap, x, y)
+    if ladder_fix:
+        return tile not in (TILE_WALL, TILE_NASTY)
+    return tile == TILE_EMPTY
+
+
+def _find_ways_up(snap: Snapshot, ladder_fix: bool = False) -> dict:
     """The nearest place on each side where a jump gets Willy to a higher platform.
 
     The search goes along Willy's level to the left and to the right. It
@@ -329,7 +348,7 @@ def _find_ways_up(snap: Snapshot) -> dict:
                 break
             for rows_up in range(1, MAX_JUMP_ROWS + 1):
                 y = floor_row - rows_up
-                if _tile(snap, x, y) in SOLID and all(_tile(snap, x, y - k) == TILE_EMPTY for k in (1, 2)):
+                if _tile(snap, x, y) in SOLID and all(_room_above(snap, x, y - k, ladder_fix) for k in (1, 2)):
                     found[side] = {"side": side, "horizontal_cells": i, "rows_higher": rows_up, "cell": (x, snap.willy_y)}
                     break
             if side in found:
@@ -337,9 +356,9 @@ def _find_ways_up(snap: Snapshot) -> dict:
     return found
 
 
-def _way_up(snap: Snapshot, preferred_side: str):
+def _way_up(snap: Snapshot, preferred_side: str, ladder_fix: bool = False):
     """The way up on the target's side, or else the nearest one."""
-    found = _find_ways_up(snap)
+    found = _find_ways_up(snap, ladder_fix)
     if not found:
         return "none on this level"
     return found.get(preferred_side) or min(found.values(), key=lambda w: w["horizontal_cells"])
@@ -378,13 +397,26 @@ def _relative(snap: Snapshot, x: int, y: int, width: int = 1) -> dict:
 def _target(snap: Snapshot, target) -> dict:
     """The target: the key or switch that jev selected, or the portal when no key is left."""
     if target is not None and tuple(target) in snap.switches:
-        return {"what": "selected switch", **_relative(snap, *target)}
+        return {"what": "selected switch", **_target_relative(snap, *target)}
     if not snap.keys or target is None or tuple(target) not in snap.keys:
         if snap.keys:
             return {"what": "no target selected"}
         px, py = snap.portal
-        return {"what": "exit portal (all keys collected)", **_relative(snap, px, py, 2)}
-    return {"what": "selected key", **_relative(snap, *target)}
+        return {"what": "exit portal (all keys collected)", **_target_relative(snap, px, py, 2)}
+    return {"what": "selected key", **_target_relative(snap, *target)}
+
+
+def _target_relative(snap: Snapshot, x: int, y: int, size: int = 1) -> dict:
+    """A target's floor level, corrected when it hangs beyond Willy's jump reach.
+
+    A shared floor does not make a high target reachable. Compare its bottom
+    row with Willy's highest possible head position. The portal is two rows high.
+    Keep the actual floor distance; it can be zero even for a high target.
+    """
+    relative = _relative(snap, x, y, size)
+    if not snap.airborne and y + size - 1 < snap.willy_y - MAX_JUMP_REACH_ROWS:
+        relative["height"] = "higher"
+    return relative
 
 
 def target_cell(snap: Snapshot, target):
@@ -401,7 +433,7 @@ def _key_facts(snap: Snapshot, x: int, y: int) -> dict:
     wall_left = any(_tile(snap, x - i, y) == TILE_WALL for i in (1, 2))
     wall_right = any(_tile(snap, x + i, y) == TILE_WALL for i in (1, 2))
     floor_type = {TILE_CRUMBLING: "crumbling floor", TILE_CONVEYOR: "conveyor"}.get(_tile(snap, x, floor), "floor")
-    facts = {**_relative(snap, x, y), "floor_below_key": floor_type}
+    facts = {**_target_relative(snap, x, y), "floor_below_key": floor_type}
     if wall_left and wall_right:
         facts["between_walls"] = "yes"
         if floor_type == "crumbling floor":
@@ -467,7 +499,7 @@ def _preferred_side(snap: Snapshot, x: int, y: int, width: int = 1) -> str:
     return ""
 
 
-def _progress_reference(snap: Snapshot, target):
+def _progress_reference(snap: Snapshot, target, ladder_fix: bool = False):
     """The cell that `progress` measures the distance to, and the text for `progress_measures`.
 
     Target on the same level: the target. On a higher floor: the way up. On
@@ -476,14 +508,14 @@ def _progress_reference(snap: Snapshot, target):
     """
     tx, ty = target_cell(snap, target)
     width = 1 if snap.keys else 2
-    height = _relative(snap, tx, ty, width)["height"]
+    height = _target_relative(snap, tx, ty, width)["height"]
     side = _preferred_side(snap, tx, ty, width)
     if height == "lower":
         way = _way_down(snap, side, tx)
         if isinstance(way, dict):
             return way["cell"], "distance to the way down"
     if height == "higher":
-        way = _way_up(snap, side)
+        way = _way_up(snap, side, ladder_fix)
         if isinstance(way, dict):
             return way["cell"], "distance to the way up"
     return (tx, snap.willy_y if height == "same level" else ty), "distance to the target"
@@ -501,7 +533,7 @@ def _visits_word(visited, x, y) -> str:
     return "visited many times"
 
 
-def moves_state(snap: Snapshot, outcomes: dict, target, visited, tried=frozenset()) -> dict:
+def moves_state(snap: Snapshot, outcomes: dict, target, visited, tried=frozenset(), ladder_fix: bool = False) -> dict:
     """The result of each valid move, from the look-ahead, and the moves that are not valid.
 
     `progress` (nearer, farther, same) compares the distance to one reference:
@@ -509,37 +541,35 @@ def moves_state(snap: Snapshot, outcomes: dict, target, visited, tried=frozenset
     exceptions change the word: a move that uses the way up or the way down
     is "nearer", and a move that leaves the target's level is "farther".
     """
-    (tx, ty), measure = _progress_reference(snap, target)
+    (tx, ty), measure = _progress_reference(snap, target, ladder_fix)
     goal = target_cell(snap, target)
-    same_level = _relative(snap, *goal, 1 if snap.keys else 2)["height"] == "same level"
+    same_level = _target_relative(snap, *goal, 1 if snap.keys else 2)["height"] == "same level"
 
     def distance(x, y):
         return abs(tx - x) + abs(ty - y)
 
     now = distance(snap.willy_x, snap.willy_y)
     moves, removed = {}, {}
-    # A wait is valid only if something can change while Willy waits.
-    guardian_near = any(g["height"] == "same level" for g in _guardians(snap))
-    guardian_blocks = any(o.dead and o.cause in ("guardian", DEAD_END_CAUSE) for o in outcomes.values())
-    wait_can_help = guardian_near or guardian_blocks or _standing_on(snap).startswith(("crumbling floor", "conveyor"))
-
-    def is_useful(name, o):
-        has_effect = o.dx or o.dy or o.keys_collected or o.complete
-        return bool(has_effect) or (name == "wait" and wait_can_help)
-
-    # If no safe move has an effect, the safe moves with no effect stay
-    # valid: they are better than a move that kills Willy.
-    some_move_is_useful = any(is_useful(n, o) for n, o in outcomes.items() if not o.dead)
     # If no move is safe, the moves into a dead end stay valid, with a
     # warning: Willy is alive after them, which is better than dying now.
     no_move_is_safe = all(o.dead for o in outcomes.values())
-    for name, o in outcomes.items():
+    kept = {}
+    # A move has no effect only if another move gives the same game. The same
+    # cell is not enough: the moves can differ in time, guardians, or floors.
+    # `wait` is the one that stays, because it says that nothing is decided.
+    for name in sorted(outcomes, key=lambda n: n != "wait"):
+        o = outcomes[name]
         dead_end_only = o.dead and o.cause == DEAD_END_CAUSE
         if o.dead and not (no_move_is_safe and dead_end_only):
             removed[name] = f"kills Willy: {o.cause}"
             continue
-        if not o.dead and some_move_is_useful and not is_useful(name, o):
-            removed[name] = "no effect: Willy stays in the same place"
+        same = next((other for other in kept if o.same_result(outcomes[other])), None)
+        if same:
+            removed[name] = f"no effect: the same result as {same}"
+            continue
+        kept[name] = o
+    for name, o in outcomes.items():
+        if name not in kept:
             continue
         movement = movement_words(o.dx, o.dy)
         after = distance(o.x, o.y)
@@ -569,6 +599,7 @@ def moves_state(snap: Snapshot, outcomes: dict, target, visited, tried=frozenset
         if o.complete:
             result["completes_cavern"] = True
         moves[name] = result
+    removed = {n: removed[n] for n in outcomes if n in removed}  # the order of the moves
     return {"progress_measures": measure, "moves": moves, "moves_not_offered": removed or "none"}
 
 
@@ -614,7 +645,7 @@ def _air_word(air: float) -> str:
     return "critical"
 
 
-def words(snap: Snapshot, target=None) -> dict:
+def words(snap: Snapshot, target=None, ladder_fix: bool = False) -> dict:
     """The move decision's facts that do not depend on the moves: Willy, the target, and the guardians.
 
     The target gets a `way_down` or a `way_up` when it is on a different floor.
@@ -625,7 +656,7 @@ def words(snap: Snapshot, target=None) -> dict:
     if target_words.get("height") == "lower":
         target_words["way_down"] = _public(_way_down(snap, side, goal[0]))
     elif target_words.get("height") == "higher":
-        target_words["way_up"] = _public(_way_up(snap, side))
+        target_words["way_up"] = _public(_way_up(snap, side, ladder_fix))
     return {
         "willy": {"facing": snap.willy_facing, "standing_on": _standing_on(snap)},
         "target": target_words,
@@ -659,15 +690,26 @@ def _public(way):
 # these functions, so the checks test the state that jev gets.
 
 
-def move_request_state(snap: Snapshot, outcomes: dict, target, visited, tried, guardian_facts: bool = True) -> dict:
-    """The complete state of a move decision. `guardian_facts=False` leaves out the `guardians` field."""
-    state = {**words(snap, target), **moves_state(snap, outcomes, target, visited, tried)}
-    if not guardian_facts:
+def move_request_state(snap: Snapshot, outcomes: dict, target, visited, tried,
+                       settings: Settings | None = None) -> dict:
+    """The complete state of a move decision, with the run's settings (the defaults if None)."""
+    settings = settings or Settings()
+    ladder_fix = settings.ladder_fix
+    state = {**words(snap, target, ladder_fix), **moves_state(snap, outcomes, target, visited, tried, ladder_fix)}
+    if settings.move_map:
+        state = {**cavern_map(snap, settings.map_empty), **state}
+    if not settings.progress_facts:
+        state.pop("progress_measures", None)
+        if isinstance(state["moves"], dict):
+            for facts in state["moves"].values():
+                facts.pop("progress", None)
+    if not settings.guardian_facts:
         del state["guardians"]
     return state
 
 
-def key_request_state(snap: Snapshot, names: dict, memory: dict | None, with_map: bool) -> dict:
-    """The complete state of a key decision: the key facts, and the map if `with_map`."""
+def key_request_state(snap: Snapshot, names: dict, memory: dict | None, settings: Settings | None = None) -> dict:
+    """The complete state of a key decision: the key facts, and the map if the settings ask for it."""
+    settings = settings or Settings()
     state = keys_state(snap, names, memory)
-    return {**cavern_map(snap), **state} if with_map else state
+    return {**cavern_map(snap, settings.map_empty), **state} if settings.map_key_decision else state

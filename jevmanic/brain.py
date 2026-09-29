@@ -154,10 +154,19 @@ class Brain:
     """The decision maker that uses jev."""
 
     def __init__(self):
-        self.client = AsyncTypeSafeClient()
+        # The client needs an API key. The viewer makes a Brain also for
+        # replays, which make no request, so the client comes at the first request.
+        self._client = None
+
+    @property
+    def client(self) -> AsyncTypeSafeClient:
+        if self._client is None:
+            self._client = AsyncTypeSafeClient()
+        return self._client
 
     async def close(self):
-        await self.client.aclose()
+        if self._client is not None:
+            await self._client.aclose()
 
     async def ask(self, state: dict, questions: dict, choice_name: str) -> Answer:
         """Send one request to jev, and return the answer to the question `choice_name`.

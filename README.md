@@ -328,8 +328,8 @@ out moves that we know are not valid (see "Valid moves" in
 [docs/design.md](docs/design.md)).
 
 **Is every decision really jev's?** Each move decision is one jev request,
-with two exceptions: only one move is valid, or all valid moves have the
-same result (Willy is in the air). Then the harness makes no request, and the log
+with one exception: only one move is valid. (A move is not valid if another
+move gives the same game.) Then the harness makes no request, and the log
 file and the viewer mark the decision "no jev call". The log file records
 every request: the state, the question, and the answer.
 
@@ -433,6 +433,10 @@ one changes a single part of the design, so you can measure its effect:
 | `--rule NAME` | a rule instead of jev, for comparison (no jev requests): `nearer`, or `nearer-memory`, which also prefers a move not tried from this place |
 | `--key-rule nearest` | the key nearest to Willy instead of jev's key decision, for comparison (no jev request) |
 | `--no-guardian-facts` | the move decision's state has no guardian facts, for comparison |
+| `--no-progress-facts` | the move decision's state has no `progress` and no `progress_measures`, for comparison. Use it with a set whose text does not name them, such as `promptD-map-noprogress`. |
+| `--move-map` | the move decision's state also has the present cavern map, for comparison. Use it with `promptD-map` or `promptD-map-noprogress`. |
+| `--map-empty SYMBOL` | the map symbol for empty space (default `.`) |
+| `--ladder-fix` | the way up can pass single floor tiles above a landing place, because a floor does not stop a jump from below |
 | `--sample-moves` | play a move drawn from jev's probabilities instead of jev's selected move, for comparison |
 | `--llm MODEL`, `--local [MODEL]`, `--laya` | another decision maker, for comparison (see "Other decision makers"). Only the terminal runner has `--llm`. |
 
@@ -497,12 +501,12 @@ last column lists them.
 | Term | Meaning | Names in the code |
 | --- | --- | --- |
 | move | One of Willy's six fixed actions: `walk_left`, `walk_right`, `jump_left`, `jump_right`, `jump_up`, `wait`. A move ends when Willy is on the ground and aligned with the grid. | `macro` |
-| valid move | A move that the harness offers to jev. A move is not valid if it is deadly, leads into a dead end, or has no effect. | `offered` |
+| valid move | A move that the harness offers to jev. A move is not valid if it is deadly, leads into a dead end, or has no effect: another valid move gives the same game. | `offered` |
 | deadly move | A move that kills Willy before it ends. | `dead` |
 | dead end | A place where Willy is still alive but cannot stay alive. The dead-end check finds it. | `DEAD_END_CAUSE` |
 | target | The key or switch that Willy is heading for, or the portal once no key is left. | `target` |
 | decision | One step of a run: one move is selected and played. Most decisions need one jev request; a forced decision needs none. | `n`, record type `decision` |
-| forced decision | A decision without a jev request, because only one move is valid or all valid moves have the same result. | `forced` |
+| forced decision | A decision without a jev request, because only one move is valid. | `forced` |
 | move decision | The decision that selects the next move. | |
 | key decision | The decision that selects the target. It happens at the start, after Willy collects a key or flips a switch, and again every 25 decisions. | record type `target`, header field `target_questions` |
 | run | One game in one cavern, from the start to its outcome. | |
@@ -523,7 +527,7 @@ last column lists them.
 | fact | One field of the state, such as `progress`. | |
 | question | The typed question in a request. This project uses only Choice questions. | `Choice` |
 | option | One answer that jev can select: a move, or a key or switch. | `criteria` |
-| instruction set | A folder in `jevmanic/instructions/` with the three texts of one version: `promptA`, `promptC`, or `promptD`. | `instructions` setting |
+| instruction set | A folder in `jevmanic/instructions/` with the three texts of one version: `promptA`, `promptC`, `promptD`, `promptD-map`, or `promptD-map-noprogress`. | `instructions` setting |
 | text | One file of an instruction set. Jev receives it as the question's `instructions`. | |
 | probability | The share that jev gives to one option. | `probabilities` |
 | confidence | Jev's measure of how the probability is spread across the options. It is not the probability of the selected option. | `confidence` |
@@ -548,7 +552,7 @@ last column lists them.
 | `jevmanic/game.py` | cavern start, memory reads, moves, look-ahead, dead-end check |
 | `jevmanic/describe.py` | the state: the map, the key facts, and the move facts |
 | `jevmanic/brain.py` | the questions and the jev requests |
-| `jevmanic/instructions/` | the instruction sets: `promptD/` (default), `promptA/`, `promptC/`, and any you add |
+| `jevmanic/instructions/` | the instruction sets: `promptD/` (default), `promptA/`, `promptC/`, `promptD-map/`, `promptD-map-noprogress/`, and any you add |
 | `jevmanic/llm_brain.py`, `laya_brain.py`, `local_brain.py` | other decision makers, for comparison |
 | `jevmanic/runner.py` | settings, live runs, log files, and replays |
 | `jevmanic/options.py` | the run options shared by the terminal runner and the measurement tool |
