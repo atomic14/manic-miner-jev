@@ -1,0 +1,3088 @@
+{
+  "source": "experiments/results/identical-inputs.json",
+  "horizon": 4,
+  "budget_per_first_move": 10000,
+  "summary": {
+    "pairs_tested": 49,
+    "pairs_skipped": 5,
+    "pairs_with_reachable_key": 3,
+    "pairs_with_different_moves": 0,
+    "pairs_with_conflicting_first_moves": 0,
+    "unknown_results": 0
+  },
+  "rows": [
+    {
+      "source_row": 0,
+      "cavern": 1,
+      "skipped": "no keys remain"
+    },
+    {
+      "source_row": 1,
+      "cavern": 1,
+      "skipped": "no keys remain"
+    },
+    {
+      "source_row": 2,
+      "cavern": 1,
+      "skipped": "no keys remain"
+    },
+    {
+      "source_row": 3,
+      "cavern": 2,
+      "profiles": [
+        {
+          "walk_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 258
+          },
+          "walk_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 258
+          },
+          "jump_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 258
+          },
+          "jump_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 258
+          },
+          "jump_up": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 258
+          },
+          "wait": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 258
+          }
+        },
+        {
+          "walk_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 258
+          },
+          "walk_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 258
+          },
+          "jump_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 258
+          },
+          "jump_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 258
+          },
+          "jump_up": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 252
+          },
+          "wait": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 258
+          }
+        }
+      ],
+      "different_moves": [],
+      "conflicting_first_moves": false,
+      "common_proven_moves": []
+    },
+    {
+      "source_row": 4,
+      "cavern": 2,
+      "profiles": [
+        {
+          "walk_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 258
+          },
+          "walk_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 246
+          },
+          "jump_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 258
+          },
+          "jump_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 192
+          },
+          "jump_up": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 174
+          },
+          "wait": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 240
+          }
+        },
+        {
+          "walk_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 258
+          },
+          "walk_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 246
+          },
+          "jump_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 258
+          },
+          "jump_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 192
+          },
+          "jump_up": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 156
+          },
+          "wait": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 240
+          }
+        }
+      ],
+      "different_moves": [],
+      "conflicting_first_moves": false,
+      "common_proven_moves": []
+    },
+    {
+      "source_row": 5,
+      "cavern": 2,
+      "profiles": [
+        {
+          "walk_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 258
+          },
+          "walk_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 258
+          },
+          "jump_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 258
+          },
+          "jump_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 258
+          },
+          "jump_up": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 258
+          },
+          "wait": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 258
+          }
+        },
+        {
+          "walk_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 258
+          },
+          "walk_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 258
+          },
+          "jump_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 258
+          },
+          "jump_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 258
+          },
+          "jump_up": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 252
+          },
+          "wait": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 258
+          }
+        }
+      ],
+      "different_moves": [],
+      "conflicting_first_moves": false,
+      "common_proven_moves": []
+    },
+    {
+      "source_row": 6,
+      "cavern": 3,
+      "profiles": [
+        {
+          "walk_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 258
+          },
+          "walk_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 216
+          },
+          "jump_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 258
+          },
+          "wait": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 210
+          }
+        },
+        {
+          "walk_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 258
+          },
+          "walk_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 216
+          },
+          "jump_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 258
+          },
+          "wait": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 126
+          }
+        }
+      ],
+      "different_moves": [],
+      "conflicting_first_moves": false,
+      "common_proven_moves": []
+    },
+    {
+      "source_row": 7,
+      "cavern": 3,
+      "profiles": [
+        {
+          "walk_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 192
+          },
+          "walk_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 138
+          },
+          "jump_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 102
+          },
+          "jump_up": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 30
+          },
+          "wait": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 132
+          }
+        },
+        {
+          "walk_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 186
+          },
+          "walk_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 138
+          },
+          "jump_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 90
+          },
+          "jump_up": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 30
+          },
+          "wait": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 126
+          }
+        }
+      ],
+      "different_moves": [],
+      "conflicting_first_moves": false,
+      "common_proven_moves": []
+    },
+    {
+      "source_row": 8,
+      "cavern": 3,
+      "profiles": [
+        {
+          "walk_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 150
+          },
+          "walk_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 126
+          },
+          "jump_up": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 96
+          },
+          "wait": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 180
+          }
+        },
+        {
+          "walk_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 144
+          },
+          "walk_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 126
+          },
+          "jump_up": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 96
+          },
+          "wait": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 180
+          }
+        }
+      ],
+      "different_moves": [],
+      "conflicting_first_moves": false,
+      "common_proven_moves": []
+    },
+    {
+      "source_row": 9,
+      "cavern": 4,
+      "profiles": [
+        {
+          "walk_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 192
+          },
+          "walk_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 222
+          },
+          "jump_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 192
+          },
+          "jump_up": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 192
+          },
+          "wait": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 192
+          }
+        },
+        {
+          "walk_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 192
+          },
+          "walk_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 222
+          },
+          "jump_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 192
+          },
+          "jump_up": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 192
+          },
+          "wait": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 192
+          }
+        }
+      ],
+      "different_moves": [],
+      "conflicting_first_moves": false,
+      "common_proven_moves": []
+    },
+    {
+      "source_row": 10,
+      "cavern": 4,
+      "profiles": [
+        {
+          "walk_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 234
+          },
+          "walk_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 258
+          },
+          "jump_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 258
+          },
+          "jump_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 258
+          },
+          "jump_up": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 258
+          },
+          "wait": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 258
+          }
+        },
+        {
+          "walk_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 234
+          },
+          "walk_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 258
+          },
+          "jump_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 258
+          },
+          "jump_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 258
+          },
+          "jump_up": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 258
+          },
+          "wait": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 258
+          }
+        }
+      ],
+      "different_moves": [],
+      "conflicting_first_moves": false,
+      "common_proven_moves": []
+    },
+    {
+      "source_row": 11,
+      "cavern": 4,
+      "profiles": [
+        {
+          "walk_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 192
+          },
+          "walk_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 258
+          },
+          "jump_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 246
+          },
+          "jump_up": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 198
+          },
+          "wait": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 198
+          }
+        },
+        {
+          "walk_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 192
+          },
+          "walk_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 258
+          },
+          "jump_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 246
+          },
+          "jump_up": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 198
+          },
+          "wait": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 198
+          }
+        }
+      ],
+      "different_moves": [],
+      "conflicting_first_moves": false,
+      "common_proven_moves": []
+    },
+    {
+      "source_row": 12,
+      "cavern": 5,
+      "profiles": [
+        {
+          "walk_left": {
+            "status": "reachable",
+            "witness": [
+              "walk_left",
+              "walk_left",
+              "walk_left",
+              "jump_left"
+            ],
+            "searched_moves": 5
+          },
+          "walk_right": {
+            "status": "reachable",
+            "witness": [
+              "walk_right",
+              "walk_left",
+              "walk_left",
+              "jump_left"
+            ],
+            "searched_moves": 5
+          },
+          "jump_left": {
+            "status": "reachable",
+            "witness": [
+              "jump_left"
+            ],
+            "searched_moves": 0
+          },
+          "jump_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 258
+          },
+          "jump_up": {
+            "status": "reachable",
+            "witness": [
+              "jump_up",
+              "walk_left",
+              "walk_left",
+              "jump_left"
+            ],
+            "searched_moves": 5
+          },
+          "wait": {
+            "status": "reachable",
+            "witness": [
+              "wait",
+              "walk_left",
+              "walk_left",
+              "jump_left"
+            ],
+            "searched_moves": 5
+          }
+        },
+        {
+          "walk_left": {
+            "status": "reachable",
+            "witness": [
+              "walk_left",
+              "walk_left",
+              "walk_left",
+              "jump_left"
+            ],
+            "searched_moves": 5
+          },
+          "walk_right": {
+            "status": "reachable",
+            "witness": [
+              "walk_right",
+              "walk_left",
+              "walk_left",
+              "jump_left"
+            ],
+            "searched_moves": 5
+          },
+          "jump_left": {
+            "status": "reachable",
+            "witness": [
+              "jump_left"
+            ],
+            "searched_moves": 0
+          },
+          "jump_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 258
+          },
+          "jump_up": {
+            "status": "reachable",
+            "witness": [
+              "jump_up",
+              "walk_left",
+              "walk_left",
+              "jump_left"
+            ],
+            "searched_moves": 5
+          },
+          "wait": {
+            "status": "reachable",
+            "witness": [
+              "wait",
+              "walk_left",
+              "walk_left",
+              "jump_left"
+            ],
+            "searched_moves": 5
+          }
+        }
+      ],
+      "different_moves": [],
+      "conflicting_first_moves": false,
+      "common_proven_moves": [
+        "jump_left",
+        "jump_up",
+        "wait",
+        "walk_left",
+        "walk_right"
+      ]
+    },
+    {
+      "source_row": 13,
+      "cavern": 5,
+      "profiles": [
+        {
+          "walk_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 84
+          },
+          "walk_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 120
+          },
+          "wait": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 84
+          }
+        },
+        {
+          "walk_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 84
+          },
+          "walk_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 120
+          },
+          "wait": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 84
+          }
+        }
+      ],
+      "different_moves": [],
+      "conflicting_first_moves": false,
+      "common_proven_moves": []
+    },
+    {
+      "source_row": 14,
+      "cavern": 5,
+      "profiles": [
+        {
+          "walk_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 180
+          },
+          "walk_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 126
+          },
+          "jump_up": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 144
+          },
+          "wait": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 132
+          }
+        },
+        {
+          "walk_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 180
+          },
+          "walk_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 126
+          },
+          "jump_up": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 144
+          },
+          "wait": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 132
+          }
+        }
+      ],
+      "different_moves": [],
+      "conflicting_first_moves": false,
+      "common_proven_moves": []
+    },
+    {
+      "source_row": 15,
+      "cavern": 6,
+      "profiles": [
+        {
+          "walk_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 42
+          },
+          "jump_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 174
+          }
+        },
+        {
+          "walk_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 42
+          },
+          "jump_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 174
+          }
+        }
+      ],
+      "different_moves": [],
+      "conflicting_first_moves": false,
+      "common_proven_moves": []
+    },
+    {
+      "source_row": 16,
+      "cavern": 7,
+      "profiles": [
+        {
+          "walk_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 192
+          },
+          "walk_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 252
+          },
+          "jump_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 192
+          },
+          "jump_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 186
+          },
+          "jump_up": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 240
+          },
+          "wait": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 240
+          }
+        },
+        {
+          "walk_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 192
+          },
+          "walk_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 252
+          },
+          "jump_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 192
+          },
+          "jump_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 186
+          },
+          "jump_up": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 240
+          },
+          "wait": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 240
+          }
+        }
+      ],
+      "different_moves": [],
+      "conflicting_first_moves": false,
+      "common_proven_moves": []
+    },
+    {
+      "source_row": 17,
+      "cavern": 7,
+      "profiles": [
+        {
+          "walk_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 204
+          },
+          "walk_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 240
+          },
+          "jump_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 240
+          },
+          "jump_up": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 186
+          },
+          "wait": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 216
+          }
+        },
+        {
+          "walk_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 204
+          },
+          "walk_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 222
+          },
+          "jump_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 240
+          },
+          "jump_up": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 168
+          },
+          "wait": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 198
+          }
+        }
+      ],
+      "different_moves": [],
+      "conflicting_first_moves": false,
+      "common_proven_moves": []
+    },
+    {
+      "source_row": 18,
+      "cavern": 7,
+      "profiles": [
+        {
+          "walk_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 186
+          },
+          "walk_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 180
+          },
+          "jump_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 216
+          },
+          "jump_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 240
+          },
+          "wait": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 198
+          }
+        },
+        {
+          "walk_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 192
+          },
+          "walk_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 120
+          },
+          "jump_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 210
+          },
+          "jump_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 246
+          },
+          "wait": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 174
+          }
+        }
+      ],
+      "different_moves": [],
+      "conflicting_first_moves": false,
+      "common_proven_moves": []
+    },
+    {
+      "source_row": 19,
+      "cavern": 8,
+      "profiles": [
+        {
+          "walk_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 240
+          },
+          "jump_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 222
+          },
+          "jump_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 192
+          },
+          "jump_up": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 198
+          },
+          "wait": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 198
+          }
+        },
+        {
+          "walk_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 240
+          },
+          "jump_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 222
+          },
+          "jump_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 192
+          },
+          "jump_up": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 198
+          },
+          "wait": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 198
+          }
+        }
+      ],
+      "different_moves": [],
+      "conflicting_first_moves": false,
+      "common_proven_moves": []
+    },
+    {
+      "source_row": 20,
+      "cavern": 8,
+      "profiles": [
+        {
+          "walk_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 192
+          },
+          "walk_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 222
+          },
+          "jump_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 162
+          },
+          "jump_up": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 192
+          },
+          "wait": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 192
+          }
+        },
+        {
+          "walk_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 192
+          },
+          "walk_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 222
+          },
+          "jump_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 162
+          },
+          "jump_up": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 192
+          },
+          "wait": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 192
+          }
+        }
+      ],
+      "different_moves": [],
+      "conflicting_first_moves": false,
+      "common_proven_moves": []
+    },
+    {
+      "source_row": 21,
+      "cavern": 8,
+      "profiles": [
+        {
+          "walk_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 78
+          },
+          "walk_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 78
+          },
+          "wait": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 78
+          }
+        },
+        {
+          "walk_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 78
+          },
+          "walk_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 78
+          },
+          "wait": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 78
+          }
+        }
+      ],
+      "different_moves": [],
+      "conflicting_first_moves": false,
+      "common_proven_moves": []
+    },
+    {
+      "source_row": 22,
+      "cavern": 9,
+      "skipped": "no keys remain"
+    },
+    {
+      "source_row": 23,
+      "cavern": 9,
+      "profiles": [
+        {
+          "walk_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 246
+          },
+          "walk_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 258
+          },
+          "jump_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 150
+          },
+          "jump_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 222
+          },
+          "jump_up": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 144
+          },
+          "wait": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 234
+          }
+        },
+        {
+          "walk_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 246
+          },
+          "walk_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 258
+          },
+          "jump_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 150
+          },
+          "jump_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 222
+          },
+          "jump_up": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 144
+          },
+          "wait": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 234
+          }
+        }
+      ],
+      "different_moves": [],
+      "conflicting_first_moves": false,
+      "common_proven_moves": []
+    },
+    {
+      "source_row": 24,
+      "cavern": 9,
+      "profiles": [
+        {
+          "walk_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 258
+          },
+          "walk_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 258
+          },
+          "jump_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 234
+          },
+          "jump_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 240
+          },
+          "jump_up": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 240
+          },
+          "wait": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 258
+          }
+        },
+        {
+          "walk_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 258
+          },
+          "walk_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 258
+          },
+          "jump_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 234
+          },
+          "jump_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 240
+          },
+          "jump_up": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 240
+          },
+          "wait": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 258
+          }
+        }
+      ],
+      "different_moves": [],
+      "conflicting_first_moves": false,
+      "common_proven_moves": []
+    },
+    {
+      "source_row": 25,
+      "cavern": 10,
+      "profiles": [
+        {
+          "walk_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 198
+          },
+          "walk_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 180
+          },
+          "jump_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 180
+          },
+          "jump_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 132
+          },
+          "wait": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 180
+          }
+        },
+        {
+          "walk_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 198
+          },
+          "walk_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 180
+          },
+          "jump_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 180
+          },
+          "jump_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 108
+          },
+          "wait": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 174
+          }
+        }
+      ],
+      "different_moves": [],
+      "conflicting_first_moves": false,
+      "common_proven_moves": []
+    },
+    {
+      "source_row": 26,
+      "cavern": 10,
+      "profiles": [
+        {
+          "walk_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 216
+          },
+          "walk_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 216
+          },
+          "jump_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 180
+          },
+          "jump_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 180
+          },
+          "jump_up": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 174
+          },
+          "wait": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 246
+          }
+        },
+        {
+          "walk_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 216
+          },
+          "walk_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 204
+          },
+          "jump_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 180
+          },
+          "jump_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 186
+          },
+          "jump_up": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 168
+          },
+          "wait": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 246
+          }
+        }
+      ],
+      "different_moves": [],
+      "conflicting_first_moves": false,
+      "common_proven_moves": []
+    },
+    {
+      "source_row": 27,
+      "cavern": 10,
+      "profiles": [
+        {
+          "walk_left": {
+            "status": "reachable",
+            "witness": [
+              "walk_left",
+              "jump_left",
+              "jump_right",
+              "jump_right"
+            ],
+            "searched_moves": 107
+          },
+          "walk_right": {
+            "status": "reachable",
+            "witness": [
+              "walk_right",
+              "jump_left",
+              "jump_right",
+              "jump_right"
+            ],
+            "searched_moves": 77
+          },
+          "jump_left": {
+            "status": "reachable",
+            "witness": [
+              "jump_left",
+              "walk_right",
+              "jump_right",
+              "jump_right"
+            ],
+            "searched_moves": 52
+          },
+          "jump_right": {
+            "status": "reachable",
+            "witness": [
+              "jump_right"
+            ],
+            "searched_moves": 0
+          },
+          "wait": {
+            "status": "reachable",
+            "witness": [
+              "wait",
+              "jump_left",
+              "jump_right",
+              "jump_right"
+            ],
+            "searched_moves": 89
+          }
+        },
+        {
+          "walk_left": {
+            "status": "reachable",
+            "witness": [
+              "walk_left",
+              "jump_left",
+              "jump_right",
+              "jump_right"
+            ],
+            "searched_moves": 107
+          },
+          "walk_right": {
+            "status": "reachable",
+            "witness": [
+              "walk_right",
+              "jump_left",
+              "jump_right",
+              "jump_right"
+            ],
+            "searched_moves": 65
+          },
+          "jump_left": {
+            "status": "reachable",
+            "witness": [
+              "jump_left",
+              "walk_right",
+              "jump_right",
+              "jump_right"
+            ],
+            "searched_moves": 52
+          },
+          "jump_right": {
+            "status": "reachable",
+            "witness": [
+              "jump_right"
+            ],
+            "searched_moves": 0
+          },
+          "wait": {
+            "status": "reachable",
+            "witness": [
+              "wait",
+              "jump_left",
+              "jump_right",
+              "jump_right"
+            ],
+            "searched_moves": 89
+          }
+        }
+      ],
+      "different_moves": [],
+      "conflicting_first_moves": false,
+      "common_proven_moves": [
+        "jump_left",
+        "jump_right",
+        "wait",
+        "walk_left",
+        "walk_right"
+      ]
+    },
+    {
+      "source_row": 28,
+      "cavern": 11,
+      "profiles": [
+        {
+          "walk_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 258
+          },
+          "walk_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 222
+          },
+          "jump_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 258
+          },
+          "jump_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 258
+          },
+          "jump_up": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 258
+          },
+          "wait": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 258
+          }
+        },
+        {
+          "walk_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 258
+          },
+          "walk_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 222
+          },
+          "jump_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 258
+          },
+          "jump_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 258
+          },
+          "jump_up": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 258
+          },
+          "wait": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 258
+          }
+        }
+      ],
+      "different_moves": [],
+      "conflicting_first_moves": false,
+      "common_proven_moves": []
+    },
+    {
+      "source_row": 29,
+      "cavern": 11,
+      "profiles": [
+        {
+          "walk_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 210
+          },
+          "walk_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 246
+          },
+          "jump_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 258
+          },
+          "jump_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 198
+          },
+          "jump_up": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 246
+          },
+          "wait": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 246
+          }
+        },
+        {
+          "walk_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 210
+          },
+          "walk_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 246
+          },
+          "jump_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 258
+          },
+          "jump_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 198
+          },
+          "jump_up": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 246
+          },
+          "wait": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 246
+          }
+        }
+      ],
+      "different_moves": [],
+      "conflicting_first_moves": false,
+      "common_proven_moves": []
+    },
+    {
+      "source_row": 30,
+      "cavern": 11,
+      "profiles": [
+        {
+          "walk_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 204
+          },
+          "walk_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 246
+          },
+          "jump_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 258
+          },
+          "jump_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 186
+          },
+          "jump_up": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 240
+          },
+          "wait": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 246
+          }
+        },
+        {
+          "walk_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 204
+          },
+          "walk_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 246
+          },
+          "jump_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 258
+          },
+          "jump_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 186
+          },
+          "jump_up": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 240
+          },
+          "wait": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 246
+          }
+        }
+      ],
+      "different_moves": [],
+      "conflicting_first_moves": false,
+      "common_proven_moves": []
+    },
+    {
+      "source_row": 31,
+      "cavern": 13,
+      "profiles": [
+        {
+          "walk_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 240
+          },
+          "jump_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 228
+          },
+          "jump_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 228
+          },
+          "wait": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 234
+          }
+        },
+        {
+          "walk_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 240
+          },
+          "jump_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 228
+          },
+          "jump_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 228
+          },
+          "wait": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 234
+          }
+        }
+      ],
+      "different_moves": [],
+      "conflicting_first_moves": false,
+      "common_proven_moves": []
+    },
+    {
+      "source_row": 32,
+      "cavern": 13,
+      "profiles": [
+        {
+          "jump_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 204
+          },
+          "jump_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 240
+          },
+          "wait": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 204
+          }
+        },
+        {
+          "jump_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 162
+          },
+          "jump_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 228
+          },
+          "wait": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 204
+          }
+        }
+      ],
+      "different_moves": [],
+      "conflicting_first_moves": false,
+      "common_proven_moves": []
+    },
+    {
+      "source_row": 33,
+      "cavern": 13,
+      "profiles": [
+        {
+          "jump_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 258
+          },
+          "wait": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 258
+          }
+        },
+        {
+          "jump_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 258
+          },
+          "wait": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 258
+          }
+        }
+      ],
+      "different_moves": [],
+      "conflicting_first_moves": false,
+      "common_proven_moves": []
+    },
+    {
+      "source_row": 34,
+      "cavern": 14,
+      "profiles": [
+        {
+          "walk_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 90
+          },
+          "walk_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 174
+          },
+          "jump_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 108
+          },
+          "jump_up": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 198
+          },
+          "wait": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 162
+          }
+        },
+        {
+          "walk_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 84
+          },
+          "walk_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 168
+          },
+          "jump_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 102
+          },
+          "jump_up": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 198
+          },
+          "wait": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 156
+          }
+        }
+      ],
+      "different_moves": [],
+      "conflicting_first_moves": false,
+      "common_proven_moves": []
+    },
+    {
+      "source_row": 35,
+      "cavern": 14,
+      "profiles": [
+        {
+          "walk_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 192
+          },
+          "walk_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 258
+          },
+          "jump_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 156
+          },
+          "jump_up": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 246
+          },
+          "wait": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 192
+          }
+        },
+        {
+          "walk_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 240
+          },
+          "walk_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 258
+          },
+          "jump_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 150
+          },
+          "jump_up": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 234
+          },
+          "wait": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 204
+          }
+        }
+      ],
+      "different_moves": [],
+      "conflicting_first_moves": false,
+      "common_proven_moves": []
+    },
+    {
+      "source_row": 36,
+      "cavern": 14,
+      "profiles": [
+        {
+          "walk_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 198
+          },
+          "walk_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 258
+          },
+          "jump_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 150
+          },
+          "jump_up": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 246
+          },
+          "wait": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 198
+          }
+        },
+        {
+          "walk_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 246
+          },
+          "walk_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 258
+          },
+          "jump_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 162
+          },
+          "jump_up": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 240
+          },
+          "wait": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 252
+          }
+        }
+      ],
+      "different_moves": [],
+      "conflicting_first_moves": false,
+      "common_proven_moves": []
+    },
+    {
+      "source_row": 37,
+      "cavern": 15,
+      "profiles": [
+        {
+          "walk_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 138
+          },
+          "walk_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 162
+          },
+          "jump_up": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 180
+          },
+          "wait": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 138
+          }
+        },
+        {
+          "walk_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 186
+          },
+          "walk_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 144
+          },
+          "jump_up": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 180
+          },
+          "wait": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 144
+          }
+        }
+      ],
+      "different_moves": [],
+      "conflicting_first_moves": false,
+      "common_proven_moves": []
+    },
+    {
+      "source_row": 38,
+      "cavern": 15,
+      "profiles": [
+        {
+          "walk_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 150
+          },
+          "walk_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 186
+          },
+          "jump_up": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 132
+          },
+          "wait": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 144
+          }
+        },
+        {
+          "walk_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 216
+          },
+          "walk_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 156
+          },
+          "jump_up": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 144
+          },
+          "wait": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 186
+          }
+        }
+      ],
+      "different_moves": [],
+      "conflicting_first_moves": false,
+      "common_proven_moves": []
+    },
+    {
+      "source_row": 39,
+      "cavern": 15,
+      "profiles": [
+        {
+          "jump_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 258
+          },
+          "jump_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 258
+          },
+          "wait": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 258
+          }
+        },
+        {
+          "jump_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 258
+          },
+          "jump_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 258
+          },
+          "wait": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 258
+          }
+        }
+      ],
+      "different_moves": [],
+      "conflicting_first_moves": false,
+      "common_proven_moves": []
+    },
+    {
+      "source_row": 40,
+      "cavern": 16,
+      "profiles": [
+        {
+          "walk_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 180
+          },
+          "walk_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 186
+          },
+          "jump_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 168
+          },
+          "jump_up": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 132
+          },
+          "wait": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 174
+          }
+        },
+        {
+          "walk_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 162
+          },
+          "walk_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 186
+          },
+          "jump_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 168
+          },
+          "jump_up": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 168
+          },
+          "wait": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 150
+          }
+        }
+      ],
+      "different_moves": [],
+      "conflicting_first_moves": false,
+      "common_proven_moves": []
+    },
+    {
+      "source_row": 41,
+      "cavern": 16,
+      "profiles": [
+        {
+          "walk_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 102
+          },
+          "walk_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 174
+          },
+          "jump_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 204
+          },
+          "jump_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 132
+          },
+          "wait": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 156
+          }
+        },
+        {
+          "walk_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 102
+          },
+          "walk_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 174
+          },
+          "jump_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 204
+          },
+          "jump_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 132
+          },
+          "wait": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 156
+          }
+        }
+      ],
+      "different_moves": [],
+      "conflicting_first_moves": false,
+      "common_proven_moves": []
+    },
+    {
+      "source_row": 42,
+      "cavern": 16,
+      "profiles": [
+        {
+          "walk_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 174
+          },
+          "jump_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 186
+          },
+          "jump_up": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 120
+          },
+          "wait": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 144
+          }
+        },
+        {
+          "walk_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 174
+          },
+          "jump_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 186
+          },
+          "jump_up": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 120
+          },
+          "wait": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 144
+          }
+        }
+      ],
+      "different_moves": [],
+      "conflicting_first_moves": false,
+      "common_proven_moves": []
+    },
+    {
+      "source_row": 43,
+      "cavern": 17,
+      "profiles": [
+        {
+          "walk_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 186
+          },
+          "jump_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 186
+          },
+          "jump_up": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 156
+          },
+          "wait": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 156
+          }
+        },
+        {
+          "walk_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 186
+          },
+          "jump_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 186
+          },
+          "jump_up": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 156
+          },
+          "wait": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 156
+          }
+        }
+      ],
+      "different_moves": [],
+      "conflicting_first_moves": false,
+      "common_proven_moves": []
+    },
+    {
+      "source_row": 44,
+      "cavern": 17,
+      "profiles": [
+        {
+          "walk_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 186
+          },
+          "jump_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 186
+          },
+          "jump_up": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 156
+          },
+          "wait": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 156
+          }
+        },
+        {
+          "walk_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 186
+          },
+          "jump_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 186
+          },
+          "jump_up": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 156
+          },
+          "wait": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 156
+          }
+        }
+      ],
+      "different_moves": [],
+      "conflicting_first_moves": false,
+      "common_proven_moves": []
+    },
+    {
+      "source_row": 45,
+      "cavern": 17,
+      "profiles": [
+        {
+          "walk_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 144
+          },
+          "walk_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 132
+          },
+          "wait": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 108
+          }
+        },
+        {
+          "walk_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 144
+          },
+          "walk_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 150
+          },
+          "wait": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 108
+          }
+        }
+      ],
+      "different_moves": [],
+      "conflicting_first_moves": false,
+      "common_proven_moves": []
+    },
+    {
+      "source_row": 46,
+      "cavern": 18,
+      "profiles": [
+        {
+          "walk_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 204
+          },
+          "walk_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 204
+          },
+          "jump_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 258
+          },
+          "wait": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 204
+          }
+        },
+        {
+          "walk_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 204
+          },
+          "walk_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 204
+          },
+          "jump_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 258
+          },
+          "wait": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 204
+          }
+        }
+      ],
+      "different_moves": [],
+      "conflicting_first_moves": false,
+      "common_proven_moves": []
+    },
+    {
+      "source_row": 47,
+      "cavern": 18,
+      "skipped": "no keys remain"
+    },
+    {
+      "source_row": 48,
+      "cavern": 18,
+      "profiles": [
+        {
+          "walk_right": {
+            "status": "reachable",
+            "witness": [
+              "walk_right",
+              "jump_right"
+            ],
+            "searched_moves": 40
+          },
+          "jump_left": {
+            "status": "reachable",
+            "witness": [
+              "jump_left",
+              "jump_up",
+              "jump_right",
+              "jump_right"
+            ],
+            "searched_moves": 25
+          },
+          "jump_right": {
+            "status": "reachable",
+            "witness": [
+              "jump_right"
+            ],
+            "searched_moves": 0
+          },
+          "wait": {
+            "status": "reachable",
+            "witness": [
+              "wait",
+              "jump_right"
+            ],
+            "searched_moves": 16
+          }
+        },
+        {
+          "walk_right": {
+            "status": "reachable",
+            "witness": [
+              "walk_right",
+              "jump_right"
+            ],
+            "searched_moves": 40
+          },
+          "jump_left": {
+            "status": "reachable",
+            "witness": [
+              "jump_left",
+              "jump_up",
+              "jump_right",
+              "jump_right"
+            ],
+            "searched_moves": 25
+          },
+          "jump_right": {
+            "status": "reachable",
+            "witness": [
+              "jump_right"
+            ],
+            "searched_moves": 0
+          },
+          "wait": {
+            "status": "reachable",
+            "witness": [
+              "wait",
+              "jump_right"
+            ],
+            "searched_moves": 16
+          }
+        }
+      ],
+      "different_moves": [],
+      "conflicting_first_moves": false,
+      "common_proven_moves": [
+        "jump_left",
+        "jump_right",
+        "wait",
+        "walk_right"
+      ]
+    },
+    {
+      "source_row": 49,
+      "cavern": 19,
+      "profiles": [
+        {
+          "walk_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 132
+          },
+          "walk_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 138
+          },
+          "jump_up": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 186
+          },
+          "wait": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 144
+          }
+        },
+        {
+          "walk_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 132
+          },
+          "walk_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 138
+          },
+          "jump_up": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 186
+          },
+          "wait": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 144
+          }
+        }
+      ],
+      "different_moves": [],
+      "conflicting_first_moves": false,
+      "common_proven_moves": []
+    },
+    {
+      "source_row": 50,
+      "cavern": 19,
+      "profiles": [
+        {
+          "walk_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 204
+          },
+          "walk_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 222
+          },
+          "jump_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 258
+          },
+          "jump_up": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 258
+          },
+          "wait": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 204
+          }
+        },
+        {
+          "walk_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 204
+          },
+          "walk_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 222
+          },
+          "jump_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 252
+          },
+          "jump_up": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 252
+          },
+          "wait": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 204
+          }
+        }
+      ],
+      "different_moves": [],
+      "conflicting_first_moves": false,
+      "common_proven_moves": []
+    },
+    {
+      "source_row": 51,
+      "cavern": 19,
+      "profiles": [
+        {
+          "walk_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 258
+          },
+          "walk_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 216
+          },
+          "jump_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 258
+          },
+          "wait": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 258
+          }
+        },
+        {
+          "walk_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 258
+          },
+          "walk_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 216
+          },
+          "jump_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 258
+          },
+          "wait": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 258
+          }
+        }
+      ],
+      "different_moves": [],
+      "conflicting_first_moves": false,
+      "common_proven_moves": []
+    },
+    {
+      "source_row": 52,
+      "cavern": 20,
+      "profiles": [
+        {
+          "walk_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 174
+          },
+          "walk_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 180
+          },
+          "jump_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 186
+          },
+          "jump_up": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 162
+          },
+          "wait": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 186
+          }
+        },
+        {
+          "walk_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 174
+          },
+          "walk_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 180
+          },
+          "jump_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 186
+          },
+          "jump_up": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 162
+          },
+          "wait": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 186
+          }
+        }
+      ],
+      "different_moves": [],
+      "conflicting_first_moves": false,
+      "common_proven_moves": []
+    },
+    {
+      "source_row": 53,
+      "cavern": 20,
+      "profiles": [
+        {
+          "walk_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 186
+          },
+          "walk_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 198
+          },
+          "jump_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 222
+          },
+          "jump_up": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 174
+          },
+          "wait": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 192
+          }
+        },
+        {
+          "walk_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 186
+          },
+          "walk_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 198
+          },
+          "jump_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 222
+          },
+          "jump_up": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 174
+          },
+          "wait": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 192
+          }
+        }
+      ],
+      "different_moves": [],
+      "conflicting_first_moves": false,
+      "common_proven_moves": []
+    }
+  ]
+}

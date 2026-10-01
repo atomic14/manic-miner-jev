@@ -10,12 +10,15 @@ So the state gives positions relative to Willy, in words and small numbers.
 
 The geometry facts (`way_up`, `way_down`, `progress`) are estimates from the
 tile map. Each of them has been wrong in at least one cavern. Measure each
-change with `experiments/measure.py`.
+change with `experiments/measure.py`. With the setting `graph_facts`,
+`progress` comes from the movement graph instead (graph.py), and the target
+has no `way_up` and no `way_down`.
 """
 
 from .game import (
     COLS,
     DEAD_END_CAUSE,
+    HALF_STEPS,
     ROWS,
     TILE_CONVEYOR,
     TILE_CRUMBLING,
@@ -456,15 +459,18 @@ def key_names(snap: Snapshot) -> dict:
     return names
 
 
-def keys_state(snap: Snapshot, key_names: dict, memory: dict | None = None) -> dict:
+def keys_state(snap: Snapshot, key_names: dict, memory: dict | None = None, offered: list | None = None) -> dict:
     """The key decision's state without the map: facts about each key and switch.
 
     `memory` gives each key a short memory: {"current": cell, "used": {cell:
     decisions}, "gave_up": {cell: times}}. With it, jev can keep the target
-    or change it.
+    or change it. `offered` limits the facts to the keys and switches that are options.
     """
-    facts = {key_names[k]: {"what": "key", **_key_facts(snap, *k)} for k in snap.keys}
+    facts = {key_names[k]: {"what": "key", **_key_facts(snap, *k)} for k in snap.keys
+             if offered is None or k in offered}
     for cell in snap.switches:
+        if offered is not None and cell not in offered:
+            continue
         facts[key_names[cell]] = {
             "what": "switch. Willy flips it when he touches it. A switch changes the cavern: "
                     "it can open a wall or remove a danger.",
@@ -472,6 +478,8 @@ def keys_state(snap: Snapshot, key_names: dict, memory: dict | None = None) -> d
         }
     if memory is not None:
         for cell in snap.keys + snap.switches:
+            if key_names[cell] not in facts:
+                continue
             fact = facts[key_names[cell]]
             if cell == memory.get("current"):
                 fact["current_target"] = "yes"
@@ -533,26 +541,39 @@ def _visits_word(visited, x, y) -> str:
     return "visited many times"
 
 
-def moves_state(snap: Snapshot, outcomes: dict, target, visited, tried=frozenset(), ladder_fix: bool = False) -> dict:
+# `progress_measures` for the route facts of the movement graph (graph.py).
+GRAPH_MEASURE = "the target, by the number of moves on the shortest way to it"
+
+
+def moves_state(snap: Snapshot, outcomes: dict, target, visited, tried=frozenset(), ladder_fix: bool = False,
+                route=None) -> dict:
     """The result of each valid move, from the look-ahead, and the moves that are not valid.
 
     `progress` (nearer, farther, same) compares the distance to one reference:
     the target, the way up, or the way down (see `progress_measures`). Two
     exceptions change the word: a move that uses the way up or the way down
     is "nearer", and a move that leaves the target's level is "farther".
+
+    With `route` (graph.RouteFacts), `progress` compares the number of moves
+    to the target before and after the move, on the shortest way that the
+    movement graph knows. A move after which a key or the portal is out of
+    reach is not valid, unless each safe move is such a move.
     """
-    (tx, ty), measure = _progress_reference(snap, target, ladder_fix)
-    goal = target_cell(snap, target)
-    same_level = _target_relative(snap, *goal, 1 if snap.keys else 2)["height"] == "same level"
-
-    def distance(x, y):
-        return abs(tx - x) + abs(ty - y)
-
-    now = distance(snap.willy_x, snap.willy_y)
+    if route is None:
+        (tx, ty), measure = _progress_reference(snap, target, ladder_fix)
+        goal = target_cell(snap, target)
+        same_level = _target_relative(snap, *goal, 1 if snap.keys else 2)["height"] == "same level"
+        now = abs(tx - snap.willy_x) + abs(ty - snap.willy_y)
+    else:
+        measure = GRAPH_MEASURE
     moves, removed = {}, {}
     # If no move is safe, the moves into a dead end stay valid, with a
     # warning: Willy is alive after them, which is better than dying now.
     no_move_is_safe = all(o.dead for o in outcomes.values())
+    safe = [name for name, o in outcomes.items() if not o.dead]
+    no_way_back = {} if route is None else {n: why for n, why in route.no_way_back.items() if n in safe}
+    if len(no_way_back) == len(safe):
+        no_way_back = {}  # each safe move leaves something out of reach: they all stay
     kept = {}
     # A move has no effect only if another move gives the same game. The same
     # cell is not enough: the moves can differ in time, guardians, or floors.
@@ -563,6 +584,9 @@ def moves_state(snap: Snapshot, outcomes: dict, target, visited, tried=frozenset
         if o.dead and not (no_move_is_safe and dead_end_only):
             removed[name] = f"kills Willy: {o.cause}"
             continue
+        if name in no_way_back:
+            removed[name] = no_way_back[name]
+            continue
         same = next((other for other in kept if o.same_result(outcomes[other])), None)
         if same:
             removed[name] = f"no effect: the same result as {same}"
@@ -571,17 +595,20 @@ def moves_state(snap: Snapshot, outcomes: dict, target, visited, tried=frozenset
     for name, o in outcomes.items():
         if name not in kept:
             continue
-        movement = movement_words(o.dx, o.dy)
-        after = distance(o.x, o.y)
-        progress = "nearer" if after < now else "farther" if after > now else "same"
-        # A move that uses the way up or the way down is "nearer", even when
-        # it goes past the reference cell.
-        if (measure.endswith("way up") and o.dy > 0) or (measure.endswith("way down") and o.dy < 0):
-            progress = "nearer"
-        # The target is on Willy's level. A move that leaves this level is
-        # "farther", even when it goes toward the target.
-        if same_level and o.dy != 0 and not (o.keys_collected or o.complete):
-            progress = "farther"
+        movement = movement_words(o.dx, o.dy, o.dx_pixels if name in HALF_STEPS else None)
+        if route is not None:
+            progress = _graph_progress(route.now, route.after.get(name))
+        else:
+            after = abs(tx - o.x) + abs(ty - o.y)
+            progress = "nearer" if after < now else "farther" if after > now else "same"
+            # A move that uses the way up or the way down is "nearer", even when
+            # it goes past the reference cell.
+            if (measure.endswith("way up") and o.dy > 0) or (measure.endswith("way down") and o.dy < 0):
+                progress = "nearer"
+            # The target is on Willy's level. A move that leaves this level is
+            # "farther", even when it goes toward the target.
+            if same_level and o.dy != 0 and not (o.keys_collected or o.complete):
+                progress = "farther"
         floor_after = {_tile(snap, o.x + dx, o.y + 2) for dx in (0, 1)}
         result = {
             "movement": movement,
@@ -601,6 +628,15 @@ def moves_state(snap: Snapshot, outcomes: dict, target, visited, tried=frozenset
         moves[name] = result
     removed = {n: removed[n] for n in outcomes if n in removed}  # the order of the moves
     return {"progress_measures": measure, "moves": moves, "moves_not_offered": removed or "none"}
+
+
+def _graph_progress(now: int | None, after: int | None) -> str:
+    """Nearer, farther, or same, from the number of moves to the target before and after a move."""
+    if now is None:
+        return "same" if after is None else "nearer"
+    if after is None:
+        return "farther"
+    return "nearer" if after < now else "farther" if after > now else "same"
 
 
 def _guardians(snap: Snapshot) -> list[dict]:
@@ -645,17 +681,20 @@ def _air_word(air: float) -> str:
     return "critical"
 
 
-def words(snap: Snapshot, target=None, ladder_fix: bool = False) -> dict:
+def words(snap: Snapshot, target=None, ladder_fix: bool = False, graph_facts: bool = False) -> dict:
     """The move decision's facts that do not depend on the moves: Willy, the target, and the guardians.
 
     The target gets a `way_down` or a `way_up` when it is on a different floor.
+    With the route facts of the movement graph it gets neither, because the
+    two must not disagree with `progress`.
     """
     target_words = _target(snap, target)
     goal = target_cell(snap, target)
     side = _preferred_side(snap, *goal, 1 if snap.keys else 2)
-    if target_words.get("height") == "lower":
+    height = None if graph_facts else target_words.get("height")
+    if height == "lower":
         target_words["way_down"] = _public(_way_down(snap, side, goal[0]))
-    elif target_words.get("height") == "higher":
+    elif height == "higher":
         target_words["way_up"] = _public(_way_up(snap, side, ladder_fix))
     return {
         "willy": {"facing": snap.willy_facing, "standing_on": _standing_on(snap)},
@@ -668,11 +707,19 @@ def words(snap: Snapshot, target=None, ladder_fix: bool = False) -> dict:
     }
 
 
-def movement_words(dx: int, dy: int) -> str:
-    """The change of place in words. `dx` is cells to the right, `dy` is rows higher."""
-    if dx == 0 and dy == 0:
+def movement_words(dx: int, dy: int, dx_pixels: int | None = None) -> str:
+    """The change of place in words. `dx` is cells to the right, `dy` is rows higher.
+
+    A half step gives `dx_pixels`, because it moves Willy less than a cell.
+    """
+    if dx_pixels is not None and 0 < abs(dx_pixels) < 8:
+        dx = 0
+        half = f"half a cell to the {'right' if dx_pixels > 0 else 'left'}"
+    else:
+        half = ""
+    if dx == 0 and dy == 0 and not half:
         return "Willy stays in the same place"
-    parts = []
+    parts = [half] if half else []
     if dx:
         parts.append(f"{abs(dx)} {'cell' if abs(dx) == 1 else 'cells'} to the {'right' if dx > 0 else 'left'}")
     if dy:
@@ -691,11 +738,15 @@ def _public(way):
 
 
 def move_request_state(snap: Snapshot, outcomes: dict, target, visited, tried,
-                       settings: Settings | None = None) -> dict:
-    """The complete state of a move decision, with the run's settings (the defaults if None)."""
+                       settings: Settings | None = None, route=None) -> dict:
+    """The complete state of a move decision, with the run's settings (the defaults if None).
+
+    `route` has the route facts of the movement graph (graph.RouteFacts), for the setting `graph_facts`.
+    """
     settings = settings or Settings()
     ladder_fix = settings.ladder_fix
-    state = {**words(snap, target, ladder_fix), **moves_state(snap, outcomes, target, visited, tried, ladder_fix)}
+    state = {**words(snap, target, ladder_fix, route is not None),
+             **moves_state(snap, outcomes, target, visited, tried, ladder_fix, route)}
     if settings.move_map:
         state = {**cavern_map(snap, settings.map_empty), **state}
     if not settings.progress_facts:
@@ -708,8 +759,12 @@ def move_request_state(snap: Snapshot, outcomes: dict, target, visited, tried,
     return state
 
 
-def key_request_state(snap: Snapshot, names: dict, memory: dict | None, settings: Settings | None = None) -> dict:
-    """The complete state of a key decision: the key facts, and the map if the settings ask for it."""
+def key_request_state(snap: Snapshot, names: dict, memory: dict | None, settings: Settings | None = None,
+                      offered: list | None = None) -> dict:
+    """The complete state of a key decision: the key facts, and the map if the settings ask for it.
+
+    `offered` limits the key facts to the options. The map still shows each key.
+    """
     settings = settings or Settings()
-    state = keys_state(snap, names, memory)
+    state = keys_state(snap, names, memory, offered)
     return {**cavern_map(snap, settings.map_empty), **state} if settings.map_key_decision else state

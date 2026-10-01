@@ -60,6 +60,13 @@ Jev gets only the valid moves. A move is not valid in three cases:
 If no move is safe, jev gets the least bad moves: the dead-end moves (with
 a warning), or else all moves.
 
+With the option `--no-way-back`, a move is also not valid if it leaves a key
+or the portal out of reach. Willy can reach it now, but the movement graph
+has no way to it after the move (see "Route facts from the movement graph").
+If each safe move is such a move, they all stay. A key or a switch is not an
+option of the key decision if Willy cannot reach it now. A key is not an
+option either if another key is out of reach after it.
+
 ## The conveyor hold
 
 A conveyor carries Willy. In the game, Willy stands still on a conveyor only
@@ -70,6 +77,41 @@ while it stays held. The moves use this:
   lands.
 - `wait` on a conveyor holds against it.
 - A walk in the conveyor's direction lets the conveyor carry Willy.
+
+## Route facts from the movement graph
+
+The route facts are `progress` and `progress_measures`, and the target's
+`way_up` and `way_down`. By default they come from rules about the tile map
+(`jevmanic/describe.py`). Three options give route facts from the emulator
+instead:
+
+- `--graph`: the harness builds a movement graph (`jevmanic/graph.py`). It
+  plays each move from each place that Willy can reach, with the guardians
+  switched off. A node is Willy's pixel position, his facing, the switches
+  that are left, and the floor under his feet. An edge is one move. `progress`
+  then compares the number of moves on the shortest way to the target, before
+  and after the move. The target has no `way_up` and no `way_down`, because
+  the tile rules can disagree with the graph.
+- `--half-steps`: two more moves, `step_left` and `step_right`. Each one moves
+  Willy half a cell (4 pixels). A walk always ends on the cell grid, and some
+  jumps must start between two cells.
+- `--no-way-back` (with `--graph`): the moves and the keys that leave a key
+  or the portal out of reach are not offered (see "Valid moves").
+
+The graph ignores the guardians, so a way in the graph can still need good
+timing, and the look-ahead still removes each deadly move. A special enemy
+(Eugene, the Kong Beast, a Skylab) is not in the guardian lists, so the graph
+keeps it. A move that it makes deadly is tried again after a few waits.
+
+The harness builds the graph again in these cases:
+
+- a switch is flipped, or the last key is collected;
+- Willy, or the end of a safe move, is not in the graph;
+- a crumbling floor has broken, and the graph is five decisions old.
+
+A graph has at most 6,000 nodes. The caverns with many crumbling floors (The
+Vat, The Warehouse) reach this limit, and a graph takes up to 30 seconds
+there.
 
 ## Instruction sets
 
@@ -93,6 +135,10 @@ difference between two sets.
   present cavern map and its legend. It is for `--move-map`.
 - `promptD-map-noprogress` is promptD-map without the sentence about
   `progress`. It is for `--move-map --no-progress-facts`.
+- `promptD-graph` is promptD without the sentence about loops ("If Willy
+  comes back to the same places again and again, the direct way is closed").
+  It is for `--graph`: with route facts from the graph, "nearer" is on the
+  shortest way, and the sentence can take Willy away from it.
 - `promptC` is a very short text for Laya, a different decision model (see
   "Laya instead of jev" in [findings.md](findings.md)).
 
@@ -352,6 +398,25 @@ The options and their criteria:
 Jev's answer in the example is `walk_left`, with a probability of 0.57 and a
 confidence of 0.44. The other probabilities: `jump_left` 0.25, `walk_right`
 0.15, and `wait` 0.03. This request used 1406 input tokens and took 233 ms.
+
+### With the movement graph
+
+With `--graph --half-steps --no-way-back`, the requests change in these ways:
+
+- `progress_measures` is "the target, by the number of moves on the shortest
+  way to it", and `progress` compares that number before and after the move.
+- The target has no `way_up` and no `way_down`.
+- `moves` can have `step_left` and `step_right`. Their `movement` is, for
+  example, "Willy moves half a cell to the left". Their options have the
+  criteria "Take a half step to the left. The result is in `moves.step_left`."
+- `moves_not_offered` can give the cause "no way back: a key or the portal is
+  out of reach after it".
+- The key decision offers only the keys and switches that Willy can reach and
+  that leave no key out of reach. `keys` describes only those. The map still
+  shows each key.
+
+The log file's decision records also have `moves_to_target`: the number of
+moves from Willy's place to the target in the graph. Jev does not get it.
 
 ## Log files
 

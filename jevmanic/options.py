@@ -42,9 +42,19 @@ def add_run_options(parser: argparse.ArgumentParser):
     parser.add_argument("--sample-moves", action="store_true",
                         help="for comparison: play a move drawn from jev's move probabilities, "
                              "instead of jev's selected move")
+    parser.add_argument("--graph", action="store_true",
+                        help="the route facts come from the movement graph: `progress` counts the moves on the "
+                             "shortest way to the target, and the target has no way_up and no way_down")
+    parser.add_argument("--half-steps", action="store_true",
+                        help="two more moves: a half step to the left and a half step to the right")
+    parser.add_argument("--no-way-back", action="store_true",
+                        help="with --graph: do not offer a move or a key after which a key or the portal is "
+                             "out of reach")
 
 
 def settings_from(args: argparse.Namespace) -> Settings:
+    if args.no_way_back and not args.graph:
+        raise SystemExit("--no-way-back needs --graph: the movement graph finds the moves with no way back")
     return Settings(
         instructions=args.instructions,
         map_key_decision=not args.facts_only_keys,
@@ -60,4 +70,7 @@ def settings_from(args: argparse.Namespace) -> Settings:
         map_empty=args.map_empty,
         ladder_fix=args.ladder_fix,
         progress_facts=not args.no_progress_facts,
+        graph_facts=args.graph,
+        half_steps=args.half_steps,
+        no_way_back=args.no_way_back,
     )

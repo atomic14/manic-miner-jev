@@ -1,6 +1,10 @@
 // The parts that the viewer pages share.
 const $ = id => document.getElementById(id);
 const MACROS = ["walk_left", "walk_right", "jump_left", "jump_right", "jump_up", "wait"];
+// The two more moves of a run with the setting half_steps.
+const HALF_STEPS = ["step_left", "step_right"];
+// The moves of a run, from its header.
+const movesOfRun = h => (h && h.settings && h.settings.half_steps) ? MACROS.concat(HALF_STEPS) : MACROS;
 const USD_PER_TOKEN = 0.042 / 1e6;
 const SCALE = 3;  // the canvas is 3 times finer than the game screen, so that lines and labels are sharp
 const color = m => getComputedStyle(document.documentElement).getPropertyValue("--" + m).trim();

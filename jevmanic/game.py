@@ -110,6 +110,17 @@ MACROS = {
         Macro("wait", 0, TICKS_PER_CELL),
     ]
 }
+# Two more moves for the setting `half_steps`: half a cell to the left or to the
+# right. A walk always ends on the cell grid, and some jumps must start between
+# two cells. See "Some caverns need a half step" in docs/findings.md.
+HALF_STEPS = {
+    m.name: m
+    for m in [
+        Macro("step_left", JOY_LEFT, TICKS_PER_CELL // 2),
+        Macro("step_right", JOY_RIGHT, TICKS_PER_CELL // 2),
+    ]
+}
+ALL_MOVES = {**MACROS, **HALF_STEPS}
 
 
 @dataclass
@@ -167,6 +178,8 @@ class Outcome:
     snapshot: "Snapshot | None" = field(default=None, repr=False, compare=False)
     # Willy's pixel position after the move. Two moves can end in one cell at different pixels.
     pixel: tuple = field(default=(), repr=False, compare=False)
+    # Pixels to the right (a negative value is to the left). A half step moves Willy less than a cell.
+    dx_pixels: int = field(default=0, repr=False, compare=False)
 
     def same_result(self, other: "Outcome") -> bool:
         """Is the game after this move the same as after `other`?
@@ -503,16 +516,18 @@ class Game:
         When Willy looks the other way, the game uses one tick to turn him.
         So a jump first turns Willy, and only then jumps; if not, the jump
         goes straight up. A walk continues until Willy is 1 cell away and in
-        line with the grid; if not, the walk can end between two cells.
+        line with the grid; if not, the walk can end between two cells. A
+        half step also turns Willy first, so that it always moves him 4 pixels.
         """
-        macro = MACROS[name]
+        macro = ALL_MOVES[name]
         direction = macro.joystick & (JOY_LEFT | JOY_RIGHT)
-        if macro.is_jump:
+        if macro.is_jump or name in HALF_STEPS:
             if direction and not self._faces(direction) and not self._finished():
                 self._tick(direction)  # turn
                 yield
             for _ in range(macro.ticks):
-                if self._finished():
+                # A half step that goes over an edge stops, and Willy falls.
+                if self._finished() or (name in HALF_STEPS and self.is_airborne()):
                     break
                 self._tick(macro.joystick)
                 yield
@@ -567,7 +582,7 @@ class Game:
                     return "nasty"
         return "fall or other cause"
 
-    def _can_survive(self, depth: int, budget: list) -> bool | None:
+    def _can_survive(self, depth: int, budget: list, moves: dict = MACROS) -> bool | None:
         """Can Willy stay alive for `depth` more moves from the current game?
 
         The check stops at the first sequence of moves that keeps Willy
@@ -584,10 +599,10 @@ class Game:
         ticks_before = self.tick_count
         self.emu.save_state(slot)
         unknown = False
-        for name in MACROS:
+        for name in moves:
             budget[0] -= 1
             self.run_macro(name)
-            alive = self._can_survive(depth - 1, budget)
+            alive = self._can_survive(depth - 1, budget, moves)
             self.emu.load_state(slot)
             self.emu.set_joystick(0)
             self.tick_count = ticks_before
@@ -600,7 +615,7 @@ class Game:
         x, _ = self._cell(self._word(ADDR_WILLY_ATTR))
         return [x * 8 + 2 * (self.emu.peek(ADDR_WILLY_FRAME) & 3), self.emu.peek(ADDR_WILLY_PIXEL_Y) // 2]
 
-    def macro_paths(self) -> dict:
+    def macro_paths(self, moves: dict = MACROS) -> dict:
         """Willy's path for each move, for the viewer. The game does not change.
 
         Each path has Willy's pixel position (top left) before the move and
@@ -609,7 +624,7 @@ class Game:
         ticks_before = self.tick_count
         self.emu.save_state(LOOK_AHEAD_SLOT)
         paths = {}
-        for name in MACROS:
+        for name in moves:
             points = [self._willy_pixel()]
             for _ in self.macro_ticks(name):
                 if self.is_dead() or self.is_complete():
@@ -621,7 +636,7 @@ class Game:
             self.tick_count = ticks_before
         return paths
 
-    def look_ahead(self, survival_depth: int = SURVIVAL_DEPTH) -> dict[str, Outcome]:
+    def look_ahead(self, survival_depth: int = SURVIVAL_DEPTH, moves: dict = MACROS) -> dict[str, Outcome]:
         """Play each move once and return its result. The game does not change.
 
         After each move, the emulator loads the saved slot again. A move
@@ -629,17 +644,18 @@ class Game:
         but no sequence of moves keeps him alive after that.
         """
         before = self.snapshot()
+        pixel_before = self._willy_pixel()
         ticks_before = self.tick_count
         self.emu.save_state(LOOK_AHEAD_SLOT)
         outcomes = {}
-        for name in MACROS:
+        for name in moves:
             ticks = self.run_macro(name)
             after = self.snapshot()
             dead, cause = self.is_dead(), ""
             if dead:
                 cause = self._death_cause(after)
             # Only a proof removes a move. A search that stopped (None) proves nothing.
-            elif survival_depth > 0 and self._can_survive(survival_depth, [SURVIVAL_BUDGET]) is False:
+            elif survival_depth > 0 and self._can_survive(survival_depth, [SURVIVAL_BUDGET], moves) is False:
                 dead, cause = True, DEAD_END_CAUSE
             outcomes[name] = Outcome(
                 dead=dead,
@@ -654,6 +670,7 @@ class Game:
                 floor_rows_gone=self._floor_rows_gone(before, after),
                 snapshot=after,
                 pixel=tuple(self._willy_pixel()),
+                dx_pixels=self._willy_pixel()[0] - pixel_before[0],
             )
             self.emu.load_state(LOOK_AHEAD_SLOT)
             self.emu.set_joystick(0)

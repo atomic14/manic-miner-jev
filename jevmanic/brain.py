@@ -16,6 +16,9 @@ instruction set:
              and has an effect. That is not always true. The results in the
              README come from this set.
     promptC  A very short text for Laya (laya_brain.py).
+    promptD-graph
+             promptD without the sentence about loops, for the route facts
+             of the movement graph (`--graph`).
 
 Two sets differ only in their texts: the state, the options, and the request
 schedule are the same. To try a new text, copy a folder, change the files, and
@@ -112,6 +115,9 @@ MOVE_CRITERIA = {
     'walk_left': 'Walk to the left. The result is in `moves.walk_left`.',
     'jump_up': 'Jump straight up. The result is in `moves.jump_up`.',
     'wait': 'Do not move. The result is in `moves.wait`.',
+    # The half steps (the setting `half_steps`).
+    'step_left': 'Take a half step to the left. The result is in `moves.step_left`.',
+    'step_right': 'Take a half step to the right. The result is in `moves.step_right`.',
 }
 
 

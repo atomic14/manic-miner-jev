@@ -1,0 +1,1198 @@
+{
+  "selection": "recorded living key collection within the horizon; retain selected pairs whose first recorded collection is at least 5 moves away",
+  "folder": "runs/depth-4",
+  "horizon": 6,
+  "eligible_groups": 139,
+  "rows": [
+    {
+      "cavern": 1,
+      "examples": [
+        {
+          "file": "runs/depth-4/20260929-174307-cavern-01-central-cavern-promptD-3.jsonl",
+          "n": 24,
+          "tick": 233
+        },
+        {
+          "file": "runs/depth-4/20260929-174330-cavern-01-central-cavern-promptD.jsonl",
+          "n": 24,
+          "tick": 231
+        }
+      ],
+      "input": [
+        {
+          "willy": {
+            "facing": "left",
+            "standing_on": "conveyor"
+          },
+          "target": {
+            "what": "selected key",
+            "side": "right",
+            "horizontal_cells": 11,
+            "horizontal_distance": "far",
+            "height": "higher",
+            "floor_rows_apart": 4,
+            "rows_above_its_floor": 0,
+            "way_up": {
+              "side": "right",
+              "horizontal_cells": 4,
+              "rows_higher": 1
+            }
+          },
+          "keys_left": 4,
+          "to_the_left": {
+            "first_thing": "edge of the floor, then a drop",
+            "distance_cells": 5
+          },
+          "to_the_right": {
+            "first_thing": "wall",
+            "distance_cells": 4
+          },
+          "guardians": [
+            {
+              "side": "left",
+              "horizontal_cells": 3,
+              "horizontal_distance": "near",
+              "height": "same level",
+              "direction": "away from Willy",
+              "willy_is_in_its_patrol_area": "yes",
+              "patrol_area_ends": {
+                "cells_to_the_left": 6,
+                "cells_to_the_right": 5
+              }
+            }
+          ],
+          "air": "plenty",
+          "progress_measures": "distance to the way up",
+          "moves": {
+            "jump_left": {
+              "movement": "Willy moves 5 cells to the left",
+              "progress": "farther",
+              "place": "new place",
+              "tried_from_here": "no"
+            },
+            "jump_right": {
+              "movement": "Willy moves 5 cells to the left",
+              "progress": "farther",
+              "place": "new place",
+              "tried_from_here": "no"
+            }
+          },
+          "moves_not_offered": {
+            "walk_left": "kills Willy: dead end, Willy cannot stay alive after it",
+            "walk_right": "kills Willy: dead end, Willy cannot stay alive after it",
+            "jump_up": "no effect: the same result as jump_left",
+            "wait": "kills Willy: dead end, Willy cannot stay alive after it"
+          }
+        },
+        {
+          "type": "Choice",
+          "instructions": "Willy is a miner in a platform game. The goal: Willy must collect all keys, then go into the exit portal, and he must stay alive. The target is the key that Willy goes to now, or the portal when no key is left. Select the move that is the best for Willy now. `moves` gives the true result of each possible move. The code removed each move that kills Willy. It also removed each move that gives the same game as another move. If no move is safe, a move after which Willy cannot stay alive stays in `moves` with a `warning`. If each move kills Willy, `moves` says this. `moves_not_offered` gives the moves that Willy cannot make now, with the cause. The meaning of the facts: `progress` tells if a move gets Willy nearer to the place that `progress_measures` names. `place` tells how frequently Willy was at the place where the move ends. `tried_from_here` tells if Willy made this move from this place before. `collects_key` tells that Willy gets a key with this move. `completes_cavern` tells that Willy goes into the portal with this move and the cavern is complete. `ends_on` tells that Willy stands on a crumbling floor after this move, and how much of that floor is left. `warning` tells that no move is safe after this move. Knowledge of the game: Willy can climb only 2 rows with one jump. If Willy comes back to the same places again and again, the direct way is closed, and he must go a different way, even if that way goes away from the target first. A crumbling floor breaks a little each time Willy stands on it. It can be the only way up, and it is also a way down. A nasty does not move: if it stops a jump, a jump from a different cell can go over it. A guardian moves along its patrol area: Willy can wait for it to go away, jump over it, or go out of its patrol area.",
+          "criteria": {
+            "jump_left": "Jump to the left. The result is in `moves.jump_left`.",
+            "jump_right": "Jump to the right. The result is in `moves.jump_right`."
+          }
+        },
+        "jev-1.13.0"
+      ],
+      "recorded_key_distance": 5
+    },
+    {
+      "cavern": 3,
+      "examples": [
+        {
+          "file": "runs/depth-4/20260929-174519-cavern-03-the-menagerie-promptD.jsonl",
+          "n": 43,
+          "tick": 489
+        },
+        {
+          "file": "runs/depth-4/20260929-174522-cavern-03-the-menagerie-promptD.jsonl",
+          "n": 43,
+          "tick": 488
+        }
+      ],
+      "input": [
+        {
+          "willy": {
+            "facing": "right",
+            "standing_on": "floor"
+          },
+          "target": {
+            "what": "selected key",
+            "side": "right",
+            "horizontal_cells": 24,
+            "horizontal_distance": "far",
+            "height": "same level",
+            "floor_rows_apart": 0,
+            "rows_above_its_floor": 0
+          },
+          "keys_left": 3,
+          "to_the_left": {
+            "first_thing": "wall",
+            "distance_cells": 5
+          },
+          "to_the_right": {
+            "first_thing": "edge of the floor, then a drop",
+            "distance_cells": 1
+          },
+          "guardians": [
+            {
+              "side": "right",
+              "horizontal_cells": 4,
+              "horizontal_distance": "medium",
+              "height": "lower",
+              "direction": "toward Willy"
+            },
+            {
+              "side": "right",
+              "horizontal_cells": 6,
+              "horizontal_distance": "medium",
+              "height": "higher",
+              "direction": "away from Willy"
+            },
+            {
+              "side": "right",
+              "horizontal_cells": 15,
+              "horizontal_distance": "far",
+              "height": "higher",
+              "direction": "away from Willy"
+            }
+          ],
+          "air": "plenty",
+          "progress_measures": "distance to the target",
+          "moves": {
+            "walk_left": {
+              "movement": "Willy moves 1 cell to the left",
+              "progress": "farther",
+              "place": "visited before",
+              "tried_from_here": "no"
+            },
+            "walk_right": {
+              "movement": "Willy moves 1 cell to the right",
+              "progress": "nearer",
+              "place": "visited before",
+              "tried_from_here": "yes"
+            },
+            "jump_left": {
+              "movement": "Willy moves 4 cells to the left and 2 rows higher",
+              "progress": "farther",
+              "place": "new place",
+              "tried_from_here": "no"
+            },
+            "jump_right": {
+              "movement": "Willy moves 4 cells to the right and 2 rows lower",
+              "progress": "farther",
+              "place": "new place",
+              "tried_from_here": "no"
+            },
+            "jump_up": {
+              "movement": "Willy moves 2 rows higher",
+              "progress": "farther",
+              "place": "new place",
+              "tried_from_here": "no",
+              "ends_on": "crumbling floor, partly gone"
+            },
+            "wait": {
+              "movement": "Willy stays in the same place",
+              "progress": "same",
+              "place": "visited before",
+              "tried_from_here": "no"
+            }
+          },
+          "moves_not_offered": "none"
+        },
+        {
+          "type": "Choice",
+          "instructions": "Willy is a miner in a platform game. The goal: Willy must collect all keys, then go into the exit portal, and he must stay alive. The target is the key that Willy goes to now, or the portal when no key is left. Select the move that is the best for Willy now. `moves` gives the true result of each possible move. The code removed each move that kills Willy. It also removed each move that gives the same game as another move. If no move is safe, a move after which Willy cannot stay alive stays in `moves` with a `warning`. If each move kills Willy, `moves` says this. `moves_not_offered` gives the moves that Willy cannot make now, with the cause. The meaning of the facts: `progress` tells if a move gets Willy nearer to the place that `progress_measures` names. `place` tells how frequently Willy was at the place where the move ends. `tried_from_here` tells if Willy made this move from this place before. `collects_key` tells that Willy gets a key with this move. `completes_cavern` tells that Willy goes into the portal with this move and the cavern is complete. `ends_on` tells that Willy stands on a crumbling floor after this move, and how much of that floor is left. `warning` tells that no move is safe after this move. Knowledge of the game: Willy can climb only 2 rows with one jump. If Willy comes back to the same places again and again, the direct way is closed, and he must go a different way, even if that way goes away from the target first. A crumbling floor breaks a little each time Willy stands on it. It can be the only way up, and it is also a way down. A nasty does not move: if it stops a jump, a jump from a different cell can go over it. A guardian moves along its patrol area: Willy can wait for it to go away, jump over it, or go out of its patrol area.",
+          "criteria": {
+            "walk_left": "Walk to the left. The result is in `moves.walk_left`.",
+            "walk_right": "Walk to the right. The result is in `moves.walk_right`.",
+            "jump_left": "Jump to the left. The result is in `moves.jump_left`.",
+            "jump_right": "Jump to the right. The result is in `moves.jump_right`.",
+            "jump_up": "Jump straight up. The result is in `moves.jump_up`.",
+            "wait": "Do not move. The result is in `moves.wait`."
+          }
+        },
+        "jev-1.13.0"
+      ],
+      "recorded_key_distance": 6
+    },
+    {
+      "cavern": 4,
+      "examples": [
+        {
+          "file": "runs/depth-4/20260929-174543-cavern-04-abandoned-uranium-workings-promptD.jsonl",
+          "n": 52,
+          "tick": 552
+        },
+        {
+          "file": "runs/depth-4/20260929-174553-cavern-04-abandoned-uranium-workings-promptD-2.jsonl",
+          "n": 52,
+          "tick": 553
+        }
+      ],
+      "input": [
+        {
+          "willy": {
+            "facing": "left",
+            "standing_on": "conveyor"
+          },
+          "target": {
+            "what": "selected key",
+            "side": "right",
+            "horizontal_cells": 27,
+            "horizontal_distance": "far",
+            "height": "same level",
+            "floor_rows_apart": 0,
+            "rows_above_its_floor": 3
+          },
+          "keys_left": 4,
+          "to_the_left": {
+            "first_thing": "wall",
+            "distance_cells": 2
+          },
+          "to_the_right": {
+            "first_thing": "edge of the floor, then a drop",
+            "distance_cells": 1
+          },
+          "guardians": [
+            {
+              "side": "same column",
+              "horizontal_cells": 0,
+              "horizontal_distance": "adjacent",
+              "height": "lower",
+              "direction": "at Willy"
+            },
+            {
+              "side": "right",
+              "horizontal_cells": 3,
+              "horizontal_distance": "near",
+              "height": "lower",
+              "direction": "away from Willy"
+            }
+          ],
+          "air": "plenty",
+          "progress_measures": "distance to the target",
+          "moves": {
+            "walk_left": {
+              "movement": "Willy moves 1 cell to the left",
+              "progress": "farther",
+              "place": "new place",
+              "tried_from_here": "no"
+            },
+            "walk_right": {
+              "movement": "Willy moves 1 cell to the right",
+              "progress": "nearer",
+              "place": "new place",
+              "tried_from_here": "no"
+            },
+            "jump_left": {
+              "movement": "Willy moves 1 cell to the left",
+              "progress": "farther",
+              "place": "new place",
+              "tried_from_here": "no"
+            },
+            "jump_right": {
+              "movement": "Willy moves 5 cells to the right and 2 rows lower",
+              "progress": "farther",
+              "place": "visited before",
+              "tried_from_here": "no"
+            },
+            "jump_up": {
+              "movement": "Willy stays in the same place",
+              "progress": "same",
+              "place": "visited before",
+              "tried_from_here": "no"
+            },
+            "wait": {
+              "movement": "Willy moves 1 cell to the left",
+              "progress": "farther",
+              "place": "new place",
+              "tried_from_here": "no"
+            }
+          },
+          "moves_not_offered": "none"
+        },
+        {
+          "type": "Choice",
+          "instructions": "Willy is a miner in a platform game. The goal: Willy must collect all keys, then go into the exit portal, and he must stay alive. The target is the key that Willy goes to now, or the portal when no key is left. Select the move that is the best for Willy now. `moves` gives the true result of each possible move. The code removed each move that kills Willy. It also removed each move that gives the same game as another move. If no move is safe, a move after which Willy cannot stay alive stays in `moves` with a `warning`. If each move kills Willy, `moves` says this. `moves_not_offered` gives the moves that Willy cannot make now, with the cause. The meaning of the facts: `progress` tells if a move gets Willy nearer to the place that `progress_measures` names. `place` tells how frequently Willy was at the place where the move ends. `tried_from_here` tells if Willy made this move from this place before. `collects_key` tells that Willy gets a key with this move. `completes_cavern` tells that Willy goes into the portal with this move and the cavern is complete. `ends_on` tells that Willy stands on a crumbling floor after this move, and how much of that floor is left. `warning` tells that no move is safe after this move. Knowledge of the game: Willy can climb only 2 rows with one jump. If Willy comes back to the same places again and again, the direct way is closed, and he must go a different way, even if that way goes away from the target first. A crumbling floor breaks a little each time Willy stands on it. It can be the only way up, and it is also a way down. A nasty does not move: if it stops a jump, a jump from a different cell can go over it. A guardian moves along its patrol area: Willy can wait for it to go away, jump over it, or go out of its patrol area.",
+          "criteria": {
+            "walk_left": "Walk to the left. The result is in `moves.walk_left`.",
+            "walk_right": "Walk to the right. The result is in `moves.walk_right`.",
+            "jump_left": "Jump to the left. The result is in `moves.jump_left`.",
+            "jump_right": "Jump to the right. The result is in `moves.jump_right`.",
+            "jump_up": "Jump straight up. The result is in `moves.jump_up`.",
+            "wait": "Do not move. The result is in `moves.wait`."
+          }
+        },
+        "jev-1.13.0"
+      ],
+      "recorded_key_distance": 6
+    },
+    {
+      "cavern": 5,
+      "examples": [
+        {
+          "file": "runs/depth-4/20260929-174726-cavern-05-eugene-s-lair-promptD.jsonl",
+          "n": 63,
+          "tick": 598
+        },
+        {
+          "file": "runs/depth-4/20260929-174731-cavern-05-eugene-s-lair-promptD.jsonl",
+          "n": 63,
+          "tick": 598
+        }
+      ],
+      "input": [
+        {
+          "willy": {
+            "facing": "right",
+            "standing_on": "floor"
+          },
+          "target": {
+            "what": "selected key",
+            "side": "left",
+            "horizontal_cells": 4,
+            "horizontal_distance": "medium",
+            "height": "lower",
+            "floor_rows_apart": 6,
+            "rows_above_its_floor": 2,
+            "way_down": {
+              "what": "edge of the floor",
+              "side": "left",
+              "horizontal_cells": 11
+            }
+          },
+          "keys_left": 3,
+          "to_the_left": {
+            "first_thing": "nothing, the floor is clear",
+            "distance_cells": 6
+          },
+          "to_the_right": {
+            "first_thing": "edge of the floor, then a drop",
+            "distance_cells": 1
+          },
+          "guardians": [
+            {
+              "side": "left",
+              "horizontal_cells": 6,
+              "horizontal_distance": "medium",
+              "height": "higher",
+              "direction": "away from Willy"
+            },
+            {
+              "side": "left",
+              "horizontal_cells": 2,
+              "horizontal_distance": "near",
+              "height": "same level",
+              "direction": "toward Willy",
+              "willy_is_in_its_patrol_area": "yes",
+              "patrol_area_ends": {
+                "cells_to_the_left": 11,
+                "cells_to_the_right": 1
+              }
+            }
+          ],
+          "air": "plenty",
+          "progress_measures": "distance to the way down",
+          "moves": {
+            "walk_right": {
+              "movement": "Willy moves 1 cell to the right",
+              "progress": "farther",
+              "place": "new place",
+              "tried_from_here": "no"
+            },
+            "jump_right": {
+              "movement": "Willy moves 4 cells to the right and 1 row higher",
+              "progress": "farther",
+              "place": "visited many times",
+              "tried_from_here": "no"
+            },
+            "jump_up": {
+              "movement": "Willy stays in the same place",
+              "progress": "same",
+              "place": "visited before",
+              "tried_from_here": "no"
+            },
+            "wait": {
+              "movement": "Willy stays in the same place",
+              "progress": "same",
+              "place": "visited before",
+              "tried_from_here": "no"
+            }
+          },
+          "moves_not_offered": {
+            "walk_left": "kills Willy: guardian",
+            "jump_left": "kills Willy: guardian"
+          }
+        },
+        {
+          "type": "Choice",
+          "instructions": "Willy is a miner in a platform game. The goal: Willy must collect all keys, then go into the exit portal, and he must stay alive. The target is the key that Willy goes to now, or the portal when no key is left. Select the move that is the best for Willy now. `moves` gives the true result of each possible move. The code removed each move that kills Willy. It also removed each move that gives the same game as another move. If no move is safe, a move after which Willy cannot stay alive stays in `moves` with a `warning`. If each move kills Willy, `moves` says this. `moves_not_offered` gives the moves that Willy cannot make now, with the cause. The meaning of the facts: `progress` tells if a move gets Willy nearer to the place that `progress_measures` names. `place` tells how frequently Willy was at the place where the move ends. `tried_from_here` tells if Willy made this move from this place before. `collects_key` tells that Willy gets a key with this move. `completes_cavern` tells that Willy goes into the portal with this move and the cavern is complete. `ends_on` tells that Willy stands on a crumbling floor after this move, and how much of that floor is left. `warning` tells that no move is safe after this move. Knowledge of the game: Willy can climb only 2 rows with one jump. If Willy comes back to the same places again and again, the direct way is closed, and he must go a different way, even if that way goes away from the target first. A crumbling floor breaks a little each time Willy stands on it. It can be the only way up, and it is also a way down. A nasty does not move: if it stops a jump, a jump from a different cell can go over it. A guardian moves along its patrol area: Willy can wait for it to go away, jump over it, or go out of its patrol area.",
+          "criteria": {
+            "walk_right": "Walk to the right. The result is in `moves.walk_right`.",
+            "jump_right": "Jump to the right. The result is in `moves.jump_right`.",
+            "jump_up": "Jump straight up. The result is in `moves.jump_up`.",
+            "wait": "Do not move. The result is in `moves.wait`."
+          }
+        },
+        "jev-1.13.0"
+      ],
+      "recorded_key_distance": 6
+    },
+    {
+      "cavern": 8,
+      "examples": [
+        {
+          "file": "runs/depth-4/20260929-175003-cavern-08-miner-willy-meets-the-kong-beast-promptD.jsonl",
+          "n": 46,
+          "tick": 505
+        },
+        {
+          "file": "runs/depth-4/20260929-175002-cavern-08-miner-willy-meets-the-kong-beast-promptD.jsonl",
+          "n": 46,
+          "tick": 504
+        }
+      ],
+      "input": [
+        {
+          "willy": {
+            "facing": "left",
+            "standing_on": "floor"
+          },
+          "target": {
+            "what": "selected key",
+            "side": "right",
+            "horizontal_cells": 9,
+            "horizontal_distance": "far",
+            "height": "higher",
+            "floor_rows_apart": 2,
+            "rows_above_its_floor": 2,
+            "way_up": {
+              "side": "left",
+              "horizontal_cells": 1,
+              "rows_higher": 2
+            }
+          },
+          "keys_left": 2,
+          "to_the_left": {
+            "first_thing": "edge of the floor, then a drop",
+            "distance_cells": 2
+          },
+          "to_the_right": {
+            "first_thing": "edge of the floor, then a drop",
+            "distance_cells": 1
+          },
+          "guardians": [
+            {
+              "side": "right",
+              "horizontal_cells": 4,
+              "horizontal_distance": "medium",
+              "height": "lower",
+              "direction": "toward Willy"
+            },
+            {
+              "side": "right",
+              "horizontal_cells": 10,
+              "horizontal_distance": "far",
+              "height": "lower",
+              "direction": "away from Willy"
+            },
+            {
+              "side": "right",
+              "horizontal_cells": 14,
+              "horizontal_distance": "far",
+              "height": "lower",
+              "direction": "toward Willy"
+            }
+          ],
+          "air": "plenty",
+          "progress_measures": "distance to the way up",
+          "moves": {
+            "walk_left": {
+              "movement": "Willy moves 1 cell to the left",
+              "progress": "nearer",
+              "place": "new place",
+              "tried_from_here": "no"
+            },
+            "walk_right": {
+              "movement": "Willy moves 1 cell to the right",
+              "progress": "farther",
+              "place": "visited before",
+              "tried_from_here": "yes"
+            },
+            "jump_left": {
+              "movement": "Willy moves 2 cells to the left and 2 rows higher",
+              "progress": "nearer",
+              "place": "visited before",
+              "tried_from_here": "no"
+            },
+            "jump_right": {
+              "movement": "Willy moves 5 cells to the right and 1 row lower",
+              "progress": "farther",
+              "place": "visited many times",
+              "tried_from_here": "no"
+            },
+            "jump_up": {
+              "movement": "Willy moves 2 rows higher",
+              "progress": "nearer",
+              "place": "visited before",
+              "tried_from_here": "no"
+            },
+            "wait": {
+              "movement": "Willy stays in the same place",
+              "progress": "same",
+              "place": "visited before",
+              "tried_from_here": "no"
+            }
+          },
+          "moves_not_offered": "none"
+        },
+        {
+          "type": "Choice",
+          "instructions": "Willy is a miner in a platform game. The goal: Willy must collect all keys, then go into the exit portal, and he must stay alive. The target is the key that Willy goes to now, or the portal when no key is left. Select the move that is the best for Willy now. `moves` gives the true result of each possible move. The code removed each move that kills Willy. It also removed each move that gives the same game as another move. If no move is safe, a move after which Willy cannot stay alive stays in `moves` with a `warning`. If each move kills Willy, `moves` says this. `moves_not_offered` gives the moves that Willy cannot make now, with the cause. The meaning of the facts: `progress` tells if a move gets Willy nearer to the place that `progress_measures` names. `place` tells how frequently Willy was at the place where the move ends. `tried_from_here` tells if Willy made this move from this place before. `collects_key` tells that Willy gets a key with this move. `completes_cavern` tells that Willy goes into the portal with this move and the cavern is complete. `ends_on` tells that Willy stands on a crumbling floor after this move, and how much of that floor is left. `warning` tells that no move is safe after this move. Knowledge of the game: Willy can climb only 2 rows with one jump. If Willy comes back to the same places again and again, the direct way is closed, and he must go a different way, even if that way goes away from the target first. A crumbling floor breaks a little each time Willy stands on it. It can be the only way up, and it is also a way down. A nasty does not move: if it stops a jump, a jump from a different cell can go over it. A guardian moves along its patrol area: Willy can wait for it to go away, jump over it, or go out of its patrol area.",
+          "criteria": {
+            "walk_left": "Walk to the left. The result is in `moves.walk_left`.",
+            "walk_right": "Walk to the right. The result is in `moves.walk_right`.",
+            "jump_left": "Jump to the left. The result is in `moves.jump_left`.",
+            "jump_right": "Jump to the right. The result is in `moves.jump_right`.",
+            "jump_up": "Jump straight up. The result is in `moves.jump_up`.",
+            "wait": "Do not move. The result is in `moves.wait`."
+          }
+        },
+        "jev-1.13.0"
+      ],
+      "recorded_key_distance": 5
+    },
+    {
+      "cavern": 9,
+      "examples": [
+        {
+          "file": "runs/depth-4/20260929-175056-cavern-09-wacky-amoebatrons-promptD.jsonl",
+          "n": 58,
+          "tick": 569
+        },
+        {
+          "file": "runs/depth-4/20260929-175038-cavern-09-wacky-amoebatrons-promptD.jsonl",
+          "n": 58,
+          "tick": 569
+        }
+      ],
+      "input": [
+        {
+          "willy": {
+            "facing": "right",
+            "standing_on": "floor"
+          },
+          "target": {
+            "what": "selected key",
+            "side": "left",
+            "horizontal_cells": 6,
+            "horizontal_distance": "medium",
+            "height": "same level",
+            "floor_rows_apart": 0,
+            "rows_above_its_floor": 3
+          },
+          "keys_left": 1,
+          "to_the_left": {
+            "first_thing": "edge of the floor, then a drop",
+            "distance_cells": 1
+          },
+          "to_the_right": {
+            "first_thing": "edge of the floor, then a drop",
+            "distance_cells": 2
+          },
+          "guardians": [
+            {
+              "side": "left",
+              "horizontal_cells": 6,
+              "horizontal_distance": "medium",
+              "height": "same level",
+              "direction": "toward Willy",
+              "willy_is_in_its_patrol_area": "no"
+            },
+            {
+              "side": "left",
+              "horizontal_cells": 4,
+              "horizontal_distance": "medium",
+              "height": "lower",
+              "direction": "toward Willy"
+            }
+          ],
+          "air": "plenty",
+          "progress_measures": "distance to the target",
+          "moves": {
+            "walk_right": {
+              "movement": "Willy moves 1 cell to the right",
+              "progress": "farther",
+              "place": "visited many times",
+              "tried_from_here": "yes"
+            },
+            "jump_right": {
+              "movement": "Willy moves 4 cells to the right",
+              "progress": "farther",
+              "place": "new place",
+              "tried_from_here": "no"
+            },
+            "jump_up": {
+              "movement": "Willy stays in the same place",
+              "progress": "same",
+              "place": "visited many times",
+              "tried_from_here": "no"
+            },
+            "wait": {
+              "movement": "Willy stays in the same place",
+              "progress": "same",
+              "place": "visited many times",
+              "tried_from_here": "no"
+            }
+          },
+          "moves_not_offered": {
+            "walk_left": "kills Willy: guardian",
+            "jump_left": "kills Willy: guardian"
+          }
+        },
+        {
+          "type": "Choice",
+          "instructions": "Willy is a miner in a platform game. The goal: Willy must collect all keys, then go into the exit portal, and he must stay alive. The target is the key that Willy goes to now, or the portal when no key is left. Select the move that is the best for Willy now. `moves` gives the true result of each possible move. The code removed each move that kills Willy. It also removed each move that gives the same game as another move. If no move is safe, a move after which Willy cannot stay alive stays in `moves` with a `warning`. If each move kills Willy, `moves` says this. `moves_not_offered` gives the moves that Willy cannot make now, with the cause. The meaning of the facts: `progress` tells if a move gets Willy nearer to the place that `progress_measures` names. `place` tells how frequently Willy was at the place where the move ends. `tried_from_here` tells if Willy made this move from this place before. `collects_key` tells that Willy gets a key with this move. `completes_cavern` tells that Willy goes into the portal with this move and the cavern is complete. `ends_on` tells that Willy stands on a crumbling floor after this move, and how much of that floor is left. `warning` tells that no move is safe after this move. Knowledge of the game: Willy can climb only 2 rows with one jump. If Willy comes back to the same places again and again, the direct way is closed, and he must go a different way, even if that way goes away from the target first. A crumbling floor breaks a little each time Willy stands on it. It can be the only way up, and it is also a way down. A nasty does not move: if it stops a jump, a jump from a different cell can go over it. A guardian moves along its patrol area: Willy can wait for it to go away, jump over it, or go out of its patrol area.",
+          "criteria": {
+            "walk_right": "Walk to the right. The result is in `moves.walk_right`.",
+            "jump_right": "Jump to the right. The result is in `moves.jump_right`.",
+            "jump_up": "Jump straight up. The result is in `moves.jump_up`.",
+            "wait": "Do not move. The result is in `moves.wait`."
+          }
+        },
+        "jev-1.13.0"
+      ],
+      "recorded_key_distance": 6
+    },
+    {
+      "cavern": 10,
+      "examples": [
+        {
+          "file": "runs/depth-4/20260929-175119-cavern-10-the-endorian-forest-promptD.jsonl",
+          "n": 8,
+          "tick": 38
+        },
+        {
+          "file": "runs/depth-4/20260929-175125-cavern-10-the-endorian-forest-promptD.jsonl",
+          "n": 8,
+          "tick": 36
+        }
+      ],
+      "input": [
+        {
+          "willy": {
+            "facing": "right",
+            "standing_on": "floor"
+          },
+          "target": {
+            "what": "selected key",
+            "side": "right",
+            "horizontal_cells": 4,
+            "horizontal_distance": "medium",
+            "height": "higher",
+            "floor_rows_apart": 1,
+            "rows_above_its_floor": 2,
+            "way_up": {
+              "side": "right",
+              "horizontal_cells": 1,
+              "rows_higher": 1
+            }
+          },
+          "keys_left": 5,
+          "to_the_left": {
+            "first_thing": "nasty",
+            "distance_cells": 6
+          },
+          "to_the_right": {
+            "first_thing": "edge of the floor, then a drop",
+            "distance_cells": 1
+          },
+          "guardians": [
+            {
+              "side": "right",
+              "horizontal_cells": 2,
+              "horizontal_distance": "near",
+              "height": "higher",
+              "direction": "toward Willy"
+            },
+            {
+              "side": "right",
+              "horizontal_cells": 4,
+              "horizontal_distance": "medium",
+              "height": "lower",
+              "direction": "toward Willy"
+            },
+            {
+              "side": "right",
+              "horizontal_cells": 10,
+              "horizontal_distance": "far",
+              "height": "lower",
+              "direction": "away from Willy"
+            },
+            {
+              "side": "right",
+              "horizontal_cells": 10,
+              "horizontal_distance": "far",
+              "height": "higher",
+              "direction": "away from Willy"
+            }
+          ],
+          "air": "plenty",
+          "progress_measures": "distance to the way up",
+          "moves": {
+            "jump_left": {
+              "movement": "Willy moves 2 rows lower",
+              "progress": "farther",
+              "place": "new place",
+              "tried_from_here": "no"
+            },
+            "jump_right": {
+              "movement": "Willy moves 2 rows lower",
+              "progress": "farther",
+              "place": "new place",
+              "tried_from_here": "no"
+            },
+            "wait": {
+              "movement": "Willy moves 2 rows lower",
+              "progress": "farther",
+              "place": "new place",
+              "tried_from_here": "no"
+            }
+          },
+          "moves_not_offered": {
+            "walk_left": "no effect: the same result as wait",
+            "walk_right": "no effect: the same result as wait",
+            "jump_up": "no effect: the same result as wait"
+          }
+        },
+        {
+          "type": "Choice",
+          "instructions": "Willy is a miner in a platform game. The goal: Willy must collect all keys, then go into the exit portal, and he must stay alive. The target is the key that Willy goes to now, or the portal when no key is left. Select the move that is the best for Willy now. `moves` gives the true result of each possible move. The code removed each move that kills Willy. It also removed each move that gives the same game as another move. If no move is safe, a move after which Willy cannot stay alive stays in `moves` with a `warning`. If each move kills Willy, `moves` says this. `moves_not_offered` gives the moves that Willy cannot make now, with the cause. The meaning of the facts: `progress` tells if a move gets Willy nearer to the place that `progress_measures` names. `place` tells how frequently Willy was at the place where the move ends. `tried_from_here` tells if Willy made this move from this place before. `collects_key` tells that Willy gets a key with this move. `completes_cavern` tells that Willy goes into the portal with this move and the cavern is complete. `ends_on` tells that Willy stands on a crumbling floor after this move, and how much of that floor is left. `warning` tells that no move is safe after this move. Knowledge of the game: Willy can climb only 2 rows with one jump. If Willy comes back to the same places again and again, the direct way is closed, and he must go a different way, even if that way goes away from the target first. A crumbling floor breaks a little each time Willy stands on it. It can be the only way up, and it is also a way down. A nasty does not move: if it stops a jump, a jump from a different cell can go over it. A guardian moves along its patrol area: Willy can wait for it to go away, jump over it, or go out of its patrol area.",
+          "criteria": {
+            "jump_left": "Jump to the left. The result is in `moves.jump_left`.",
+            "jump_right": "Jump to the right. The result is in `moves.jump_right`.",
+            "wait": "Do not move. The result is in `moves.wait`."
+          }
+        },
+        "jev-1.13.0"
+      ],
+      "recorded_key_distance": 5
+    },
+    {
+      "cavern": 14,
+      "examples": [
+        {
+          "file": "runs/depth-4/20260929-175404-cavern-14-skylab-landing-bay-promptD.jsonl",
+          "n": 119,
+          "tick": 1265
+        },
+        {
+          "file": "runs/depth-4/20260929-175358-cavern-14-skylab-landing-bay-promptD.jsonl",
+          "n": 122,
+          "tick": 1276
+        }
+      ],
+      "input": [
+        {
+          "willy": {
+            "facing": "right",
+            "standing_on": "floor"
+          },
+          "target": {
+            "what": "selected key",
+            "side": "right",
+            "horizontal_cells": 10,
+            "horizontal_distance": "far",
+            "height": "lower",
+            "floor_rows_apart": 1,
+            "rows_above_its_floor": 4,
+            "way_down": {
+              "what": "edge of the floor",
+              "side": "right",
+              "horizontal_cells": 1
+            }
+          },
+          "keys_left": 2,
+          "to_the_left": {
+            "first_thing": "edge of the floor, then a drop",
+            "distance_cells": 2
+          },
+          "to_the_right": {
+            "first_thing": "edge of the floor, then a drop",
+            "distance_cells": 1
+          },
+          "guardians": [],
+          "air": "low",
+          "progress_measures": "distance to the way down",
+          "moves": {
+            "walk_left": {
+              "movement": "Willy moves 1 cell to the left",
+              "progress": "farther",
+              "place": "visited before",
+              "tried_from_here": "no"
+            },
+            "walk_right": {
+              "movement": "Willy moves 1 cell to the right",
+              "progress": "nearer",
+              "place": "visited before",
+              "tried_from_here": "yes"
+            },
+            "jump_right": {
+              "movement": "Willy moves 4 cells to the right and 1 row higher",
+              "progress": "farther",
+              "place": "new place",
+              "tried_from_here": "no"
+            },
+            "wait": {
+              "movement": "Willy stays in the same place",
+              "progress": "same",
+              "place": "visited before",
+              "tried_from_here": "no"
+            }
+          },
+          "moves_not_offered": {
+            "jump_left": "kills Willy: guardian",
+            "jump_up": "kills Willy: guardian"
+          }
+        },
+        {
+          "type": "Choice",
+          "instructions": "Willy is a miner in a platform game. The goal: Willy must collect all keys, then go into the exit portal, and he must stay alive. The target is the key that Willy goes to now, or the portal when no key is left. Select the move that is the best for Willy now. `moves` gives the true result of each possible move. The code removed each move that kills Willy. It also removed each move that gives the same game as another move. If no move is safe, a move after which Willy cannot stay alive stays in `moves` with a `warning`. If each move kills Willy, `moves` says this. `moves_not_offered` gives the moves that Willy cannot make now, with the cause. The meaning of the facts: `progress` tells if a move gets Willy nearer to the place that `progress_measures` names. `place` tells how frequently Willy was at the place where the move ends. `tried_from_here` tells if Willy made this move from this place before. `collects_key` tells that Willy gets a key with this move. `completes_cavern` tells that Willy goes into the portal with this move and the cavern is complete. `ends_on` tells that Willy stands on a crumbling floor after this move, and how much of that floor is left. `warning` tells that no move is safe after this move. Knowledge of the game: Willy can climb only 2 rows with one jump. If Willy comes back to the same places again and again, the direct way is closed, and he must go a different way, even if that way goes away from the target first. A crumbling floor breaks a little each time Willy stands on it. It can be the only way up, and it is also a way down. A nasty does not move: if it stops a jump, a jump from a different cell can go over it. A guardian moves along its patrol area: Willy can wait for it to go away, jump over it, or go out of its patrol area.",
+          "criteria": {
+            "walk_left": "Walk to the left. The result is in `moves.walk_left`.",
+            "walk_right": "Walk to the right. The result is in `moves.walk_right`.",
+            "jump_right": "Jump to the right. The result is in `moves.jump_right`.",
+            "wait": "Do not move. The result is in `moves.wait`."
+          }
+        },
+        "jev-1.13.0"
+      ],
+      "recorded_key_distance": 6
+    },
+    {
+      "cavern": 15,
+      "examples": [
+        {
+          "file": "runs/depth-4/20260929-175529-cavern-15-the-bank-promptD.jsonl",
+          "n": 53,
+          "tick": 359
+        },
+        {
+          "file": "runs/depth-4/20260929-175610-cavern-15-the-bank-promptD.jsonl",
+          "n": 55,
+          "tick": 407
+        }
+      ],
+      "input": [
+        {
+          "willy": {
+            "facing": "right",
+            "standing_on": "floor"
+          },
+          "target": {
+            "what": "selected key",
+            "side": "left",
+            "horizontal_cells": 4,
+            "horizontal_distance": "medium",
+            "height": "higher",
+            "floor_rows_apart": 4,
+            "rows_above_its_floor": 0,
+            "way_up": {
+              "side": "left",
+              "horizontal_cells": 4,
+              "rows_higher": 1
+            }
+          },
+          "keys_left": 2,
+          "to_the_left": {
+            "first_thing": "nasty",
+            "distance_cells": 1
+          },
+          "to_the_right": {
+            "first_thing": "wall",
+            "distance_cells": 1
+          },
+          "guardians": [
+            {
+              "side": "left",
+              "horizontal_cells": 11,
+              "horizontal_distance": "far",
+              "height": "lower",
+              "direction": "toward Willy"
+            }
+          ],
+          "air": "plenty",
+          "progress_measures": "distance to the way up",
+          "moves": {
+            "walk_right": {
+              "movement": "Willy stays in the same place",
+              "progress": "same",
+              "place": "visited before",
+              "tried_from_here": "no"
+            },
+            "jump_right": {
+              "movement": "Willy moves 2 rows higher",
+              "progress": "nearer",
+              "place": "new place",
+              "tried_from_here": "no"
+            },
+            "jump_up": {
+              "movement": "Willy moves 2 rows higher",
+              "progress": "nearer",
+              "place": "new place",
+              "tried_from_here": "no"
+            },
+            "wait": {
+              "movement": "Willy stays in the same place",
+              "progress": "same",
+              "place": "visited before",
+              "tried_from_here": "no"
+            }
+          },
+          "moves_not_offered": {
+            "walk_left": "kills Willy: nasty",
+            "jump_left": "kills Willy: nasty"
+          }
+        },
+        {
+          "type": "Choice",
+          "instructions": "Willy is a miner in a platform game. The goal: Willy must collect all keys, then go into the exit portal, and he must stay alive. The target is the key that Willy goes to now, or the portal when no key is left. Select the move that is the best for Willy now. `moves` gives the true result of each possible move. The code removed each move that kills Willy. It also removed each move that gives the same game as another move. If no move is safe, a move after which Willy cannot stay alive stays in `moves` with a `warning`. If each move kills Willy, `moves` says this. `moves_not_offered` gives the moves that Willy cannot make now, with the cause. The meaning of the facts: `progress` tells if a move gets Willy nearer to the place that `progress_measures` names. `place` tells how frequently Willy was at the place where the move ends. `tried_from_here` tells if Willy made this move from this place before. `collects_key` tells that Willy gets a key with this move. `completes_cavern` tells that Willy goes into the portal with this move and the cavern is complete. `ends_on` tells that Willy stands on a crumbling floor after this move, and how much of that floor is left. `warning` tells that no move is safe after this move. Knowledge of the game: Willy can climb only 2 rows with one jump. If Willy comes back to the same places again and again, the direct way is closed, and he must go a different way, even if that way goes away from the target first. A crumbling floor breaks a little each time Willy stands on it. It can be the only way up, and it is also a way down. A nasty does not move: if it stops a jump, a jump from a different cell can go over it. A guardian moves along its patrol area: Willy can wait for it to go away, jump over it, or go out of its patrol area.",
+          "criteria": {
+            "walk_right": "Walk to the right. The result is in `moves.walk_right`.",
+            "jump_right": "Jump to the right. The result is in `moves.jump_right`.",
+            "jump_up": "Jump straight up. The result is in `moves.jump_up`.",
+            "wait": "Do not move. The result is in `moves.wait`."
+          }
+        },
+        "jev-1.13.0"
+      ],
+      "recorded_key_distance": 6
+    },
+    {
+      "cavern": 18,
+      "examples": [
+        {
+          "file": "runs/depth-4/20260929-175746-cavern-18-amoebatrons-revenge-promptD.jsonl",
+          "n": 58,
+          "tick": 685
+        },
+        {
+          "file": "runs/depth-4/20260929-175748-cavern-18-amoebatrons-revenge-promptD.jsonl",
+          "n": 61,
+          "tick": 684
+        }
+      ],
+      "input": [
+        {
+          "willy": {
+            "facing": "left",
+            "standing_on": "floor"
+          },
+          "target": {
+            "what": "selected key",
+            "side": "right",
+            "horizontal_cells": 11,
+            "horizontal_distance": "far",
+            "height": "higher",
+            "floor_rows_apart": 4,
+            "rows_above_its_floor": 3,
+            "way_up": {
+              "side": "right",
+              "horizontal_cells": 7,
+              "rows_higher": 1
+            }
+          },
+          "keys_left": 1,
+          "to_the_left": {
+            "first_thing": "edge of the floor, then a drop",
+            "distance_cells": 2
+          },
+          "to_the_right": {
+            "first_thing": "edge of the floor, then a drop",
+            "distance_cells": 1
+          },
+          "guardians": [
+            {
+              "side": "right",
+              "horizontal_cells": 9,
+              "horizontal_distance": "far",
+              "height": "higher",
+              "direction": "away from Willy"
+            },
+            {
+              "side": "right",
+              "horizontal_cells": 12,
+              "horizontal_distance": "far",
+              "height": "lower",
+              "direction": "toward Willy"
+            },
+            {
+              "side": "right",
+              "horizontal_cells": 10,
+              "horizontal_distance": "far",
+              "height": "higher",
+              "direction": "toward Willy"
+            },
+            {
+              "side": "right",
+              "horizontal_cells": 7,
+              "horizontal_distance": "medium",
+              "height": "lower",
+              "direction": "toward Willy"
+            }
+          ],
+          "air": "plenty",
+          "progress_measures": "distance to the way up",
+          "moves": {
+            "walk_left": {
+              "movement": "Willy moves 1 cell to the left",
+              "progress": "farther",
+              "place": "new place",
+              "tried_from_here": "no"
+            },
+            "jump_left": {
+              "movement": "Willy moves 3 cells to the left and 2 rows higher",
+              "progress": "nearer",
+              "place": "new place",
+              "tried_from_here": "no"
+            },
+            "jump_right": {
+              "movement": "Willy moves 5 cells to the right",
+              "progress": "nearer",
+              "place": "visited before",
+              "tried_from_here": "no"
+            },
+            "wait": {
+              "movement": "Willy stays in the same place",
+              "progress": "same",
+              "place": "visited before",
+              "tried_from_here": "no"
+            }
+          },
+          "moves_not_offered": {
+            "walk_right": "kills Willy: dead end, Willy cannot stay alive after it",
+            "jump_up": "kills Willy: guardian"
+          }
+        },
+        {
+          "type": "Choice",
+          "instructions": "Willy is a miner in a platform game. The goal: Willy must collect all keys, then go into the exit portal, and he must stay alive. The target is the key that Willy goes to now, or the portal when no key is left. Select the move that is the best for Willy now. `moves` gives the true result of each possible move. The code removed each move that kills Willy. It also removed each move that gives the same game as another move. If no move is safe, a move after which Willy cannot stay alive stays in `moves` with a `warning`. If each move kills Willy, `moves` says this. `moves_not_offered` gives the moves that Willy cannot make now, with the cause. The meaning of the facts: `progress` tells if a move gets Willy nearer to the place that `progress_measures` names. `place` tells how frequently Willy was at the place where the move ends. `tried_from_here` tells if Willy made this move from this place before. `collects_key` tells that Willy gets a key with this move. `completes_cavern` tells that Willy goes into the portal with this move and the cavern is complete. `ends_on` tells that Willy stands on a crumbling floor after this move, and how much of that floor is left. `warning` tells that no move is safe after this move. Knowledge of the game: Willy can climb only 2 rows with one jump. If Willy comes back to the same places again and again, the direct way is closed, and he must go a different way, even if that way goes away from the target first. A crumbling floor breaks a little each time Willy stands on it. It can be the only way up, and it is also a way down. A nasty does not move: if it stops a jump, a jump from a different cell can go over it. A guardian moves along its patrol area: Willy can wait for it to go away, jump over it, or go out of its patrol area.",
+          "criteria": {
+            "walk_left": "Walk to the left. The result is in `moves.walk_left`.",
+            "jump_left": "Jump to the left. The result is in `moves.jump_left`.",
+            "jump_right": "Jump to the right. The result is in `moves.jump_right`.",
+            "wait": "Do not move. The result is in `moves.wait`."
+          }
+        },
+        "jev-1.13.0"
+      ],
+      "recorded_key_distance": 6
+    },
+    {
+      "cavern": 20,
+      "examples": [
+        {
+          "file": "runs/depth-4/20260929-175909-cavern-20-the-final-barrier-promptD.jsonl",
+          "n": 14,
+          "tick": 112
+        },
+        {
+          "file": "runs/depth-4/20260929-175900-cavern-20-the-final-barrier-promptD.jsonl",
+          "n": 14,
+          "tick": 112
+        }
+      ],
+      "input": [
+        {
+          "willy": {
+            "facing": "left",
+            "standing_on": "floor"
+          },
+          "target": {
+            "what": "selected key",
+            "side": "left",
+            "horizontal_cells": 13,
+            "horizontal_distance": "far",
+            "height": "same level",
+            "floor_rows_apart": 0,
+            "rows_above_its_floor": 3
+          },
+          "keys_left": 5,
+          "to_the_left": {
+            "first_thing": "nothing, the floor is clear",
+            "distance_cells": 6
+          },
+          "to_the_right": {
+            "first_thing": "nothing, the floor is clear",
+            "distance_cells": 6
+          },
+          "guardians": [
+            {
+              "side": "left",
+              "horizontal_cells": 12,
+              "horizontal_distance": "far",
+              "height": "same level",
+              "direction": "away from Willy",
+              "willy_is_in_its_patrol_area": "yes",
+              "patrol_area_ends": {
+                "cells_to_the_left": 18,
+                "cells_to_the_right": 1
+              }
+            }
+          ],
+          "air": "plenty",
+          "progress_measures": "distance to the target",
+          "moves": {
+            "walk_left": {
+              "movement": "Willy moves 1 cell to the left",
+              "progress": "nearer",
+              "place": "visited many times",
+              "tried_from_here": "yes"
+            },
+            "walk_right": {
+              "movement": "Willy moves 1 cell to the right",
+              "progress": "farther",
+              "place": "visited before",
+              "tried_from_here": "no"
+            },
+            "jump_right": {
+              "movement": "Willy moves 4 cells to the right",
+              "progress": "farther",
+              "place": "visited before",
+              "tried_from_here": "no"
+            },
+            "jump_up": {
+              "movement": "Willy stays in the same place",
+              "progress": "same",
+              "place": "visited many times",
+              "tried_from_here": "yes"
+            },
+            "wait": {
+              "movement": "Willy stays in the same place",
+              "progress": "same",
+              "place": "visited many times",
+              "tried_from_here": "no"
+            }
+          },
+          "moves_not_offered": {
+            "jump_left": "kills Willy: nasty"
+          }
+        },
+        {
+          "type": "Choice",
+          "instructions": "Willy is a miner in a platform game. The goal: Willy must collect all keys, then go into the exit portal, and he must stay alive. The target is the key that Willy goes to now, or the portal when no key is left. Select the move that is the best for Willy now. `moves` gives the true result of each possible move. The code removed each move that kills Willy. It also removed each move that gives the same game as another move. If no move is safe, a move after which Willy cannot stay alive stays in `moves` with a `warning`. If each move kills Willy, `moves` says this. `moves_not_offered` gives the moves that Willy cannot make now, with the cause. The meaning of the facts: `progress` tells if a move gets Willy nearer to the place that `progress_measures` names. `place` tells how frequently Willy was at the place where the move ends. `tried_from_here` tells if Willy made this move from this place before. `collects_key` tells that Willy gets a key with this move. `completes_cavern` tells that Willy goes into the portal with this move and the cavern is complete. `ends_on` tells that Willy stands on a crumbling floor after this move, and how much of that floor is left. `warning` tells that no move is safe after this move. Knowledge of the game: Willy can climb only 2 rows with one jump. If Willy comes back to the same places again and again, the direct way is closed, and he must go a different way, even if that way goes away from the target first. A crumbling floor breaks a little each time Willy stands on it. It can be the only way up, and it is also a way down. A nasty does not move: if it stops a jump, a jump from a different cell can go over it. A guardian moves along its patrol area: Willy can wait for it to go away, jump over it, or go out of its patrol area.",
+          "criteria": {
+            "walk_left": "Walk to the left. The result is in `moves.walk_left`.",
+            "walk_right": "Walk to the right. The result is in `moves.walk_right`.",
+            "jump_right": "Jump to the right. The result is in `moves.jump_right`.",
+            "jump_up": "Jump straight up. The result is in `moves.jump_up`.",
+            "wait": "Do not move. The result is in `moves.wait`."
+          }
+        },
+        "jev-1.13.0"
+      ],
+      "recorded_key_distance": 6
+    }
+  ]
+}

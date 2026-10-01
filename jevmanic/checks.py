@@ -25,7 +25,7 @@ from functools import cache
 
 from . import describe
 from .brain import instruction_sets, key_instructions, move_instructions
-from .game import SURVIVAL_DEPTH, Game, Snapshot
+from .game import ALL_MOVES, HALF_STEPS, MACROS, SURVIVAL_DEPTH, Game, Snapshot
 from .runner import DEMO_DIR
 from .settings import Settings
 
@@ -51,7 +51,8 @@ class Situation:
     tried: set
 
 
-def _replay(cavern: int, moves: list, targets: list, last_only: bool, survival_depth: int) -> list[Situation]:
+def _replay(cavern: int, moves: list, targets: list, last_only: bool, survival_depth: int,
+            half_steps: bool = False) -> list[Situation]:
     """Play `moves`, and keep a Situation before each move (or only after the last move).
 
     `targets` has the target cell of each decision, and one more for the last situation.
@@ -59,11 +60,12 @@ def _replay(cavern: int, moves: list, targets: list, last_only: bool, survival_d
     game = Game()
     game.select_cavern(cavern)
     visited, tried, found = Counter(), set(), []
+    move_set = ALL_MOVES if half_steps else MACROS
 
     def situation(cell):
         snap = game.snapshot()
         target = tuple(cell) if tuple(cell) in snap.keys + snap.switches else None
-        return Situation(snap, game.look_ahead(survival_depth), target, Counter(visited), set(tried))
+        return Situation(snap, game.look_ahead(survival_depth, move_set), target, Counter(visited), set(tried))
 
     for macro, cell in zip(moves, targets):
         snap = game.snapshot()
@@ -78,35 +80,39 @@ def _replay(cavern: int, moves: list, targets: list, last_only: bool, survival_d
     return found
 
 
-def replay_situations(file: str, survival_depth: int = SURVIVAL_DEPTH) -> list[Situation]:
+def replay_situations(file: str, survival_depth: int = SURVIVAL_DEPTH, half_steps: bool = False) -> list[Situation]:
     """Replay a recorded run from demo/, and keep a Situation for each move decision."""
     records = [json.loads(line) for line in (DEMO_DIR / file).read_text().splitlines()]
     decisions = [r for r in records[1:] if r["type"] == "decision"]
     return _replay(records[0].get("cavern", 0), [d["macro"] for d in decisions],
-                   [d["target_cell"] for d in decisions], False, survival_depth)
+                   [d["target_cell"] for d in decisions], False, survival_depth, half_steps)
 
 
-def state_situations(file: str, survival_depth: int = SURVIVAL_DEPTH) -> list[Situation]:
+def state_situations(file: str, survival_depth: int = SURVIVAL_DEPTH, half_steps: bool = False) -> list[Situation]:
     """The recorded states in one file of STATES_DIR: one Situation for each."""
     found = []
     for state in json.loads((STATES_DIR / file).read_text()):
         # The replay has no target for the earlier moves, so each one uses the last target.
         targets = [state["target"]] * (len(state["moves"]) + 1)
-        found += _replay(state["cavern"], state["moves"], targets, True, survival_depth)
+        found += _replay(state["cavern"], state["moves"], targets, True, survival_depth, half_steps)
     return found
 
 
 @cache
-def check_situations(survival_depth: int = SURVIVAL_DEPTH) -> tuple[Situation, ...]:
+def check_situations(survival_depth: int = SURVIVAL_DEPTH, half_steps: bool = False) -> tuple[Situation, ...]:
     """The situations from all CHECK_RUNS and STATE_FILES. Cached, because the replay takes a few seconds."""
-    runs = [s for file in CHECK_RUNS for s in replay_situations(file, survival_depth)]
-    states = [s for file in STATE_FILES for s in state_situations(file, survival_depth)]
+    runs = [s for file in CHECK_RUNS for s in replay_situations(file, survival_depth, half_steps)]
+    states = [s for file in STATE_FILES for s in state_situations(file, survival_depth, half_steps)]
     return tuple(runs + states)
 
 
 def situations_for(settings: Settings) -> tuple[Situation, ...]:
-    """The situations, with the look-ahead that a run with these settings uses."""
-    return check_situations(settings.survival_depth)
+    """The situations, with the look-ahead that a run with these settings uses.
+
+    The route facts of the movement graph (`graph_facts`) are not in these
+    states: a graph takes seconds for each situation. tests/test_graph.py checks them.
+    """
+    return check_situations(settings.survival_depth, settings.half_steps)
 
 
 # -- 1. A text names only fields that its state has --------------------------------------
@@ -187,7 +193,8 @@ def after_move_problems(situations=None, settings: Settings | None = None) -> li
         for name, facts in state["moves"].items():
             after = s.outcomes[name].snapshot
             where = f"situation {i}, {name}"
-            expected = describe.movement_words(after.willy_x - s.snap.willy_x, s.snap.willy_y - after.willy_y)
+            half = s.outcomes[name].dx_pixels if name in HALF_STEPS else None
+            expected = describe.movement_words(after.willy_x - s.snap.willy_x, s.snap.willy_y - after.willy_y, half)
             if facts["movement"] != expected:
                 problems.append(f"{where}: movement is '{facts['movement']}', the game after the move gives '{expected}'")
             if ("collects_key" in facts) != (len(after.keys) < len(s.snap.keys)):

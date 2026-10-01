@@ -161,10 +161,13 @@ let paused = false, pausing = false, stepping = false;
 let endInfo = {text: "", good: false};
 const isReplay = () => header && header.mode === "replay";
 
-$("legend").innerHTML = MACROS.map(m => `<span><i style="background:${color(m)}"></i>${m}</span>`).join("") +
-  `<span><i style="background:var(--bad)"></i>Willy died</span><span><i class="got"></i>key collected</span>` +
-  `<span><i class="key-q"></i>key decision</span><span><i class="again"></i>Willy was at this place before</span>` +
-  `<span>height: confidence</span>`;
+function showLegend(moves) {
+  $("legend").innerHTML = moves.map(m => `<span><i style="background:${color(m)}"></i>${m}</span>`).join("") +
+    `<span><i style="background:var(--bad)"></i>Willy died</span><span><i class="got"></i>key collected</span>` +
+    `<span><i class="key-q"></i>key decision</span><span><i class="again"></i>Willy was at this place before</span>` +
+    `<span>height: confidence</span>`;
+}
+showLegend(MACROS);
 const showPane = setupTabs($("sidetabs"));
 function send(msg) { ws.send(JSON.stringify(msg)); }
 
@@ -228,11 +231,13 @@ async function draw(blob, targetCell, decision) {
 // Each figure has the colour of its move. The selected move is the brightest.
 // A red cross marks a move that kills Willy or goes into a dead end.
 const GHOST_EVERY_TICKS = 2;
-const SHORT_NAME = {walk_left: "walk L", walk_right: "walk R", jump_left: "jump L", jump_right: "jump R", jump_up: "jump up", wait: "wait"};
+const SHORT_NAME = {walk_left: "walk L", walk_right: "walk R", jump_left: "jump L", jump_right: "jump R", jump_up: "jump up",
+                    wait: "wait", step_left: "step L", step_right: "step R"};
 function drawGhosts(bitmap, d) {
-  const start = d.paths[MACROS[0]].points[0];
+  const moves = Object.keys(d.paths);
+  const start = d.paths[moves[0]].points[0];
   // Draw the selected move last, so that it is on top.
-  const order = MACROS.filter(m => m !== d.macro).concat(d.macro in d.paths ? [d.macro] : []);
+  const order = moves.filter(m => m !== d.macro).concat(d.macro in d.paths ? [d.macro] : []);
   const labels = [];
   for (const m of order) {
     const path = d.paths[m], points = path.points, end = points[points.length - 1];
@@ -395,6 +400,7 @@ function handle(msg) {
     updateControls();
   } else if (msg.type === "header") {
     header = msg; pinned = null; pendingPaths = null;
+    showLegend(movesOfRun(header));
     $("pinned").textContent = "";
     runState = "running";
     $("error").textContent = "";
@@ -512,8 +518,8 @@ function showDecision(d) {
   const total = isReplay() ? ` of ${decisions.length}` : "";
   $("d-n").textContent = `Decision ${d.n + 1}${total}` + (d.forced ? ` (no jev call: ${d.forced_reason || "only one move is valid"})` : "");
   $("d-conf").textContent = d.confidence.toFixed(2);
-  $("bars").innerHTML = (d.no_safe_move ? `<div class="outcome-bad">No safe move: all 6 moves kill Willy. jev got all of them.</div>` : "") +
-    MACROS.map(m => (d.removed && d.removed[m] && !d.no_safe_move)
+  $("bars").innerHTML = (d.no_safe_move ? `<div class="outcome-bad">No safe move: all moves kill Willy. jev got all of them.</div>` : "") +
+    movesOfRun(header).map(m => (d.removed && d.removed[m] && !d.no_safe_move)
     ? `<div class="bar removed"><span class="name">${m}</span><span class="reason">not valid — ${d.removed[m]}</span></div>`
     : bar(m, d.probabilities[m] ?? 0, color(m), m === d.macro)).join("");
   $("d-latency").textContent = d.latency_ms + " ms";

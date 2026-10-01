@@ -332,7 +332,8 @@ def test_default_settings():
     assert settings.rule == "" and settings.key_rule == "" and not settings.sample_moves
     assert settings.guardian_facts and not settings.move_map and settings.map_empty == "."
     assert not settings.ladder_fix and settings.progress_facts
-    assert len(fields(Settings)) == 14  # a new setting needs a reason and a measurement
+    assert not settings.graph_facts and not settings.half_steps and not settings.no_way_back
+    assert len(fields(Settings)) == 17  # a new setting needs a reason and a measurement
 
 
 def test_nearer_rule():
@@ -443,3 +444,20 @@ def test_the_saved_examples_replay_to_a_complete_cavern():
         results = [e for e in _events(runner.play_replay(game, run["file"])) if e["type"] == "result"]
         assert results[-1]["complete"], run["file"]
         assert not any(r.get("replay_mismatch") for r in results), run["file"]
+
+
+def test_two_runs_that_start_in_the_same_second_get_two_log_files(tmp_path, monkeypatch):
+    from concurrent.futures import ProcessPoolExecutor
+
+    monkeypatch.setattr(runner, "RUNS_DIR", tmp_path)
+    paths = [runner._log_path("same", 0, "Central Cavern", "promptD") for _ in range(3)]
+    assert len(set(paths)) == 3 and all(p.exists() for p in paths)
+    # Several processes at once: each file is new, so no two runs share one.
+    with ProcessPoolExecutor(4) as pool:
+        names = list(pool.map(_log_path_in_process, [str(tmp_path)] * 8))
+    assert len(set(names)) == 8
+
+
+def _log_path_in_process(folder):
+    runner.RUNS_DIR = Path(folder)
+    return str(runner._log_path("parallel", 0, "Central Cavern", "promptD"))

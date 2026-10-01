@@ -77,6 +77,53 @@ results are close, the harness is doing the work.
 Some measurements need older code, kept in the git tag `research-2026-09`
 (see [docs/findings.md](docs/findings.md)).
 
+## With true route facts, the rule does better than jev
+
+Most failed runs end where the route facts are wrong. In 122 of the 166
+failed jev runs of 29 September, no move was "nearer", or the "nearer" moves
+went round a loop. The facts come from rules about the tile map: `progress`
+measures a straight distance, past walls, gaps, and one-way drops. And a
+search found no way for the six moves to complete three caverns, because a
+walk always ends on the cell grid. Three options change this:
+
+- `--graph`: `progress` comes from a movement graph. The harness finds the
+  graph with the emulator, with the guardians switched off.
+- `--half-steps`: two more moves, `step_left` and `step_right`, half a cell
+  each.
+- `--no-way-back`: the harness does not offer a move or a key after which a
+  key or the portal is out of reach.
+
+Each arm is 10 runs of each cavern (30 September 2026):
+
+| Decision maker for moves | Key choice | Complete runs of 200, present facts | With `--graph --half-steps --no-way-back` |
+| --- | --- | --- | --- |
+| jev | jev selects | 28 | 89 |
+| rule `nearer` | key rule `nearest` | 20 | 114 |
+| jev | the optimum order | - | 86 |
+| rule `nearer` | the optimum order | - | 125 |
+
+What the table shows:
+
+- True route facts give both decision makers far more complete runs. 19 of
+  the 20 caverns have complete runs in these four arms, and 8 of them had
+  none in the 11,019 runs before.
+- With true route facts, the rule completes more runs than jev: 114 against
+  89 (Fisher p = 0.016). With the same key order, it completes 125 against
+  86 (p = 0.0001).
+- Jev takes a "nearer" move in 90 % of the decisions that have one. Its
+  other choices now cost runs: it waits where a guardian comes, and it goes
+  round loops. The rule's random choice among the "nearer" moves does better.
+- Jev's lead in the two guardian caverns is smaller, because the rule no
+  longer gets trapped there. With their own key choices, jev completes 10
+  and 9 runs of 10, the rule 7 and 5. With the optimum order, jev completes
+  8 and 6, the rule 8 and 8.
+
+So the answer to the project's question gets clearer: the harness does the
+work. With wrong route facts, jev's choices away from the facts help a
+little. With true route facts, they hurt. The options are not the defaults.
+See "Route facts from a movement graph" and "Some caverns need a half step"
+in [docs/findings.md](docs/findings.md).
+
 ![A replay of The Cold Room, paused before decision 37](docs/screenshots/hero.jpg)
 
 A replay of The Cold Room, paused before decision 37. The coloured figures
@@ -280,6 +327,13 @@ which setting made the difference. See "Open work" in
   10 runs per cavern reveal only large differences.
 - A good key order needs a route plan across the whole map, and jev is weak
   at tasks with more than one step.
+- Most failed runs end where the route facts are wrong, not where jev
+  ignores them. With route facts from the emulator and two half steps, a
+  three-line rule completes 114 to 125 of 200 runs, and jev 86 to 89.
+- A sentence of the text can help with one kind of facts and hurt with
+  another. With the graph, the sentence about loops takes jev away from
+  "nearer" in single decisions. But without it, jev gets stuck in other
+  caverns: 71 complete runs against 89.
 
 [docs/findings.md](docs/findings.md) has every measurement behind these
 statements, with its settings.
@@ -317,7 +371,9 @@ reads only `progress` and the goal facts completes about half as many runs
 as jev (39 against 72 over two runs), and all of that difference is in two
 caverns. Jev picks a move that the rule could
 also pick in 93 % of its decisions; a random valid move would do this in
-54 %.
+54 %. With the route facts from the movement graph (`--graph`), the rule
+does better than jev. It completes 114 runs of 200, and jev 89 (see "With
+true route facts, the rule does better than jev").
 
 **Does the state mark the correct answer?** Not directly, but `progress`
 comes close. The state never says which move is best. However, `progress`
@@ -416,8 +472,13 @@ differences.
 ```sh
 uv run python -m experiments.measure --caverns 1,2 --runs 10 --label my-test
 uv run python -m experiments.measure --caverns 1,2 --runs 10 --label old-text --instructions promptA
+uv run python -m experiments.measure --caverns 1,2 --runs 10 --label graph --graph --half-steps --processes 8
 uv run python -m experiments.diagnose runs/my-test/<file>.jsonl
 ```
+
+The movement graph (`--graph`) needs the processor: a run takes about a
+minute, and up to 20 minutes in The Warehouse. `--processes N` plays the
+games in N processes.
 
 The terminal runner and the measurement tool share these run options. Each
 one changes a single part of the design, so you can measure its effect:
@@ -438,6 +499,9 @@ one changes a single part of the design, so you can measure its effect:
 | `--map-empty SYMBOL` | the map symbol for empty space (default `.`) |
 | `--ladder-fix` | the way up can pass single floor tiles above a landing place, because a floor does not stop a jump from below |
 | `--sample-moves` | play a move drawn from jev's probabilities instead of jev's selected move, for comparison |
+| `--graph` | the route facts come from the movement graph: `progress` counts the moves on the shortest way to the target, and the target has no `way_up` or `way_down` (see "Route facts from the movement graph" in [docs/design.md](docs/design.md)) |
+| `--half-steps` | two more moves: `step_left` and `step_right`, half a cell each |
+| `--no-way-back` | with `--graph`: the harness does not offer a move or a key after which a key or the portal is out of reach |
 | `--llm MODEL`, `--local [MODEL]`, `--laya` | another decision maker, for comparison (see "Other decision makers"). Only the terminal runner has `--llm`. |
 
 With `--facts-only-keys`, jev also gets a key decision after 12 decisions
@@ -473,6 +537,12 @@ tables are in `experiments/results/`.
   effect of the switch facts.
 - The cause of a death (guardian or nasty) is a guess from the positions at
   the moment of death.
+- By default, the route facts come from rules about the tile map. They are
+  wrong in most caverns (see "How the failed runs end" in
+  [docs/findings.md](docs/findings.md)). With `--graph`, they come from the
+  emulator, but the graph ignores the guardians, and it keeps Eugene.
+- A search found no way for the six moves to complete three caverns.
+  `--half-steps` adds two moves for them.
 - The results come from 10 runs per cavern, so they are not exact.
 
 ## Terms
@@ -500,8 +570,10 @@ last column lists them.
 
 | Term | Meaning | Names in the code |
 | --- | --- | --- |
-| move | One of Willy's six fixed actions: `walk_left`, `walk_right`, `jump_left`, `jump_right`, `jump_up`, `wait`. A move ends when Willy is on the ground and aligned with the grid. | `macro` |
-| valid move | A move that the harness offers to jev. A move is not valid if it is deadly, leads into a dead end, or has no effect: another valid move gives the same game. | `offered` |
+| move | One of Willy's six fixed actions: `walk_left`, `walk_right`, `jump_left`, `jump_right`, `jump_up`, `wait`. A move ends when Willy is on the ground. With `--half-steps`, there are two more moves: the half steps. | `macro` |
+| half step | The move `step_left` or `step_right`: Willy moves half a cell (4 pixels). A walk ends on the cell grid, but a half step can end between two cells. | `HALF_STEPS` |
+| valid move | A move that the harness offers to jev. A move is not valid if it is deadly, leads into a dead end, or has no effect: another valid move gives the same game. With `--no-way-back`, a move with no way back is not valid either. | `offered` |
+| no way back | A move or a key after which a key or the portal is out of reach in the movement graph, although Willy can reach it now. | `NO_WAY_BACK` |
 | deadly move | A move that kills Willy before it ends. | `dead` |
 | dead end | A place where Willy is still alive but cannot stay alive. The dead-end check finds it. | `DEAD_END_CAUSE` |
 | target | The key or switch that Willy is heading for, or the portal once no key is left. | `target` |
@@ -527,7 +599,8 @@ last column lists them.
 | fact | One field of the state, such as `progress`. | |
 | question | The typed question in a request. This project uses only Choice questions. | `Choice` |
 | option | One answer that jev can select: a move, or a key or switch. | `criteria` |
-| instruction set | A folder in `jevmanic/instructions/` with the three texts of one version: `promptA`, `promptC`, `promptD`, `promptD-map`, or `promptD-map-noprogress`. | `instructions` setting |
+| instruction set | A folder in `jevmanic/instructions/` with the three texts of one version: `promptA`, `promptC`, `promptD`, `promptD-graph`, `promptD-map`, or `promptD-map-noprogress`. | `instructions` setting |
+| route facts | The facts about the way to the target: `progress` and `progress_measures`, and the target's `way_up` and `way_down`. | |
 | text | One file of an instruction set. Jev receives it as the question's `instructions`. | |
 | probability | The share that jev gives to one option. | `probabilities` |
 | confidence | Jev's measure of how the probability is spread across the options. It is not the probability of the selected option. | `confidence` |
@@ -540,6 +613,7 @@ last column lists them.
 | decision maker | Whatever selects a move or a key: jev, a rule, random choice, or another model. |
 | rule | A simple decision maker used for comparison, such as the rule `nearer`. It makes no jev requests. "Rule" has no other meaning in this project. |
 | dead-end check | The search that finds dead ends (`--depth`). |
+| movement graph | The places that Willy can reach, and the moves between them. The harness finds them with the emulator, with the guardians switched off (`--graph`, `jevmanic/graph.py`). |
 | request checks | The tests in `jevmanic/checks.py` that run before a measurement. |
 | optimum order | The key order in `jevmanic/key_orders.py`. It is a good reference order, not a proven best one. |
 
@@ -550,9 +624,10 @@ last column lists them.
 | `emulator/` | the ZX Spectrum emulator (C++) and its pybind11 binding `env.cpp` |
 | `roms/ManicMiner.z80` | the game snapshot |
 | `jevmanic/game.py` | cavern start, memory reads, moves, look-ahead, dead-end check |
+| `jevmanic/graph.py` | the movement graph, and the route facts from it (`--graph`, `--no-way-back`) |
 | `jevmanic/describe.py` | the state: the map, the key facts, and the move facts |
 | `jevmanic/brain.py` | the questions and the jev requests |
-| `jevmanic/instructions/` | the instruction sets: `promptD/` (default), `promptA/`, `promptC/`, `promptD-map/`, `promptD-map-noprogress/`, and any you add |
+| `jevmanic/instructions/` | the instruction sets: `promptD/` (default), `promptA/`, `promptC/`, `promptD-graph/`, `promptD-map/`, `promptD-map-noprogress/`, and any you add |
 | `jevmanic/llm_brain.py`, `laya_brain.py`, `local_brain.py` | other decision makers, for comparison |
 | `jevmanic/runner.py` | settings, live runs, log files, and replays |
 | `jevmanic/options.py` | the run options shared by the terminal runner and the measurement tool |
@@ -561,14 +636,14 @@ last column lists them.
 | `jevmanic/key_orders.py` | the optimum key order of each cavern |
 | `jevmanic/cli.py` | live runs in the terminal |
 | `jevmanic/checks.py` | the request checks |
-| `experiments/` | the measurement tool, the diagnosis script, the option-order test, the agreement count (`agreement.py`), and the paired test (`paired_rollouts.py`) |
+| `experiments/` | the measurement tool, the diagnosis script, the option-order test, the agreement count (`agreement.py`), the paired test (`paired_rollouts.py`), how failed runs end (`failure_ends.py`), the complete runs over all log files (`all_runs.py`), and the searches for what a move set can reach (`solvable.py`, `tick_search.py`) |
 | `experiments/results/` | the summaries behind this README's tables (other summaries are in the tag `research-2026-09`) |
 | `docs/design.md` | the present design, the exact data that jev receives, and the log file format |
 | `docs/findings.md` | the measurements behind the design |
 | `docs/viewer.md` | the viewer's pages |
 | `docs/planner-subagent.md` | the test with a reasoning model as planner |
 | `docs/screenshots/` | screenshots of the viewer |
-| `demo/` | one complete recorded jev run each for caverns 1, 2, 3, 9, and 18 (in git) |
+| `demo/` | one complete recorded jev run each for caverns 1, 2, 3, 4, 6, 7, 8, 9, 10, 11, 12, 13, 14, 17, 18, and 20 (in git). The runs of caverns 4 to 20, except 9 and 18, use `--graph --half-steps --no-way-back`. In cavern 12, the code set the key order. |
 | `runs/` | your log files (JSON Lines), not in git |
 
 The emulator core comes from the esp32-zxspectrum project, which took it

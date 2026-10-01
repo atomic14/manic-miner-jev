@@ -3,7 +3,7 @@
   --bg: #0d0f14; --panel: #161a22; --line: #2a303c; --text: #d8dde6; --dim: #8892a2;
   --accent: #00d7d7; --good: #00d700; --bad: #ff4d4d; --warn: #ffd700;
   --walk_left: #4d8dff; --walk_right: #00b7ff; --jump_left: #ff8a3d; --jump_right: #ffb03d;
-  --jump_up: #ffe14d; --wait: #7a8496;
+  --jump_up: #ffe14d; --wait: #7a8496; --step_left: #b47bff; --step_right: #e07bff;
   --mono: ui-monospace, Menlo, monospace;
 }
 * { box-sizing: border-box; }

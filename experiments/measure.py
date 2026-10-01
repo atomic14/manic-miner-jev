@@ -8,6 +8,7 @@ Examples:
     uv run python -m experiments.measure --caverns 1,2,3 --runs 10 --label my-test
     uv run python -m experiments.measure --caverns 1,2 --label nearer --rule nearer --key-order optimum
     uv run python -m experiments.measure --caverns 1 --label random --random-moves --key-order optimum
+    uv run python -m experiments.measure --caverns 1,2 --label graph --graph --half-steps --processes 8
 
 The log files go to runs/<label>/, and the viewer can replay them. The summary
 goes to runs/<label>/summary.json.
@@ -18,6 +19,7 @@ import asyncio
 import json
 import statistics
 from collections import Counter
+from concurrent.futures import ProcessPoolExecutor
 from dataclasses import asdict
 
 from dotenv import load_dotenv
@@ -34,6 +36,10 @@ def parse():
     parser.add_argument("--runs", type=int, default=10, help="live games for each cavern (default 10)")
     parser.add_argument("--label", default="measure", help="the measurement's name, and its folder below runs/")
     parser.add_argument("--parallel", type=int, default=5, help="games that run at the same time (default 5)")
+    parser.add_argument("--processes", type=int, default=1,
+                        help="play the games in this many processes (default 1). One process plays one game "
+                             "at a time. The movement graph (--graph) needs the processor, so use more "
+                             "processes with it. Not with --local or --laya")
     parser.add_argument("--local", nargs="?", const="default", metavar="MODEL",
                         help="for comparison: a local LLM makes the decisions, with the answer read from its logits "
                              "(needs `uv sync --extra local`). MODEL is an MLX model name; the default is "
@@ -50,6 +56,8 @@ def parse():
         parser.error("--caverns must be numbers with commas, for example 1,2,3")
     if not all(0 <= c < 20 for c in args.cavern_list):
         parser.error("each cavern number must be 1 to 20")
+    if args.processes > 1 and (args.local or args.laya):
+        parser.error("--processes works with jev and the rules only")
     return args
 
 
@@ -93,6 +101,19 @@ async def _one_run(brain, limit, cavern, settings, label):
             "low_confidence": sum(1 for c in confidences if c < 0.5),
             "jev_calls": len(confidences),
         }
+
+
+def one_run_in_process(cavern, settings, label):
+    """One game in a worker process, with its own jev client."""
+
+    async def play():
+        brain = Brain()
+        try:
+            return await one_run(brain, asyncio.Semaphore(1), cavern, settings, label)
+        finally:
+            await brain.close()
+
+    return asyncio.run(play())
 
 
 def table(results, names):
@@ -152,9 +173,15 @@ async def main():
         brain = LayaBrain()
     else:
         brain = Brain()
-    limit = asyncio.Semaphore(args.parallel)
-    jobs = [one_run(brain, limit, c, settings, args.label) for c in args.cavern_list for _ in range(args.runs)]
-    results = await asyncio.gather(*jobs)
+    games = [c for c in args.cavern_list for _ in range(args.runs)]
+    if args.processes > 1:
+        loop = asyncio.get_running_loop()
+        with ProcessPoolExecutor(args.processes) as pool:
+            results = await asyncio.gather(
+                *[loop.run_in_executor(pool, one_run_in_process, c, settings, args.label) for c in games])
+    else:
+        limit = asyncio.Semaphore(args.parallel)
+        results = await asyncio.gather(*[one_run(brain, limit, c, settings, args.label) for c in games])
     if args.laya:
         print(brain.cut_report())
     await brain.close()

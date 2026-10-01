@@ -26,7 +26,8 @@ from pathlib import Path
 
 from . import describe
 from .brain import key_question, move_question, questions_as_json
-from .game import MACROS, Game
+from .game import ALL_MOVES, MACROS, Game
+from .graph import Routes
 from .key_orders import OPTIMUM, OPTIMUM_KEY_ORDER
 from .settings import Settings
 
@@ -74,7 +75,10 @@ def list_runs() -> list[dict]:
         lines = path.read_text().splitlines()
         if len(lines) < 2:
             continue
-        header, end = json.loads(lines[0]), json.loads(lines[-1])
+        try:
+            header, end = json.loads(lines[0]), json.loads(lines[-1])
+        except json.JSONDecodeError:
+            continue  # a run that is still writing its last line, or a damaged file
         if not is_current(header):
             continue
         if end.get("type") != "end":
@@ -258,13 +262,16 @@ def _log_path(folder: str, cavern: int, cavern_name: str, mode: str) -> Path:
     runs_dir.mkdir(parents=True, exist_ok=True)
     slug = re.sub(r"[^a-z0-9]+", "-", cavern_name.lower()).strip("-")
     stem = f"{datetime.now():%Y%m%d-%H%M%S}-cavern-{cavern + 1:02d}-{slug}-{mode}"
-    path = runs_dir / f"{stem}.jsonl"
-    number = 2
-    while path.exists():  # two runs can start in the same second
-        path = runs_dir / f"{stem}-{number}.jsonl"
-        number += 1
-    path.touch()
-    return path
+    number = 1
+    while True:
+        # Two runs can start in the same second, also in two processes. The mode "x"
+        # creates the file only if it does not exist, so each run gets its own file.
+        path = runs_dir / (f"{stem}.jsonl" if number == 1 else f"{stem}-{number}.jsonl")
+        try:
+            path.open("x").close()
+            return path
+        except FileExistsError:
+            number += 1
 
 
 class _LiveRun:
@@ -288,6 +295,9 @@ class _LiveRun:
         self.used_for = Counter()  # decisions that Willy used on each key as the target
         self.gave_up = Counter()  # times that Willy made no progress toward each key
         self.goals_at_request, self.floor_at_request, self.n_at_request = -1, -1, 0
+        # The moves of this run, and its movement graph for the route facts.
+        self.moves = ALL_MOVES if settings.half_steps else MACROS
+        self.routes = Routes(game, self.moves) if settings.graph_facts else None
 
     # -- the key decision --
 
@@ -309,6 +319,7 @@ class _LiveRun:
     async def key_decision(self, snap, n: int) -> dict | None:
         """Select the target, if a key decision is due. Returns the log record, or None."""
         goals = snap.keys + snap.switches
+        options = goals
         if self.settings.forced_key_order:
             by_letter = {snap.key_letters[k]: k for k in snap.keys}
             wanted = next((by_letter[c] for c in self.settings.forced_key_order if c in by_letter), None)
@@ -317,27 +328,40 @@ class _LiveRun:
             self.target = wanted
             record = {"type": "target", "n": n, "forced": True, "choice": self.names[wanted],
                       "forced_reason": "the code sets the key order (a test)"}
-        elif not self._key_decision_is_due(snap, goals, n):
-            return None
-        elif len(goals) == 1 or self.settings.key_rule:
-            if len(goals) == 1:
-                wanted, reason = goals[0], "only one key is left"
-            else:
-                wanted, reason = KEY_RULES[self.settings.key_rule](snap, goals), f"key rule: {self.settings.key_rule}"
-            self.target = wanted
-            record = {"type": "target", "n": n, "forced": True, "choice": self.names[wanted],
-                      "forced_reason": reason}
         else:
-            memory = {"current": self.target, "used": self.used_for, "gave_up": self.gave_up}
-            state = describe.key_request_state(snap, self.names, memory, self.settings)
-            names = [self.names[k] for k in goals]
-            question = key_question(names, self.settings.instructions, self.settings.map_key_decision)
-            answer = await self.brain.ask(state, question, "key")
-            self.tokens += answer.input_tokens
-            previous = self.target
-            self.target = next(k for k in goals if self.names[k] == answer.choice)
-            record = {"type": "target", "n": n, **answer.to_json(), "kept_target": previous == self.target}
-        record["cells"] = {self.names[k]: list(k) for k in goals}
+            due = self._key_decision_is_due(snap, goals, n)
+            if self.settings.no_way_back and snap.keys:
+                # The options leave out each goal that is out of reach, and each key
+                # that leaves another key out of reach. A target that is out of reach
+                # now needs a new key decision, but only if another goal is in reach:
+                # else the decision would come again at each move.
+                if not due and not self.routes.reachable(snap, self.target):
+                    due = any(self.routes.reachable(snap, g) for g in goals)
+                options = self.routes.valid_goals(snap, goals) if due else goals
+            if not due:
+                return None
+            if len(options) == 1 or self.settings.key_rule:
+                if len(options) == 1:
+                    wanted = options[0]
+                    reason = "only one key is left" if len(goals) == 1 else "only one key or switch is valid"
+                else:
+                    wanted = KEY_RULES[self.settings.key_rule](snap, options)
+                    reason = f"key rule: {self.settings.key_rule}"
+                self.target = wanted
+                record = {"type": "target", "n": n, "forced": True, "choice": self.names[wanted],
+                          "forced_reason": reason}
+            else:
+                memory = {"current": self.target, "used": self.used_for, "gave_up": self.gave_up}
+                state = describe.key_request_state(snap, self.names, memory, self.settings,
+                                                   None if options == goals else options)
+                names = [self.names[k] for k in options]
+                question = key_question(names, self.settings.instructions, self.settings.map_key_decision)
+                answer = await self.brain.ask(state, question, "key")
+                self.tokens += answer.input_tokens
+                previous = self.target
+                self.target = next(k for k in options if self.names[k] == answer.choice)
+                record = {"type": "target", "n": n, **answer.to_json(), "kept_target": previous == self.target}
+        record["cells"] = {self.names[k]: list(k) for k in options}
         record["target_cell"] = list(self.target)
         self.since_new_place = 0
         self.goals_at_request, self.floor_at_request, self.n_at_request = len(goals), snap.willy_y + 2, n
@@ -347,14 +371,20 @@ class _LiveRun:
 
     async def move_decision(self, snap, n: int) -> dict:
         """Select one of the valid moves. Returns the log record."""
-        outcomes = self.game.look_ahead(self.settings.survival_depth)
-        state = describe.move_request_state(snap, outcomes, self.target, self.visited, self.tried, self.settings)
+        outcomes = self.game.look_ahead(self.settings.survival_depth, self.moves)
+        route = None
+        if self.routes:
+            cell = describe.target_cell(snap, self.target)
+            goal = cell if cell in snap.keys + snap.switches else None
+            route = self.routes.move_facts(snap, outcomes, goal, self.settings.no_way_back)
+        state = describe.move_request_state(snap, outcomes, self.target, self.visited, self.tried, self.settings,
+                                            route)
         removed = {} if state["moves_not_offered"] == "none" else state["moves_not_offered"]
         offered = list(state["moves"])
         if not offered:
             # Each move kills Willy. Jev gets all of them, because a Choice
             # question needs options. The log file keeps the causes.
-            offered = list(MACROS)
+            offered = list(self.moves)
             state["moves"] = "none: no move is safe"
         record = {
             "type": "decision",
@@ -362,9 +392,12 @@ class _LiveRun:
             "tick": self.game.tick_count,
             "offered": offered,
             "removed": removed,
-            "no_safe_move": len(removed) == len(MACROS),
+            "no_safe_move": len(removed) == len(self.moves),
             "target_cell": list(describe.target_cell(snap, self.target)),
         }
+        if route is not None:
+            # For the analysis, not for jev: the moves from Willy's place to the target.
+            record["moves_to_target"] = route.now
         if len(offered) == 1:
             # A forced decision. The other moves kill Willy, or give the same
             # game as this move (for example when Willy is in the air).
@@ -417,6 +450,8 @@ async def play_live(game: Game, brain, cavern: int = 0, settings: Settings | Non
     Willy's path for each move. The paths do not go to jev or to the log file.
     """
     settings = settings or Settings()
+    if settings.no_way_back and not settings.graph_facts:
+        raise ValueError("no_way_back needs graph_facts: the movement graph finds the moves with no way back")
     if settings.forced_key_order == OPTIMUM:
         settings = replace(settings, forced_key_order=OPTIMUM_KEY_ORDER[cavern])
     game.select_cavern(cavern)
@@ -441,6 +476,12 @@ async def play_live(game: Game, brain, cavern: int = 0, settings: Settings | Non
         mode += "-ladder"
     if not settings.progress_facts:
         mode += "-no-progress"
+    if settings.graph_facts:
+        mode += "-graph"
+    if settings.half_steps:
+        mode += "-half-steps"
+    if settings.no_way_back:
+        mode += "-no-way-back"
     cavern_name = game.snapshot().cavern_name
     path = _log_path(folder, cavern, cavern_name, mode)
     header = {
@@ -475,7 +516,7 @@ async def play_live(game: Game, brain, cavern: int = 0, settings: Settings | Non
                 write(key_record)
                 yield "event", key_record
             if show_paths:
-                yield "event", {"type": "paths", "n": n, "paths": game.macro_paths()}
+                yield "event", {"type": "paths", "n": n, "paths": game.macro_paths(run.moves)}
             record = await run.move_decision(snap, n)
             yield "event", record
             start = game.tick_count
@@ -496,6 +537,8 @@ async def play_live(game: Game, brain, cavern: int = 0, settings: Settings | Non
             # input tokens.
             "cost_usd": round(brain.total_cost if hasattr(brain, "total_cost") else run.tokens * USD_PER_TOKEN, 6),
         }
+        if run.routes:
+            end["graph_explorations"] = run.routes.explorations
         write(end)
         yield "event", end
 
@@ -515,6 +558,7 @@ async def play_replay(game: Game, file: str, show_paths: bool = False, start: in
         raise ValueError(f"{file} is a log file of an earlier version")
     game.select_cavern(header.get("cavern", 0))
     keys_at_start = len(game.snapshot().keys)
+    moves = ALL_MOVES if header["settings"].get("half_steps") else MACROS
     yield "event", header
     for record in records[1:]:
         if record["type"] == "decision" and record["n"] < start:
@@ -532,7 +576,7 @@ async def play_replay(game: Game, file: str, show_paths: bool = False, start: in
             yield "frame", game  # the screen at the first decision that the viewer shows
         logged = record.pop("result", None)
         if show_paths:
-            yield "event", {"type": "paths", "n": record["n"], "paths": game.macro_paths()}
+            yield "event", {"type": "paths", "n": record["n"], "paths": game.macro_paths(moves)}
         yield "event", record
         first_tick = game.tick_count
         for _ in game.macro_ticks(record["macro"]):

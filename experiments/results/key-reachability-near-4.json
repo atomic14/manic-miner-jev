@@ -1,0 +1,5065 @@
+{
+  "source": "experiments/results/key-reachability-near-4-source.json",
+  "horizon": 4,
+  "budget_per_first_move": 10000,
+  "summary": {
+    "pairs_tested": 27,
+    "pairs_skipped": 0,
+    "pairs_with_reachable_key": 27,
+    "pairs_with_different_moves": 2,
+    "pairs_with_conflicting_first_moves": 0,
+    "unknown_results": 0
+  },
+  "rows": [
+    {
+      "source_row": 0,
+      "cavern": 1,
+      "prefixes": [
+        [
+          "jump_right",
+          "jump_right",
+          "walk_left",
+          "jump_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "jump_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "jump_right",
+          "jump_right",
+          "jump_right",
+          "jump_left",
+          "walk_left",
+          "wait",
+          "jump_up",
+          "jump_left",
+          "walk_left",
+          "wait",
+          "jump_left",
+          "jump_right",
+          "jump_right",
+          "walk_right",
+          "jump_up",
+          "walk_right",
+          "walk_right",
+          "walk_right"
+        ],
+        [
+          "jump_right",
+          "jump_right",
+          "walk_left",
+          "jump_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "jump_right",
+          "walk_right",
+          "walk_right",
+          "jump_right",
+          "jump_right",
+          "jump_right",
+          "jump_left",
+          "walk_left",
+          "wait",
+          "jump_up",
+          "walk_left",
+          "walk_right",
+          "jump_left",
+          "walk_left",
+          "wait",
+          "jump_left",
+          "jump_right",
+          "jump_right",
+          "walk_right",
+          "jump_up",
+          "walk_right",
+          "walk_right",
+          "walk_right"
+        ]
+      ],
+      "profiles": [
+        {
+          "walk_left": {
+            "status": "reachable",
+            "witness": [
+              "walk_left",
+              "walk_right",
+              "jump_right"
+            ],
+            "searched_moves": 60
+          },
+          "walk_right": {
+            "status": "reachable",
+            "witness": [
+              "walk_right",
+              "walk_left",
+              "jump_right"
+            ],
+            "searched_moves": 23
+          },
+          "jump_left": {
+            "status": "reachable",
+            "witness": [
+              "jump_left",
+              "jump_right",
+              "jump_right"
+            ],
+            "searched_moves": 146
+          },
+          "jump_right": {
+            "status": "reachable",
+            "witness": [
+              "jump_right"
+            ],
+            "searched_moves": 0
+          },
+          "wait": {
+            "status": "reachable",
+            "witness": [
+              "wait",
+              "walk_left",
+              "walk_right",
+              "jump_right"
+            ],
+            "searched_moves": 13
+          }
+        },
+        {
+          "walk_left": {
+            "status": "reachable",
+            "witness": [
+              "walk_left",
+              "walk_right",
+              "jump_right"
+            ],
+            "searched_moves": 60
+          },
+          "walk_right": {
+            "status": "reachable",
+            "witness": [
+              "walk_right",
+              "walk_left",
+              "jump_right"
+            ],
+            "searched_moves": 23
+          },
+          "jump_left": {
+            "status": "reachable",
+            "witness": [
+              "jump_left",
+              "jump_right",
+              "jump_right"
+            ],
+            "searched_moves": 146
+          },
+          "jump_right": {
+            "status": "reachable",
+            "witness": [
+              "jump_right"
+            ],
+            "searched_moves": 0
+          },
+          "wait": {
+            "status": "reachable",
+            "witness": [
+              "wait",
+              "walk_left",
+              "walk_right",
+              "jump_right"
+            ],
+            "searched_moves": 13
+          }
+        }
+      ],
+      "different_moves": [],
+      "conflicting_first_moves": false,
+      "common_proven_moves": [
+        "jump_left",
+        "jump_right",
+        "wait",
+        "walk_left",
+        "walk_right"
+      ]
+    },
+    {
+      "source_row": 1,
+      "cavern": 1,
+      "prefixes": [
+        [
+          "jump_right",
+          "jump_right",
+          "walk_left",
+          "jump_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "jump_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "jump_right",
+          "jump_right",
+          "jump_right",
+          "jump_left",
+          "walk_left",
+          "wait",
+          "jump_up",
+          "jump_left",
+          "walk_left",
+          "wait",
+          "jump_left",
+          "jump_right",
+          "jump_right",
+          "walk_right",
+          "jump_up",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "jump_right",
+          "jump_right",
+          "walk_right",
+          "jump_right",
+          "walk_left"
+        ],
+        [
+          "jump_right",
+          "jump_right",
+          "walk_left",
+          "jump_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "jump_right",
+          "walk_right",
+          "walk_right",
+          "jump_right",
+          "jump_right",
+          "jump_right",
+          "jump_left",
+          "walk_left",
+          "wait",
+          "jump_up",
+          "jump_left",
+          "walk_left",
+          "wait",
+          "jump_right",
+          "jump_left",
+          "jump_right",
+          "walk_right",
+          "jump_up",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "jump_right",
+          "jump_right",
+          "walk_right",
+          "jump_right",
+          "walk_left"
+        ]
+      ],
+      "profiles": [
+        {
+          "walk_right": {
+            "status": "reachable",
+            "witness": [
+              "walk_right",
+              "walk_left",
+              "walk_right",
+              "jump_right"
+            ],
+            "searched_moves": 7
+          },
+          "jump_right": {
+            "status": "reachable",
+            "witness": [
+              "jump_right",
+              "walk_right",
+              "walk_left",
+              "jump_right"
+            ],
+            "searched_moves": 7
+          },
+          "jump_up": {
+            "status": "reachable",
+            "witness": [
+              "jump_up",
+              "walk_right",
+              "jump_right"
+            ],
+            "searched_moves": 18
+          },
+          "wait": {
+            "status": "reachable",
+            "witness": [
+              "wait",
+              "walk_right",
+              "jump_right"
+            ],
+            "searched_moves": 18
+          }
+        },
+        {
+          "walk_right": {
+            "status": "reachable",
+            "witness": [
+              "walk_right",
+              "walk_left",
+              "walk_right",
+              "jump_right"
+            ],
+            "searched_moves": 7
+          },
+          "jump_right": {
+            "status": "reachable",
+            "witness": [
+              "jump_right",
+              "walk_right",
+              "walk_left",
+              "jump_right"
+            ],
+            "searched_moves": 7
+          },
+          "jump_up": {
+            "status": "reachable",
+            "witness": [
+              "jump_up",
+              "walk_right",
+              "jump_right"
+            ],
+            "searched_moves": 18
+          },
+          "wait": {
+            "status": "reachable",
+            "witness": [
+              "wait",
+              "walk_right",
+              "jump_right"
+            ],
+            "searched_moves": 18
+          }
+        }
+      ],
+      "different_moves": [],
+      "conflicting_first_moves": false,
+      "common_proven_moves": [
+        "jump_right",
+        "jump_up",
+        "wait",
+        "walk_right"
+      ]
+    },
+    {
+      "source_row": 2,
+      "cavern": 1,
+      "prefixes": [
+        [
+          "jump_right",
+          "jump_right",
+          "walk_left",
+          "jump_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "jump_right",
+          "walk_right",
+          "walk_right",
+          "jump_right",
+          "jump_right",
+          "jump_right",
+          "jump_left",
+          "walk_left",
+          "wait",
+          "jump_up",
+          "walk_left",
+          "walk_right",
+          "jump_left",
+          "walk_left",
+          "wait",
+          "jump_left"
+        ],
+        [
+          "jump_right",
+          "jump_right",
+          "walk_left",
+          "jump_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "jump_right",
+          "walk_right",
+          "walk_right",
+          "jump_right",
+          "jump_right",
+          "jump_up",
+          "jump_left",
+          "wait",
+          "wait",
+          "jump_up",
+          "walk_left",
+          "walk_right",
+          "jump_left",
+          "walk_left",
+          "wait",
+          "jump_left"
+        ]
+      ],
+      "profiles": [
+        {
+          "jump_left": {
+            "status": "reachable",
+            "witness": [
+              "jump_left",
+              "jump_up",
+              "jump_right",
+              "jump_right"
+            ],
+            "searched_moves": 151
+          },
+          "jump_right": {
+            "status": "reachable",
+            "witness": [
+              "jump_right",
+              "walk_left",
+              "jump_right",
+              "jump_right"
+            ],
+            "searched_moves": 27
+          },
+          "jump_up": {
+            "status": "reachable",
+            "witness": [
+              "jump_up",
+              "jump_up",
+              "jump_right",
+              "jump_right"
+            ],
+            "searched_moves": 151
+          },
+          "wait": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 198
+          }
+        },
+        {
+          "jump_left": {
+            "status": "reachable",
+            "witness": [
+              "jump_left",
+              "jump_up",
+              "jump_right",
+              "jump_right"
+            ],
+            "searched_moves": 163
+          },
+          "jump_right": {
+            "status": "reachable",
+            "witness": [
+              "jump_right",
+              "walk_left",
+              "jump_right",
+              "jump_right"
+            ],
+            "searched_moves": 27
+          },
+          "jump_up": {
+            "status": "reachable",
+            "witness": [
+              "jump_up",
+              "jump_up",
+              "jump_right",
+              "jump_right"
+            ],
+            "searched_moves": 169
+          },
+          "wait": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 198
+          }
+        }
+      ],
+      "different_moves": [],
+      "conflicting_first_moves": false,
+      "common_proven_moves": [
+        "jump_left",
+        "jump_right",
+        "jump_up"
+      ]
+    },
+    {
+      "source_row": 3,
+      "cavern": 3,
+      "prefixes": [
+        [
+          "jump_right",
+          "jump_right",
+          "jump_right",
+          "jump_right",
+          "jump_right",
+          "jump_left",
+          "wait",
+          "jump_right",
+          "walk_left",
+          "jump_left"
+        ],
+        [
+          "jump_right",
+          "jump_right",
+          "jump_right",
+          "jump_right",
+          "jump_right",
+          "jump_left",
+          "jump_right",
+          "jump_right",
+          "walk_left",
+          "jump_left"
+        ]
+      ],
+      "profiles": [
+        {
+          "walk_left": {
+            "status": "reachable",
+            "witness": [
+              "walk_left",
+              "walk_left",
+              "walk_right",
+              "jump_right"
+            ],
+            "searched_moves": 13
+          },
+          "walk_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 258
+          },
+          "jump_left": {
+            "status": "reachable",
+            "witness": [
+              "jump_left",
+              "walk_right",
+              "jump_right",
+              "jump_right"
+            ],
+            "searched_moves": 70
+          },
+          "jump_right": {
+            "status": "reachable",
+            "witness": [
+              "jump_right"
+            ],
+            "searched_moves": 0
+          },
+          "jump_up": {
+            "status": "reachable",
+            "witness": [
+              "jump_up",
+              "walk_left",
+              "walk_right",
+              "jump_right"
+            ],
+            "searched_moves": 13
+          },
+          "wait": {
+            "status": "reachable",
+            "witness": [
+              "wait",
+              "walk_left",
+              "walk_right",
+              "jump_right"
+            ],
+            "searched_moves": 13
+          }
+        },
+        {
+          "walk_left": {
+            "status": "reachable",
+            "witness": [
+              "walk_left",
+              "walk_left",
+              "walk_right",
+              "jump_right"
+            ],
+            "searched_moves": 13
+          },
+          "walk_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 258
+          },
+          "jump_left": {
+            "status": "reachable",
+            "witness": [
+              "jump_left",
+              "walk_right",
+              "jump_right",
+              "jump_right"
+            ],
+            "searched_moves": 70
+          },
+          "jump_right": {
+            "status": "reachable",
+            "witness": [
+              "jump_right"
+            ],
+            "searched_moves": 0
+          },
+          "jump_up": {
+            "status": "reachable",
+            "witness": [
+              "jump_up",
+              "walk_left",
+              "walk_right",
+              "jump_right"
+            ],
+            "searched_moves": 13
+          },
+          "wait": {
+            "status": "reachable",
+            "witness": [
+              "wait",
+              "walk_left",
+              "walk_right",
+              "jump_right"
+            ],
+            "searched_moves": 13
+          }
+        }
+      ],
+      "different_moves": [],
+      "conflicting_first_moves": false,
+      "common_proven_moves": [
+        "jump_left",
+        "jump_right",
+        "jump_up",
+        "wait",
+        "walk_left"
+      ]
+    },
+    {
+      "source_row": 4,
+      "cavern": 3,
+      "prefixes": [
+        [
+          "jump_right",
+          "jump_right",
+          "jump_right",
+          "jump_right",
+          "jump_right",
+          "jump_left",
+          "wait",
+          "jump_right"
+        ],
+        [
+          "jump_right",
+          "jump_right",
+          "jump_right",
+          "jump_right",
+          "jump_right",
+          "jump_left",
+          "jump_right",
+          "jump_right"
+        ]
+      ],
+      "profiles": [
+        {
+          "walk_left": {
+            "status": "reachable",
+            "witness": [
+              "walk_left",
+              "walk_left",
+              "jump_left",
+              "jump_right"
+            ],
+            "searched_moves": 20
+          },
+          "walk_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 258
+          },
+          "jump_left": {
+            "status": "reachable",
+            "witness": [
+              "jump_left",
+              "jump_right",
+              "jump_left",
+              "jump_right"
+            ],
+            "searched_moves": 149
+          },
+          "jump_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 258
+          },
+          "jump_up": {
+            "status": "reachable",
+            "witness": [
+              "jump_up",
+              "walk_left",
+              "jump_left",
+              "jump_right"
+            ],
+            "searched_moves": 20
+          },
+          "wait": {
+            "status": "reachable",
+            "witness": [
+              "wait",
+              "walk_left",
+              "jump_left",
+              "jump_right"
+            ],
+            "searched_moves": 20
+          }
+        },
+        {
+          "walk_left": {
+            "status": "reachable",
+            "witness": [
+              "walk_left",
+              "walk_left",
+              "jump_left",
+              "jump_right"
+            ],
+            "searched_moves": 20
+          },
+          "walk_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 258
+          },
+          "jump_left": {
+            "status": "reachable",
+            "witness": [
+              "jump_left",
+              "jump_right",
+              "jump_left",
+              "jump_right"
+            ],
+            "searched_moves": 149
+          },
+          "jump_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 258
+          },
+          "jump_up": {
+            "status": "reachable",
+            "witness": [
+              "jump_up",
+              "walk_left",
+              "jump_left",
+              "jump_right"
+            ],
+            "searched_moves": 20
+          },
+          "wait": {
+            "status": "reachable",
+            "witness": [
+              "wait",
+              "walk_left",
+              "jump_left",
+              "jump_right"
+            ],
+            "searched_moves": 20
+          }
+        }
+      ],
+      "different_moves": [],
+      "conflicting_first_moves": false,
+      "common_proven_moves": [
+        "jump_left",
+        "jump_up",
+        "wait",
+        "walk_left"
+      ]
+    },
+    {
+      "source_row": 5,
+      "cavern": 3,
+      "prefixes": [
+        [
+          "jump_right",
+          "jump_right",
+          "jump_right",
+          "jump_right",
+          "jump_right",
+          "jump_left",
+          "wait",
+          "jump_right",
+          "walk_left",
+          "jump_left",
+          "jump_right",
+          "jump_left",
+          "jump_right",
+          "walk_left",
+          "jump_left",
+          "walk_left",
+          "walk_left",
+          "jump_left",
+          "jump_left",
+          "wait",
+          "wait",
+          "jump_right",
+          "jump_right",
+          "jump_right",
+          "jump_left",
+          "jump_right",
+          "walk_right",
+          "jump_left",
+          "jump_up",
+          "walk_right"
+        ],
+        [
+          "jump_right",
+          "jump_right",
+          "jump_right",
+          "jump_right",
+          "jump_right",
+          "jump_left",
+          "jump_right",
+          "jump_right",
+          "walk_left",
+          "jump_left",
+          "jump_right",
+          "jump_left",
+          "jump_right",
+          "walk_left",
+          "jump_left",
+          "walk_left",
+          "walk_left",
+          "jump_left",
+          "jump_left",
+          "wait",
+          "wait",
+          "jump_right",
+          "jump_right",
+          "jump_right",
+          "jump_left",
+          "jump_right",
+          "walk_right",
+          "jump_left",
+          "jump_up",
+          "walk_right"
+        ]
+      ],
+      "profiles": [
+        {
+          "walk_left": {
+            "status": "reachable",
+            "witness": [
+              "walk_left",
+              "walk_left",
+              "jump_right",
+              "jump_up"
+            ],
+            "searched_moves": 28
+          },
+          "walk_right": {
+            "status": "reachable",
+            "witness": [
+              "walk_right",
+              "walk_left",
+              "jump_up",
+              "jump_right"
+            ],
+            "searched_moves": 28
+          },
+          "jump_left": {
+            "status": "reachable",
+            "witness": [
+              "jump_left",
+              "walk_left",
+              "walk_right",
+              "jump_right"
+            ],
+            "searched_moves": 13
+          },
+          "jump_right": {
+            "status": "reachable",
+            "witness": [
+              "jump_right",
+              "walk_left",
+              "walk_left",
+              "jump_up"
+            ],
+            "searched_moves": 7
+          },
+          "jump_up": {
+            "status": "reachable",
+            "witness": [
+              "jump_up",
+              "walk_left",
+              "walk_left",
+              "jump_right"
+            ],
+            "searched_moves": 6
+          },
+          "wait": {
+            "status": "reachable",
+            "witness": [
+              "wait",
+              "walk_left",
+              "jump_up",
+              "jump_right"
+            ],
+            "searched_moves": 34
+          }
+        },
+        {
+          "walk_left": {
+            "status": "reachable",
+            "witness": [
+              "walk_left",
+              "walk_left",
+              "jump_right",
+              "jump_up"
+            ],
+            "searched_moves": 28
+          },
+          "walk_right": {
+            "status": "reachable",
+            "witness": [
+              "walk_right",
+              "walk_left",
+              "jump_up",
+              "jump_right"
+            ],
+            "searched_moves": 34
+          },
+          "jump_left": {
+            "status": "reachable",
+            "witness": [
+              "jump_left",
+              "walk_left",
+              "walk_right",
+              "jump_right"
+            ],
+            "searched_moves": 13
+          },
+          "jump_right": {
+            "status": "reachable",
+            "witness": [
+              "jump_right",
+              "walk_left",
+              "walk_left",
+              "jump_up"
+            ],
+            "searched_moves": 7
+          },
+          "jump_up": {
+            "status": "reachable",
+            "witness": [
+              "jump_up",
+              "walk_left",
+              "walk_left",
+              "jump_right"
+            ],
+            "searched_moves": 6
+          },
+          "wait": {
+            "status": "reachable",
+            "witness": [
+              "wait",
+              "walk_left",
+              "jump_up",
+              "jump_right"
+            ],
+            "searched_moves": 34
+          }
+        }
+      ],
+      "different_moves": [],
+      "conflicting_first_moves": false,
+      "common_proven_moves": [
+        "jump_left",
+        "jump_right",
+        "jump_up",
+        "wait",
+        "walk_left",
+        "walk_right"
+      ]
+    },
+    {
+      "source_row": 6,
+      "cavern": 4,
+      "prefixes": [
+        [
+          "jump_left",
+          "walk_left",
+          "walk_left",
+          "jump_left",
+          "jump_right",
+          "walk_left",
+          "walk_left",
+          "jump_left",
+          "jump_left",
+          "jump_right",
+          "walk_right",
+          "walk_right",
+          "jump_right",
+          "jump_left",
+          "jump_right",
+          "jump_left",
+          "walk_left",
+          "walk_left",
+          "walk_left",
+          "walk_left",
+          "jump_left",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "jump_left",
+          "walk_left",
+          "walk_left",
+          "jump_up",
+          "jump_left",
+          "walk_right",
+          "wait",
+          "walk_right",
+          "walk_right",
+          "jump_up",
+          "jump_right",
+          "jump_left",
+          "jump_right",
+          "jump_left",
+          "jump_right",
+          "walk_left",
+          "jump_left",
+          "jump_left",
+          "walk_right",
+          "jump_right",
+          "jump_left",
+          "walk_right",
+          "walk_left",
+          "walk_left",
+          "walk_right",
+          "jump_left",
+          "walk_left",
+          "jump_left",
+          "walk_right",
+          "jump_left",
+          "walk_right",
+          "walk_right",
+          "jump_right"
+        ],
+        [
+          "jump_left",
+          "walk_left",
+          "walk_left",
+          "jump_left",
+          "jump_right",
+          "walk_left",
+          "walk_left",
+          "jump_left",
+          "jump_left",
+          "jump_right",
+          "walk_right",
+          "walk_right",
+          "jump_right",
+          "jump_left",
+          "jump_right",
+          "jump_left",
+          "walk_left",
+          "walk_left",
+          "walk_left",
+          "walk_left",
+          "jump_left",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "wait",
+          "walk_left",
+          "walk_left",
+          "jump_up",
+          "jump_left",
+          "walk_right",
+          "wait",
+          "walk_right",
+          "walk_right",
+          "jump_up",
+          "jump_right",
+          "jump_left",
+          "jump_right",
+          "jump_left",
+          "jump_right",
+          "walk_left",
+          "jump_left",
+          "jump_left",
+          "walk_right",
+          "jump_right",
+          "jump_left",
+          "walk_right",
+          "walk_left",
+          "walk_left",
+          "walk_right",
+          "jump_left",
+          "walk_left",
+          "jump_left",
+          "walk_right",
+          "jump_left",
+          "walk_right",
+          "walk_right",
+          "jump_right"
+        ]
+      ],
+      "profiles": [
+        {
+          "walk_right": {
+            "status": "reachable",
+            "witness": [
+              "walk_right",
+              "walk_left",
+              "walk_right",
+              "jump_up"
+            ],
+            "searched_moves": 8
+          },
+          "jump_left": {
+            "status": "reachable",
+            "witness": [
+              "jump_left",
+              "walk_left",
+              "walk_right",
+              "jump_right"
+            ],
+            "searched_moves": 7
+          },
+          "jump_up": {
+            "status": "reachable",
+            "witness": [
+              "jump_up"
+            ],
+            "searched_moves": 0
+          },
+          "wait": {
+            "status": "reachable",
+            "witness": [
+              "wait",
+              "walk_right",
+              "walk_left",
+              "jump_up"
+            ],
+            "searched_moves": 8
+          }
+        },
+        {
+          "walk_right": {
+            "status": "reachable",
+            "witness": [
+              "walk_right",
+              "walk_left",
+              "walk_right",
+              "jump_up"
+            ],
+            "searched_moves": 8
+          },
+          "jump_left": {
+            "status": "reachable",
+            "witness": [
+              "jump_left",
+              "walk_left",
+              "walk_right",
+              "jump_right"
+            ],
+            "searched_moves": 7
+          },
+          "jump_up": {
+            "status": "reachable",
+            "witness": [
+              "jump_up"
+            ],
+            "searched_moves": 0
+          },
+          "wait": {
+            "status": "reachable",
+            "witness": [
+              "wait",
+              "walk_right",
+              "walk_left",
+              "jump_up"
+            ],
+            "searched_moves": 8
+          }
+        }
+      ],
+      "different_moves": [],
+      "conflicting_first_moves": false,
+      "common_proven_moves": [
+        "jump_left",
+        "jump_up",
+        "wait",
+        "walk_right"
+      ]
+    },
+    {
+      "source_row": 7,
+      "cavern": 4,
+      "prefixes": [
+        [
+          "jump_left",
+          "walk_left",
+          "walk_left",
+          "jump_left",
+          "jump_right",
+          "walk_left",
+          "walk_left",
+          "jump_left",
+          "jump_left",
+          "jump_right",
+          "walk_right",
+          "walk_right",
+          "jump_right",
+          "jump_left",
+          "jump_right",
+          "jump_left",
+          "walk_left",
+          "walk_left",
+          "walk_left",
+          "walk_left",
+          "jump_left",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "jump_left",
+          "walk_left",
+          "walk_left",
+          "jump_up",
+          "jump_left",
+          "walk_right",
+          "wait",
+          "walk_right",
+          "walk_right",
+          "jump_up",
+          "jump_right",
+          "jump_left",
+          "jump_right",
+          "jump_left",
+          "jump_right",
+          "walk_left",
+          "jump_left",
+          "jump_left",
+          "walk_right",
+          "jump_right",
+          "jump_left",
+          "walk_right",
+          "walk_left",
+          "walk_left",
+          "walk_right",
+          "jump_left",
+          "walk_left",
+          "jump_left",
+          "walk_right",
+          "jump_left",
+          "walk_right",
+          "walk_right"
+        ],
+        [
+          "jump_left",
+          "walk_left",
+          "walk_left",
+          "jump_left",
+          "jump_right",
+          "walk_left",
+          "walk_left",
+          "jump_left",
+          "jump_left",
+          "jump_right",
+          "walk_right",
+          "walk_right",
+          "jump_right",
+          "jump_left",
+          "jump_right",
+          "jump_left",
+          "walk_left",
+          "walk_left",
+          "walk_left",
+          "walk_left",
+          "jump_left",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "wait",
+          "walk_left",
+          "walk_left",
+          "jump_up",
+          "jump_left",
+          "walk_right",
+          "wait",
+          "walk_right",
+          "walk_right",
+          "jump_up",
+          "jump_right",
+          "jump_left",
+          "jump_right",
+          "jump_left",
+          "jump_right",
+          "walk_left",
+          "jump_left",
+          "jump_left",
+          "walk_right",
+          "jump_right",
+          "jump_left",
+          "walk_right",
+          "walk_left",
+          "walk_left",
+          "walk_right",
+          "jump_left",
+          "walk_left",
+          "jump_left",
+          "walk_right",
+          "jump_left",
+          "walk_right",
+          "walk_right"
+        ]
+      ],
+      "profiles": [
+        {
+          "walk_left": {
+            "status": "reachable",
+            "witness": [
+              "walk_left",
+              "walk_right",
+              "jump_right",
+              "jump_up"
+            ],
+            "searched_moves": 65
+          },
+          "jump_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 204
+          },
+          "jump_right": {
+            "status": "reachable",
+            "witness": [
+              "jump_right",
+              "walk_right",
+              "walk_left",
+              "jump_up"
+            ],
+            "searched_moves": 8
+          },
+          "jump_up": {
+            "status": "reachable",
+            "witness": [
+              "jump_up",
+              "jump_right",
+              "walk_right",
+              "jump_up"
+            ],
+            "searched_moves": 95
+          },
+          "wait": {
+            "status": "reachable",
+            "witness": [
+              "wait",
+              "jump_right",
+              "walk_right",
+              "jump_up"
+            ],
+            "searched_moves": 95
+          }
+        },
+        {
+          "walk_left": {
+            "status": "reachable",
+            "witness": [
+              "walk_left",
+              "walk_right",
+              "jump_right",
+              "jump_up"
+            ],
+            "searched_moves": 65
+          },
+          "jump_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 204
+          },
+          "jump_right": {
+            "status": "reachable",
+            "witness": [
+              "jump_right",
+              "walk_right",
+              "walk_left",
+              "jump_up"
+            ],
+            "searched_moves": 8
+          },
+          "jump_up": {
+            "status": "reachable",
+            "witness": [
+              "jump_up",
+              "jump_right",
+              "walk_right",
+              "jump_up"
+            ],
+            "searched_moves": 95
+          },
+          "wait": {
+            "status": "reachable",
+            "witness": [
+              "wait",
+              "jump_right",
+              "walk_right",
+              "jump_up"
+            ],
+            "searched_moves": 95
+          }
+        }
+      ],
+      "different_moves": [],
+      "conflicting_first_moves": false,
+      "common_proven_moves": [
+        "jump_right",
+        "jump_up",
+        "wait",
+        "walk_left"
+      ]
+    },
+    {
+      "source_row": 8,
+      "cavern": 4,
+      "prefixes": [
+        [
+          "jump_left",
+          "walk_left",
+          "walk_left",
+          "jump_left",
+          "jump_right",
+          "walk_left",
+          "walk_left",
+          "jump_left",
+          "jump_left",
+          "jump_right",
+          "walk_right",
+          "walk_right",
+          "jump_right",
+          "jump_left",
+          "jump_right",
+          "jump_left",
+          "walk_left",
+          "walk_left",
+          "walk_left",
+          "walk_left",
+          "jump_left",
+          "walk_right",
+          "jump_left",
+          "walk_right",
+          "wait",
+          "walk_right",
+          "jump_right",
+          "walk_right",
+          "jump_left",
+          "walk_left",
+          "walk_left",
+          "jump_up",
+          "jump_right",
+          "jump_left",
+          "jump_right",
+          "jump_left",
+          "jump_right",
+          "jump_left",
+          "walk_right",
+          "jump_right",
+          "walk_right",
+          "jump_left",
+          "jump_left",
+          "walk_right",
+          "jump_right",
+          "jump_left",
+          "walk_right",
+          "walk_left",
+          "walk_left",
+          "walk_right",
+          "jump_left",
+          "walk_left",
+          "jump_left",
+          "walk_right",
+          "jump_left",
+          "walk_right",
+          "walk_right",
+          "jump_right",
+          "jump_up",
+          "walk_right",
+          "jump_right",
+          "jump_right",
+          "jump_right",
+          "jump_right",
+          "jump_left",
+          "walk_right",
+          "walk_left",
+          "jump_left",
+          "jump_right",
+          "jump_right",
+          "jump_left",
+          "jump_right",
+          "jump_left",
+          "jump_right",
+          "jump_right",
+          "walk_left",
+          "walk_left",
+          "walk_left",
+          "jump_left",
+          "walk_right",
+          "jump_right",
+          "jump_right",
+          "jump_right",
+          "jump_right"
+        ],
+        [
+          "jump_left",
+          "walk_left",
+          "walk_left",
+          "jump_left",
+          "jump_right",
+          "walk_left",
+          "walk_left",
+          "jump_left",
+          "jump_left",
+          "jump_right",
+          "walk_right",
+          "walk_right",
+          "jump_right",
+          "jump_left",
+          "jump_right",
+          "jump_left",
+          "walk_left",
+          "walk_left",
+          "walk_left",
+          "walk_left",
+          "jump_left",
+          "walk_right",
+          "jump_left",
+          "walk_right",
+          "wait",
+          "walk_right",
+          "jump_right",
+          "walk_right",
+          "jump_left",
+          "walk_left",
+          "walk_left",
+          "jump_up",
+          "jump_right",
+          "jump_left",
+          "jump_right",
+          "jump_left",
+          "jump_right",
+          "jump_left",
+          "walk_right",
+          "jump_right",
+          "walk_right",
+          "jump_left",
+          "jump_left",
+          "walk_right",
+          "jump_right",
+          "jump_left",
+          "walk_right",
+          "walk_left",
+          "walk_left",
+          "walk_right",
+          "jump_left",
+          "walk_left",
+          "jump_left",
+          "walk_right",
+          "jump_left",
+          "walk_right",
+          "walk_right",
+          "jump_right",
+          "jump_up",
+          "walk_right",
+          "jump_right",
+          "walk_right",
+          "walk_right",
+          "jump_right",
+          "jump_right",
+          "walk_left",
+          "jump_left",
+          "jump_right",
+          "jump_left",
+          "walk_right",
+          "walk_left",
+          "jump_left",
+          "walk_left",
+          "walk_right",
+          "jump_right",
+          "jump_right",
+          "jump_left",
+          "jump_right",
+          "jump_left",
+          "jump_right",
+          "walk_left",
+          "jump_right",
+          "jump_right",
+          "jump_right"
+        ]
+      ],
+      "profiles": [
+        {
+          "walk_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 246
+          },
+          "walk_right": {
+            "status": "reachable",
+            "witness": [
+              "walk_right",
+              "jump_left",
+              "jump_left",
+              "jump_right"
+            ],
+            "searched_moves": 106
+          },
+          "jump_left": {
+            "status": "reachable",
+            "witness": [
+              "jump_left",
+              "walk_left",
+              "jump_left",
+              "jump_right"
+            ],
+            "searched_moves": 20
+          },
+          "jump_right": {
+            "status": "reachable",
+            "witness": [
+              "jump_right",
+              "jump_left",
+              "jump_left",
+              "jump_right"
+            ],
+            "searched_moves": 106
+          },
+          "wait": {
+            "status": "reachable",
+            "witness": [
+              "wait",
+              "jump_left",
+              "jump_left",
+              "jump_right"
+            ],
+            "searched_moves": 106
+          }
+        },
+        {
+          "walk_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 246
+          },
+          "walk_right": {
+            "status": "reachable",
+            "witness": [
+              "walk_right",
+              "jump_left",
+              "jump_left",
+              "jump_right"
+            ],
+            "searched_moves": 106
+          },
+          "jump_left": {
+            "status": "reachable",
+            "witness": [
+              "jump_left",
+              "walk_left",
+              "jump_left",
+              "jump_right"
+            ],
+            "searched_moves": 20
+          },
+          "jump_right": {
+            "status": "reachable",
+            "witness": [
+              "jump_right",
+              "jump_left",
+              "jump_left",
+              "jump_right"
+            ],
+            "searched_moves": 106
+          },
+          "wait": {
+            "status": "reachable",
+            "witness": [
+              "wait",
+              "jump_left",
+              "jump_left",
+              "jump_right"
+            ],
+            "searched_moves": 106
+          }
+        }
+      ],
+      "different_moves": [],
+      "conflicting_first_moves": false,
+      "common_proven_moves": [
+        "jump_left",
+        "jump_right",
+        "wait",
+        "walk_right"
+      ]
+    },
+    {
+      "source_row": 9,
+      "cavern": 5,
+      "prefixes": [
+        [
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "jump_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "jump_right",
+          "walk_right",
+          "walk_left",
+          "walk_right",
+          "wait",
+          "wait",
+          "jump_left"
+        ],
+        [
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "jump_right",
+          "walk_right",
+          "jump_right",
+          "jump_right",
+          "walk_left",
+          "wait",
+          "wait",
+          "jump_left"
+        ]
+      ],
+      "profiles": [
+        {
+          "walk_left": {
+            "status": "reachable",
+            "witness": [
+              "walk_left",
+              "walk_left",
+              "walk_left",
+              "jump_right"
+            ],
+            "searched_moves": 6
+          },
+          "walk_right": {
+            "status": "reachable",
+            "witness": [
+              "walk_right",
+              "walk_left",
+              "walk_right",
+              "jump_left"
+            ],
+            "searched_moves": 12
+          },
+          "jump_left": {
+            "status": "reachable",
+            "witness": [
+              "jump_left"
+            ],
+            "searched_moves": 0
+          },
+          "jump_up": {
+            "status": "reachable",
+            "witness": [
+              "jump_up",
+              "walk_left",
+              "walk_left",
+              "jump_left"
+            ],
+            "searched_moves": 5
+          },
+          "wait": {
+            "status": "reachable",
+            "witness": [
+              "wait",
+              "walk_left",
+              "walk_left",
+              "jump_up"
+            ],
+            "searched_moves": 7
+          }
+        },
+        {
+          "walk_left": {
+            "status": "reachable",
+            "witness": [
+              "walk_left",
+              "walk_left",
+              "walk_left",
+              "jump_right"
+            ],
+            "searched_moves": 6
+          },
+          "walk_right": {
+            "status": "reachable",
+            "witness": [
+              "walk_right",
+              "walk_left",
+              "walk_right",
+              "jump_left"
+            ],
+            "searched_moves": 12
+          },
+          "jump_left": {
+            "status": "reachable",
+            "witness": [
+              "jump_left"
+            ],
+            "searched_moves": 0
+          },
+          "jump_up": {
+            "status": "reachable",
+            "witness": [
+              "jump_up",
+              "walk_left",
+              "walk_left",
+              "jump_left"
+            ],
+            "searched_moves": 5
+          },
+          "wait": {
+            "status": "reachable",
+            "witness": [
+              "wait",
+              "walk_left",
+              "walk_left",
+              "jump_up"
+            ],
+            "searched_moves": 7
+          }
+        }
+      ],
+      "different_moves": [],
+      "conflicting_first_moves": false,
+      "common_proven_moves": [
+        "jump_left",
+        "jump_up",
+        "wait",
+        "walk_left",
+        "walk_right"
+      ]
+    },
+    {
+      "source_row": 10,
+      "cavern": 5,
+      "prefixes": [
+        [
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "jump_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "jump_right",
+          "walk_right",
+          "walk_left",
+          "walk_right",
+          "wait",
+          "wait",
+          "jump_left",
+          "jump_left",
+          "jump_left",
+          "jump_right",
+          "jump_right",
+          "walk_left",
+          "walk_left",
+          "walk_left",
+          "jump_right",
+          "walk_right",
+          "jump_left",
+          "walk_right",
+          "walk_left",
+          "jump_left",
+          "walk_left",
+          "walk_right",
+          "walk_right",
+          "jump_left",
+          "jump_right",
+          "jump_left",
+          "jump_right",
+          "jump_left",
+          "walk_right",
+          "jump_right",
+          "jump_left",
+          "jump_left",
+          "jump_right",
+          "walk_right",
+          "walk_right",
+          "jump_left",
+          "walk_right",
+          "jump_up",
+          "walk_right",
+          "jump_right",
+          "walk_left",
+          "walk_right",
+          "walk_left",
+          "walk_right",
+          "walk_right",
+          "walk_left",
+          "jump_right",
+          "walk_right",
+          "walk_right",
+          "walk_left",
+          "walk_left",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "wait",
+          "walk_right",
+          "jump_left",
+          "walk_left"
+        ],
+        [
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "jump_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "jump_right",
+          "walk_right",
+          "walk_left",
+          "walk_right",
+          "wait",
+          "wait",
+          "jump_left",
+          "jump_left",
+          "jump_left",
+          "jump_right",
+          "jump_right",
+          "walk_left",
+          "walk_left",
+          "walk_left",
+          "jump_right",
+          "walk_right",
+          "jump_left",
+          "walk_right",
+          "walk_left",
+          "jump_left",
+          "walk_left",
+          "walk_right",
+          "walk_right",
+          "jump_left",
+          "jump_right",
+          "jump_left",
+          "jump_right",
+          "jump_left",
+          "walk_right",
+          "jump_right",
+          "jump_left",
+          "jump_left",
+          "jump_right",
+          "walk_right",
+          "walk_right",
+          "jump_left",
+          "walk_right",
+          "jump_up",
+          "walk_right",
+          "jump_right",
+          "walk_left",
+          "walk_right",
+          "walk_left",
+          "walk_right",
+          "walk_left",
+          "jump_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "walk_left",
+          "walk_left",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "wait",
+          "walk_right",
+          "jump_left",
+          "walk_left"
+        ]
+      ],
+      "profiles": [
+        {
+          "walk_left": {
+            "status": "reachable",
+            "witness": [
+              "walk_left",
+              "walk_left",
+              "walk_left",
+              "jump_left"
+            ],
+            "searched_moves": 5
+          },
+          "walk_right": {
+            "status": "reachable",
+            "witness": [
+              "walk_right",
+              "walk_left",
+              "walk_left",
+              "jump_left"
+            ],
+            "searched_moves": 5
+          },
+          "jump_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 174
+          },
+          "jump_up": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 180
+          },
+          "wait": {
+            "status": "reachable",
+            "witness": [
+              "wait",
+              "walk_left",
+              "walk_left",
+              "jump_left"
+            ],
+            "searched_moves": 5
+          }
+        },
+        {
+          "walk_left": {
+            "status": "reachable",
+            "witness": [
+              "walk_left",
+              "walk_left",
+              "walk_left",
+              "jump_left"
+            ],
+            "searched_moves": 5
+          },
+          "walk_right": {
+            "status": "reachable",
+            "witness": [
+              "walk_right",
+              "walk_left",
+              "walk_left",
+              "jump_left"
+            ],
+            "searched_moves": 5
+          },
+          "jump_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 174
+          },
+          "jump_up": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 180
+          },
+          "wait": {
+            "status": "reachable",
+            "witness": [
+              "wait",
+              "walk_left",
+              "walk_left",
+              "jump_left"
+            ],
+            "searched_moves": 5
+          }
+        }
+      ],
+      "different_moves": [],
+      "conflicting_first_moves": false,
+      "common_proven_moves": [
+        "wait",
+        "walk_left",
+        "walk_right"
+      ]
+    },
+    {
+      "source_row": 11,
+      "cavern": 5,
+      "prefixes": [
+        [
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "jump_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "jump_right",
+          "walk_right",
+          "walk_left",
+          "walk_right",
+          "wait",
+          "wait",
+          "jump_left",
+          "jump_left",
+          "jump_left",
+          "jump_right",
+          "jump_right",
+          "walk_left",
+          "walk_left",
+          "walk_left",
+          "jump_right",
+          "walk_right",
+          "jump_left",
+          "walk_right",
+          "walk_left",
+          "jump_left",
+          "walk_left",
+          "walk_right",
+          "walk_right",
+          "jump_left",
+          "jump_right",
+          "jump_left",
+          "jump_right",
+          "jump_left",
+          "walk_right",
+          "jump_right",
+          "jump_left",
+          "jump_left",
+          "jump_right",
+          "walk_right",
+          "walk_right",
+          "jump_left",
+          "walk_right",
+          "jump_up",
+          "walk_right",
+          "jump_right",
+          "walk_left",
+          "walk_right",
+          "walk_left",
+          "walk_right",
+          "walk_right",
+          "walk_left",
+          "jump_right",
+          "walk_right",
+          "walk_right",
+          "walk_left",
+          "walk_left",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "wait",
+          "walk_right"
+        ],
+        [
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "jump_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "jump_right",
+          "walk_right",
+          "walk_left",
+          "walk_right",
+          "wait",
+          "wait",
+          "jump_left",
+          "jump_left",
+          "jump_left",
+          "jump_right",
+          "jump_right",
+          "walk_left",
+          "walk_left",
+          "walk_left",
+          "jump_right",
+          "walk_right",
+          "jump_left",
+          "walk_right",
+          "walk_left",
+          "jump_left",
+          "walk_left",
+          "walk_right",
+          "walk_right",
+          "jump_left",
+          "jump_right",
+          "jump_left",
+          "jump_right",
+          "jump_left",
+          "walk_right",
+          "jump_right",
+          "jump_left",
+          "jump_left",
+          "jump_right",
+          "walk_right",
+          "walk_right",
+          "jump_left",
+          "walk_right",
+          "jump_up",
+          "walk_right",
+          "jump_right",
+          "walk_left",
+          "walk_right",
+          "walk_left",
+          "walk_right",
+          "walk_left",
+          "jump_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "walk_left",
+          "walk_left",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "wait",
+          "walk_right"
+        ]
+      ],
+      "profiles": [
+        {
+          "jump_left": {
+            "status": "reachable",
+            "witness": [
+              "jump_left",
+              "walk_left",
+              "walk_left",
+              "jump_left"
+            ],
+            "searched_moves": 5
+          },
+          "wait": {
+            "status": "reachable",
+            "witness": [
+              "wait",
+              "walk_left",
+              "walk_left",
+              "jump_left"
+            ],
+            "searched_moves": 5
+          }
+        },
+        {
+          "jump_left": {
+            "status": "reachable",
+            "witness": [
+              "jump_left",
+              "walk_left",
+              "walk_left",
+              "jump_left"
+            ],
+            "searched_moves": 5
+          },
+          "wait": {
+            "status": "reachable",
+            "witness": [
+              "wait",
+              "walk_left",
+              "walk_left",
+              "jump_left"
+            ],
+            "searched_moves": 5
+          }
+        }
+      ],
+      "different_moves": [],
+      "conflicting_first_moves": false,
+      "common_proven_moves": [
+        "jump_left",
+        "wait"
+      ]
+    },
+    {
+      "source_row": 12,
+      "cavern": 9,
+      "prefixes": [
+        [
+          "jump_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "jump_left",
+          "walk_right",
+          "walk_right",
+          "jump_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "jump_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "wait",
+          "walk_right",
+          "jump_right",
+          "jump_left",
+          "jump_left",
+          "walk_left",
+          "jump_left",
+          "walk_left",
+          "jump_left",
+          "walk_right",
+          "jump_left",
+          "jump_left",
+          "jump_right",
+          "jump_right",
+          "walk_left",
+          "jump_right",
+          "jump_right",
+          "wait",
+          "walk_left",
+          "jump_left",
+          "walk_left",
+          "jump_right",
+          "jump_right",
+          "walk_left",
+          "jump_up",
+          "walk_left",
+          "wait",
+          "jump_up",
+          "jump_left",
+          "walk_left",
+          "walk_right",
+          "jump_left",
+          "walk_left"
+        ],
+        [
+          "jump_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "jump_left",
+          "walk_right",
+          "walk_right",
+          "jump_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "jump_right",
+          "walk_right",
+          "walk_right",
+          "wait",
+          "walk_right",
+          "jump_right",
+          "jump_left",
+          "walk_left",
+          "jump_left",
+          "jump_left",
+          "walk_left",
+          "jump_left",
+          "walk_right",
+          "jump_left",
+          "jump_left",
+          "jump_right",
+          "jump_right",
+          "walk_left",
+          "jump_right",
+          "jump_right",
+          "wait",
+          "walk_left",
+          "jump_left",
+          "walk_left",
+          "jump_right",
+          "jump_right",
+          "walk_left",
+          "jump_up",
+          "walk_left",
+          "wait",
+          "jump_up",
+          "jump_left",
+          "walk_left",
+          "walk_right",
+          "jump_left",
+          "walk_left"
+        ]
+      ],
+      "profiles": [
+        {
+          "walk_left": {
+            "status": "reachable",
+            "witness": [
+              "walk_left",
+              "walk_left",
+              "walk_right",
+              "jump_up"
+            ],
+            "searched_moves": 8
+          },
+          "walk_right": {
+            "status": "reachable",
+            "witness": [
+              "walk_right",
+              "walk_left",
+              "walk_left",
+              "jump_up"
+            ],
+            "searched_moves": 7
+          },
+          "jump_up": {
+            "status": "reachable",
+            "witness": [
+              "jump_up"
+            ],
+            "searched_moves": 0
+          },
+          "wait": {
+            "status": "reachable",
+            "witness": [
+              "wait",
+              "walk_left",
+              "walk_right",
+              "jump_left"
+            ],
+            "searched_moves": 12
+          }
+        },
+        {
+          "walk_left": {
+            "status": "reachable",
+            "witness": [
+              "walk_left",
+              "walk_left",
+              "walk_right",
+              "jump_up"
+            ],
+            "searched_moves": 8
+          },
+          "walk_right": {
+            "status": "reachable",
+            "witness": [
+              "walk_right",
+              "walk_left",
+              "walk_left",
+              "jump_up"
+            ],
+            "searched_moves": 7
+          },
+          "jump_up": {
+            "status": "reachable",
+            "witness": [
+              "jump_up"
+            ],
+            "searched_moves": 0
+          },
+          "wait": {
+            "status": "reachable",
+            "witness": [
+              "wait",
+              "walk_left",
+              "walk_right",
+              "jump_left"
+            ],
+            "searched_moves": 12
+          }
+        }
+      ],
+      "different_moves": [],
+      "conflicting_first_moves": false,
+      "common_proven_moves": [
+        "jump_up",
+        "wait",
+        "walk_left",
+        "walk_right"
+      ]
+    },
+    {
+      "source_row": 13,
+      "cavern": 9,
+      "prefixes": [
+        [
+          "jump_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "jump_left",
+          "walk_right",
+          "walk_right",
+          "jump_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "jump_right",
+          "walk_right",
+          "walk_right",
+          "wait",
+          "walk_right",
+          "jump_right",
+          "jump_left",
+          "jump_left",
+          "walk_left",
+          "jump_left",
+          "walk_left",
+          "jump_left",
+          "walk_right",
+          "jump_left",
+          "jump_left",
+          "jump_right",
+          "jump_right",
+          "walk_left",
+          "jump_right",
+          "jump_right",
+          "wait",
+          "walk_left",
+          "jump_left",
+          "walk_left",
+          "jump_right",
+          "jump_right",
+          "walk_left",
+          "jump_up",
+          "walk_left",
+          "wait",
+          "walk_right",
+          "jump_left",
+          "jump_left",
+          "wait",
+          "walk_right",
+          "jump_right",
+          "walk_left",
+          "walk_right",
+          "walk_left",
+          "walk_left",
+          "walk_right",
+          "jump_right",
+          "jump_left",
+          "walk_left",
+          "walk_right",
+          "walk_left",
+          "jump_left",
+          "walk_left",
+          "walk_left",
+          "walk_left",
+          "jump_left",
+          "walk_right"
+        ],
+        [
+          "jump_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "jump_left",
+          "walk_right",
+          "walk_right",
+          "jump_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "jump_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "wait",
+          "walk_right",
+          "jump_right",
+          "jump_left",
+          "jump_left",
+          "walk_left",
+          "jump_left",
+          "walk_left",
+          "jump_left",
+          "walk_right",
+          "jump_left",
+          "jump_left",
+          "jump_right",
+          "jump_right",
+          "walk_left",
+          "jump_right",
+          "jump_right",
+          "wait",
+          "walk_left",
+          "jump_left",
+          "walk_left",
+          "jump_right",
+          "jump_right",
+          "walk_left",
+          "jump_up",
+          "walk_left",
+          "wait",
+          "walk_right",
+          "jump_left",
+          "jump_left",
+          "wait",
+          "walk_right",
+          "jump_right",
+          "walk_left",
+          "walk_right",
+          "walk_left",
+          "walk_left",
+          "walk_right",
+          "jump_right",
+          "jump_left",
+          "walk_left",
+          "walk_right",
+          "walk_left",
+          "jump_left",
+          "walk_left",
+          "walk_left",
+          "walk_left",
+          "jump_left",
+          "walk_right"
+        ]
+      ],
+      "profiles": [
+        {
+          "walk_left": {
+            "status": "reachable",
+            "witness": [
+              "walk_left",
+              "walk_left",
+              "jump_right",
+              "jump_right"
+            ],
+            "searched_moves": 27
+          },
+          "jump_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 162
+          },
+          "jump_right": {
+            "status": "reachable",
+            "witness": [
+              "jump_right",
+              "walk_left",
+              "jump_right"
+            ],
+            "searched_moves": 23
+          },
+          "jump_up": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 114
+          },
+          "wait": {
+            "status": "reachable",
+            "witness": [
+              "wait",
+              "jump_right",
+              "jump_up",
+              "jump_right"
+            ],
+            "searched_moves": 115
+          }
+        },
+        {
+          "walk_left": {
+            "status": "reachable",
+            "witness": [
+              "walk_left",
+              "walk_left",
+              "jump_right",
+              "jump_right"
+            ],
+            "searched_moves": 27
+          },
+          "jump_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 162
+          },
+          "jump_right": {
+            "status": "reachable",
+            "witness": [
+              "jump_right",
+              "walk_left",
+              "jump_right"
+            ],
+            "searched_moves": 23
+          },
+          "jump_up": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 114
+          },
+          "wait": {
+            "status": "reachable",
+            "witness": [
+              "wait",
+              "jump_right",
+              "jump_up",
+              "jump_right"
+            ],
+            "searched_moves": 115
+          }
+        }
+      ],
+      "different_moves": [],
+      "conflicting_first_moves": false,
+      "common_proven_moves": [
+        "jump_right",
+        "wait",
+        "walk_left"
+      ]
+    },
+    {
+      "source_row": 14,
+      "cavern": 9,
+      "prefixes": [
+        [
+          "jump_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "jump_left",
+          "walk_right",
+          "walk_right",
+          "jump_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "jump_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "wait",
+          "walk_right",
+          "jump_right",
+          "jump_left",
+          "walk_left",
+          "jump_left",
+          "jump_left",
+          "walk_left",
+          "jump_left",
+          "walk_right",
+          "jump_left",
+          "jump_left",
+          "jump_right",
+          "jump_right",
+          "walk_left",
+          "jump_right",
+          "jump_right",
+          "wait",
+          "walk_left",
+          "jump_left",
+          "walk_left",
+          "jump_right",
+          "jump_right",
+          "walk_left",
+          "jump_up",
+          "walk_left",
+          "wait",
+          "walk_right",
+          "jump_left",
+          "jump_left",
+          "wait",
+          "jump_right",
+          "walk_left",
+          "walk_right",
+          "walk_left",
+          "walk_left",
+          "wait",
+          "walk_right",
+          "jump_right",
+          "jump_left"
+        ],
+        [
+          "jump_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "jump_left",
+          "walk_right",
+          "walk_right",
+          "jump_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "jump_right",
+          "walk_right",
+          "walk_right",
+          "wait",
+          "walk_right",
+          "jump_right",
+          "jump_left",
+          "jump_left",
+          "walk_left",
+          "jump_left",
+          "walk_left",
+          "jump_left",
+          "walk_right",
+          "jump_left",
+          "jump_left",
+          "jump_right",
+          "jump_right",
+          "walk_left",
+          "jump_right",
+          "jump_right",
+          "wait",
+          "walk_left",
+          "jump_left",
+          "walk_left",
+          "jump_right",
+          "jump_right",
+          "walk_left",
+          "jump_up",
+          "walk_left",
+          "wait",
+          "walk_right",
+          "jump_left",
+          "jump_left",
+          "wait",
+          "walk_right",
+          "jump_right",
+          "walk_left",
+          "walk_right",
+          "walk_left",
+          "walk_left",
+          "walk_right",
+          "jump_right",
+          "jump_left"
+        ]
+      ],
+      "profiles": [
+        {
+          "walk_left": {
+            "status": "reachable",
+            "witness": [
+              "walk_left",
+              "jump_up",
+              "jump_left",
+              "jump_up"
+            ],
+            "searched_moves": 49
+          },
+          "walk_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 174
+          },
+          "jump_right": {
+            "status": "reachable",
+            "witness": [
+              "jump_right",
+              "jump_left",
+              "jump_left",
+              "jump_left"
+            ],
+            "searched_moves": 57
+          },
+          "jump_up": {
+            "status": "reachable",
+            "witness": [
+              "jump_up",
+              "walk_left",
+              "jump_left",
+              "jump_up"
+            ],
+            "searched_moves": 15
+          },
+          "wait": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 156
+          }
+        },
+        {
+          "walk_left": {
+            "status": "reachable",
+            "witness": [
+              "walk_left",
+              "jump_up",
+              "jump_left",
+              "jump_up"
+            ],
+            "searched_moves": 49
+          },
+          "walk_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 174
+          },
+          "jump_right": {
+            "status": "reachable",
+            "witness": [
+              "jump_right",
+              "jump_left",
+              "jump_left",
+              "jump_left"
+            ],
+            "searched_moves": 57
+          },
+          "jump_up": {
+            "status": "reachable",
+            "witness": [
+              "jump_up",
+              "walk_left",
+              "jump_left",
+              "jump_up"
+            ],
+            "searched_moves": 15
+          },
+          "wait": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 156
+          }
+        }
+      ],
+      "different_moves": [],
+      "conflicting_first_moves": false,
+      "common_proven_moves": [
+        "jump_right",
+        "jump_up",
+        "walk_left"
+      ]
+    },
+    {
+      "source_row": 15,
+      "cavern": 10,
+      "prefixes": [
+        [
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "jump_left",
+          "walk_right",
+          "wait",
+          "jump_left",
+          "walk_right",
+          "walk_right",
+          "jump_right"
+        ],
+        [
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "jump_left",
+          "walk_right",
+          "jump_left",
+          "jump_left",
+          "walk_right",
+          "walk_right",
+          "jump_right"
+        ]
+      ],
+      "profiles": [
+        {
+          "walk_left": {
+            "status": "reachable",
+            "witness": [
+              "walk_left",
+              "jump_left",
+              "jump_right",
+              "jump_right"
+            ],
+            "searched_moves": 107
+          },
+          "walk_right": {
+            "status": "reachable",
+            "witness": [
+              "walk_right",
+              "jump_left",
+              "jump_right",
+              "jump_right"
+            ],
+            "searched_moves": 65
+          },
+          "jump_left": {
+            "status": "reachable",
+            "witness": [
+              "jump_left",
+              "walk_right",
+              "jump_right",
+              "jump_right"
+            ],
+            "searched_moves": 52
+          },
+          "jump_right": {
+            "status": "reachable",
+            "witness": [
+              "jump_right"
+            ],
+            "searched_moves": 0
+          },
+          "wait": {
+            "status": "reachable",
+            "witness": [
+              "wait",
+              "jump_left",
+              "jump_right",
+              "jump_right"
+            ],
+            "searched_moves": 89
+          }
+        },
+        {
+          "walk_left": {
+            "status": "reachable",
+            "witness": [
+              "walk_left",
+              "jump_left",
+              "jump_right",
+              "jump_right"
+            ],
+            "searched_moves": 107
+          },
+          "walk_right": {
+            "status": "reachable",
+            "witness": [
+              "walk_right",
+              "jump_left",
+              "jump_right",
+              "jump_right"
+            ],
+            "searched_moves": 77
+          },
+          "jump_left": {
+            "status": "reachable",
+            "witness": [
+              "jump_left",
+              "walk_right",
+              "jump_right",
+              "jump_right"
+            ],
+            "searched_moves": 52
+          },
+          "jump_right": {
+            "status": "reachable",
+            "witness": [
+              "jump_right"
+            ],
+            "searched_moves": 0
+          },
+          "wait": {
+            "status": "reachable",
+            "witness": [
+              "wait",
+              "jump_left",
+              "jump_right",
+              "jump_right"
+            ],
+            "searched_moves": 89
+          }
+        }
+      ],
+      "different_moves": [],
+      "conflicting_first_moves": false,
+      "common_proven_moves": [
+        "jump_left",
+        "jump_right",
+        "wait",
+        "walk_left",
+        "walk_right"
+      ]
+    },
+    {
+      "source_row": 16,
+      "cavern": 10,
+      "prefixes": [
+        [
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "jump_left",
+          "walk_right",
+          "jump_left",
+          "walk_right",
+          "jump_left",
+          "jump_left"
+        ],
+        [
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "jump_right",
+          "walk_right",
+          "jump_left",
+          "walk_right",
+          "jump_left",
+          "jump_left"
+        ]
+      ],
+      "profiles": [
+        {
+          "walk_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 138
+          },
+          "walk_right": {
+            "status": "reachable",
+            "witness": [
+              "walk_right",
+              "jump_right",
+              "jump_right"
+            ],
+            "searched_moves": 146
+          },
+          "jump_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 180
+          },
+          "jump_up": {
+            "status": "reachable",
+            "witness": [
+              "jump_up",
+              "walk_right",
+              "jump_right",
+              "jump_right"
+            ],
+            "searched_moves": 52
+          },
+          "wait": {
+            "status": "reachable",
+            "witness": [
+              "wait",
+              "walk_right",
+              "jump_right",
+              "jump_right"
+            ],
+            "searched_moves": 58
+          }
+        },
+        {
+          "walk_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 138
+          },
+          "walk_right": {
+            "status": "reachable",
+            "witness": [
+              "walk_right",
+              "jump_right",
+              "walk_right",
+              "jump_right"
+            ],
+            "searched_moves": 136
+          },
+          "jump_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 180
+          },
+          "jump_up": {
+            "status": "reachable",
+            "witness": [
+              "jump_up",
+              "jump_right",
+              "wait",
+              "jump_right"
+            ],
+            "searched_moves": 128
+          },
+          "wait": {
+            "status": "reachable",
+            "witness": [
+              "wait",
+              "walk_right",
+              "jump_right",
+              "jump_right"
+            ],
+            "searched_moves": 58
+          }
+        }
+      ],
+      "different_moves": [],
+      "conflicting_first_moves": false,
+      "common_proven_moves": [
+        "jump_up",
+        "wait",
+        "walk_right"
+      ]
+    },
+    {
+      "source_row": 17,
+      "cavern": 10,
+      "prefixes": [
+        [
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "jump_left",
+          "walk_right",
+          "jump_left",
+          "jump_left"
+        ],
+        [
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "jump_right",
+          "walk_right",
+          "jump_left",
+          "jump_left"
+        ]
+      ],
+      "profiles": [
+        {
+          "walk_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 180
+          },
+          "walk_right": {
+            "status": "reachable",
+            "witness": [
+              "walk_right",
+              "walk_right",
+              "jump_right",
+              "jump_right"
+            ],
+            "searched_moves": 52
+          },
+          "jump_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 180
+          },
+          "wait": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 138
+          }
+        },
+        {
+          "walk_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 180
+          },
+          "walk_right": {
+            "status": "reachable",
+            "witness": [
+              "walk_right",
+              "walk_right",
+              "jump_right",
+              "jump_right"
+            ],
+            "searched_moves": 52
+          },
+          "jump_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 180
+          },
+          "wait": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 138
+          }
+        }
+      ],
+      "different_moves": [],
+      "conflicting_first_moves": false,
+      "common_proven_moves": [
+        "walk_right"
+      ]
+    },
+    {
+      "source_row": 18,
+      "cavern": 14,
+      "prefixes": [
+        [
+          "jump_left",
+          "jump_left",
+          "jump_left",
+          "jump_left",
+          "jump_left",
+          "jump_left",
+          "jump_right",
+          "walk_right",
+          "jump_up",
+          "jump_right",
+          "walk_right",
+          "wait",
+          "jump_left",
+          "walk_right",
+          "jump_up",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "jump_left",
+          "walk_left",
+          "walk_left",
+          "walk_left",
+          "jump_up",
+          "walk_right",
+          "jump_left",
+          "walk_left",
+          "walk_left",
+          "walk_right",
+          "jump_left",
+          "jump_right",
+          "jump_right",
+          "walk_right",
+          "jump_right",
+          "walk_left",
+          "jump_left",
+          "walk_right",
+          "walk_left",
+          "jump_left",
+          "walk_right",
+          "wait",
+          "walk_right",
+          "jump_right",
+          "jump_left",
+          "jump_right",
+          "jump_right",
+          "walk_right",
+          "jump_left",
+          "walk_right",
+          "jump_right",
+          "jump_right",
+          "jump_right"
+        ],
+        [
+          "jump_left",
+          "jump_left",
+          "jump_left",
+          "jump_left",
+          "jump_left",
+          "jump_left",
+          "jump_right",
+          "walk_right",
+          "jump_up",
+          "jump_right",
+          "walk_right",
+          "wait",
+          "jump_left",
+          "walk_right",
+          "jump_up",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "jump_left",
+          "walk_left",
+          "walk_left",
+          "walk_left",
+          "jump_up",
+          "walk_right",
+          "jump_left",
+          "walk_left",
+          "jump_up",
+          "jump_up",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "jump_right",
+          "jump_left",
+          "jump_left",
+          "jump_right",
+          "jump_right",
+          "jump_left",
+          "walk_right",
+          "jump_right",
+          "jump_left",
+          "jump_right",
+          "jump_right",
+          "jump_left",
+          "jump_right",
+          "jump_left",
+          "walk_left",
+          "walk_right",
+          "jump_up",
+          "jump_up",
+          "walk_right",
+          "jump_left",
+          "walk_right",
+          "jump_right",
+          "jump_right"
+        ]
+      ],
+      "profiles": [
+        {
+          "walk_left": {
+            "status": "reachable",
+            "witness": [
+              "walk_left",
+              "walk_left",
+              "walk_right",
+              "jump_right"
+            ],
+            "searched_moves": 7
+          },
+          "walk_right": {
+            "status": "reachable",
+            "witness": [
+              "walk_right"
+            ],
+            "searched_moves": 0
+          },
+          "jump_right": {
+            "status": "reachable",
+            "witness": [
+              "jump_right"
+            ],
+            "searched_moves": 0
+          },
+          "jump_up": {
+            "status": "reachable",
+            "witness": [
+              "jump_up",
+              "walk_left",
+              "walk_right",
+              "walk_right"
+            ],
+            "searched_moves": 11
+          },
+          "wait": {
+            "status": "reachable",
+            "witness": [
+              "wait",
+              "walk_left",
+              "walk_left",
+              "jump_right"
+            ],
+            "searched_moves": 6
+          }
+        },
+        {
+          "walk_left": {
+            "status": "reachable",
+            "witness": [
+              "walk_left",
+              "walk_left",
+              "jump_right"
+            ],
+            "searched_moves": 11
+          },
+          "walk_right": {
+            "status": "reachable",
+            "witness": [
+              "walk_right"
+            ],
+            "searched_moves": 0
+          },
+          "jump_right": {
+            "status": "reachable",
+            "witness": [
+              "jump_right"
+            ],
+            "searched_moves": 0
+          },
+          "jump_up": {
+            "status": "reachable",
+            "witness": [
+              "jump_up",
+              "walk_left",
+              "walk_left",
+              "jump_right"
+            ],
+            "searched_moves": 6
+          },
+          "wait": {
+            "status": "reachable",
+            "witness": [
+              "wait",
+              "walk_left",
+              "walk_right",
+              "walk_right"
+            ],
+            "searched_moves": 11
+          }
+        }
+      ],
+      "different_moves": [],
+      "conflicting_first_moves": false,
+      "common_proven_moves": [
+        "jump_right",
+        "jump_up",
+        "wait",
+        "walk_left",
+        "walk_right"
+      ]
+    },
+    {
+      "source_row": 19,
+      "cavern": 14,
+      "prefixes": [
+        [
+          "jump_left",
+          "jump_left",
+          "jump_left",
+          "jump_left",
+          "jump_left",
+          "jump_left",
+          "jump_right",
+          "walk_right",
+          "jump_up",
+          "jump_right",
+          "walk_right",
+          "wait",
+          "jump_left",
+          "walk_right",
+          "jump_up",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "jump_left",
+          "walk_left",
+          "walk_left",
+          "walk_left",
+          "jump_up",
+          "walk_right",
+          "jump_left",
+          "walk_left",
+          "walk_left",
+          "walk_right",
+          "jump_left",
+          "jump_right",
+          "jump_right",
+          "walk_right",
+          "jump_right",
+          "walk_left",
+          "jump_left",
+          "walk_right",
+          "walk_left",
+          "jump_left",
+          "walk_right",
+          "wait",
+          "walk_right",
+          "jump_right",
+          "jump_left",
+          "jump_right",
+          "jump_right",
+          "walk_right",
+          "jump_left",
+          "walk_right",
+          "jump_right"
+        ],
+        [
+          "jump_left",
+          "jump_left",
+          "jump_left",
+          "jump_left",
+          "jump_left",
+          "jump_left",
+          "jump_right",
+          "walk_right",
+          "walk_right",
+          "jump_up",
+          "jump_up",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "wait",
+          "jump_left",
+          "jump_right",
+          "jump_left",
+          "walk_left",
+          "walk_left",
+          "walk_left",
+          "walk_left",
+          "jump_up",
+          "walk_right",
+          "walk_right",
+          "jump_left",
+          "walk_left",
+          "jump_left",
+          "jump_right",
+          "jump_right",
+          "walk_right",
+          "jump_right",
+          "walk_left",
+          "jump_left",
+          "walk_right",
+          "walk_left",
+          "jump_left",
+          "walk_right",
+          "jump_left",
+          "walk_right",
+          "jump_right",
+          "jump_left",
+          "jump_right",
+          "jump_right",
+          "walk_right",
+          "jump_left",
+          "walk_right",
+          "jump_right"
+        ]
+      ],
+      "profiles": [
+        {
+          "walk_left": {
+            "status": "reachable",
+            "witness": [
+              "walk_left",
+              "jump_right",
+              "jump_right",
+              "jump_right"
+            ],
+            "searched_moves": 138
+          },
+          "walk_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 246
+          },
+          "jump_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 210
+          },
+          "jump_right": {
+            "status": "reachable",
+            "witness": [
+              "jump_right",
+              "walk_left",
+              "jump_right",
+              "jump_right"
+            ],
+            "searched_moves": 27
+          },
+          "jump_up": {
+            "status": "reachable",
+            "witness": [
+              "jump_up",
+              "jump_right",
+              "jump_right",
+              "walk_right"
+            ],
+            "searched_moves": 154
+          },
+          "wait": {
+            "status": "reachable",
+            "witness": [
+              "wait",
+              "jump_right",
+              "jump_right",
+              "walk_right"
+            ],
+            "searched_moves": 154
+          }
+        },
+        {
+          "walk_left": {
+            "status": "reachable",
+            "witness": [
+              "walk_left",
+              "jump_right",
+              "jump_right",
+              "jump_right"
+            ],
+            "searched_moves": 138
+          },
+          "walk_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 246
+          },
+          "jump_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 156
+          },
+          "jump_right": {
+            "status": "reachable",
+            "witness": [
+              "jump_right",
+              "walk_left",
+              "jump_right",
+              "jump_right"
+            ],
+            "searched_moves": 27
+          },
+          "jump_up": {
+            "status": "reachable",
+            "witness": [
+              "jump_up",
+              "jump_right",
+              "jump_right",
+              "walk_right"
+            ],
+            "searched_moves": 154
+          },
+          "wait": {
+            "status": "reachable",
+            "witness": [
+              "wait",
+              "jump_right",
+              "jump_right",
+              "walk_right"
+            ],
+            "searched_moves": 148
+          }
+        }
+      ],
+      "different_moves": [],
+      "conflicting_first_moves": false,
+      "common_proven_moves": [
+        "jump_right",
+        "jump_up",
+        "wait",
+        "walk_left"
+      ]
+    },
+    {
+      "source_row": 20,
+      "cavern": 14,
+      "prefixes": [
+        [
+          "jump_left",
+          "jump_left",
+          "jump_left",
+          "jump_left",
+          "jump_left",
+          "jump_left",
+          "jump_right",
+          "walk_right",
+          "jump_up",
+          "jump_right",
+          "walk_right",
+          "wait",
+          "jump_left",
+          "walk_right",
+          "jump_up",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "jump_left",
+          "walk_left",
+          "walk_left",
+          "walk_left",
+          "jump_up",
+          "walk_right",
+          "jump_left",
+          "walk_left",
+          "walk_left",
+          "walk_right",
+          "jump_left",
+          "jump_right",
+          "jump_right",
+          "walk_right",
+          "jump_right",
+          "walk_left",
+          "jump_left",
+          "walk_right",
+          "walk_left",
+          "jump_left",
+          "walk_right",
+          "wait",
+          "walk_right",
+          "jump_right",
+          "jump_left",
+          "jump_right",
+          "jump_right",
+          "walk_right",
+          "jump_left",
+          "walk_right"
+        ],
+        [
+          "jump_left",
+          "jump_left",
+          "jump_left",
+          "jump_left",
+          "jump_left",
+          "jump_left",
+          "jump_right",
+          "walk_right",
+          "jump_up",
+          "jump_right",
+          "walk_right",
+          "wait",
+          "jump_left",
+          "walk_right",
+          "jump_up",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "jump_left",
+          "walk_left",
+          "walk_left",
+          "walk_left",
+          "jump_up",
+          "walk_right",
+          "jump_left",
+          "walk_left",
+          "walk_left",
+          "walk_right",
+          "jump_left",
+          "jump_right",
+          "jump_right",
+          "walk_right",
+          "jump_right",
+          "walk_left",
+          "jump_left",
+          "walk_right",
+          "walk_left",
+          "jump_left",
+          "walk_right",
+          "jump_left",
+          "walk_right",
+          "jump_right",
+          "jump_left",
+          "jump_right",
+          "jump_right",
+          "jump_left",
+          "jump_left",
+          "walk_right",
+          "walk_right",
+          "jump_right",
+          "jump_right",
+          "walk_left",
+          "walk_right",
+          "jump_up",
+          "jump_right",
+          "jump_right",
+          "walk_left",
+          "jump_left",
+          "walk_right",
+          "jump_right",
+          "walk_right",
+          "walk_right",
+          "jump_left",
+          "walk_right",
+          "walk_left",
+          "jump_right",
+          "walk_left",
+          "walk_left",
+          "jump_left",
+          "jump_up",
+          "jump_up",
+          "walk_right",
+          "jump_left",
+          "walk_right",
+          "walk_right"
+        ]
+      ],
+      "profiles": [
+        {
+          "jump_left": {
+            "status": "reachable",
+            "witness": [
+              "jump_left",
+              "jump_right",
+              "jump_right",
+              "walk_right"
+            ],
+            "searched_moves": 142
+          },
+          "jump_right": {
+            "status": "reachable",
+            "witness": [
+              "jump_right",
+              "jump_right",
+              "jump_right",
+              "walk_right"
+            ],
+            "searched_moves": 148
+          },
+          "wait": {
+            "status": "reachable",
+            "witness": [
+              "wait",
+              "jump_right",
+              "jump_right",
+              "walk_right"
+            ],
+            "searched_moves": 142
+          }
+        },
+        {
+          "jump_left": {
+            "status": "reachable",
+            "witness": [
+              "jump_left",
+              "jump_right",
+              "jump_right",
+              "walk_right"
+            ],
+            "searched_moves": 142
+          },
+          "jump_right": {
+            "status": "reachable",
+            "witness": [
+              "jump_right",
+              "jump_right",
+              "jump_right",
+              "walk_right"
+            ],
+            "searched_moves": 142
+          },
+          "wait": {
+            "status": "reachable",
+            "witness": [
+              "wait",
+              "jump_right",
+              "jump_right",
+              "walk_right"
+            ],
+            "searched_moves": 142
+          }
+        }
+      ],
+      "different_moves": [],
+      "conflicting_first_moves": false,
+      "common_proven_moves": [
+        "jump_left",
+        "jump_right",
+        "wait"
+      ]
+    },
+    {
+      "source_row": 21,
+      "cavern": 15,
+      "prefixes": [
+        [
+          "jump_right",
+          "walk_right",
+          "walk_right",
+          "wait",
+          "wait",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "wait",
+          "walk_right",
+          "walk_right",
+          "walk_left",
+          "jump_left",
+          "walk_right",
+          "jump_right",
+          "walk_right",
+          "walk_right",
+          "jump_left",
+          "walk_right",
+          "walk_left",
+          "walk_left",
+          "walk_left",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "jump_up",
+          "walk_right",
+          "walk_right",
+          "wait",
+          "jump_right",
+          "walk_right",
+          "walk_right"
+        ],
+        [
+          "jump_right",
+          "walk_right",
+          "walk_right",
+          "wait",
+          "wait",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "wait",
+          "walk_right",
+          "walk_right",
+          "jump_left",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "jump_left",
+          "walk_right",
+          "walk_right",
+          "jump_right",
+          "walk_right",
+          "walk_left",
+          "walk_left",
+          "walk_right",
+          "jump_up",
+          "wait",
+          "walk_right",
+          "jump_left",
+          "walk_left",
+          "jump_right",
+          "walk_right",
+          "walk_left",
+          "walk_right",
+          "jump_right",
+          "walk_right",
+          "walk_right"
+        ]
+      ],
+      "profiles": [
+        {
+          "walk_right": {
+            "status": "reachable",
+            "witness": [
+              "walk_right",
+              "walk_right",
+              "walk_right"
+            ],
+            "searched_moves": 10
+          },
+          "jump_right": {
+            "status": "reachable",
+            "witness": [
+              "jump_right"
+            ],
+            "searched_moves": 0
+          },
+          "wait": {
+            "status": "reachable",
+            "witness": [
+              "wait",
+              "walk_right",
+              "walk_right",
+              "walk_right"
+            ],
+            "searched_moves": 6
+          }
+        },
+        {
+          "walk_right": {
+            "status": "reachable",
+            "witness": [
+              "walk_right",
+              "walk_right",
+              "walk_right"
+            ],
+            "searched_moves": 10
+          },
+          "jump_right": {
+            "status": "reachable",
+            "witness": [
+              "jump_right"
+            ],
+            "searched_moves": 0
+          },
+          "wait": {
+            "status": "reachable",
+            "witness": [
+              "wait",
+              "walk_right",
+              "walk_right",
+              "walk_right"
+            ],
+            "searched_moves": 6
+          }
+        }
+      ],
+      "different_moves": [],
+      "conflicting_first_moves": false,
+      "common_proven_moves": [
+        "jump_right",
+        "wait",
+        "walk_right"
+      ]
+    },
+    {
+      "source_row": 22,
+      "cavern": 15,
+      "prefixes": [
+        [
+          "jump_right",
+          "walk_right",
+          "walk_right",
+          "wait",
+          "wait",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "wait",
+          "walk_right",
+          "walk_right",
+          "walk_left",
+          "jump_left",
+          "walk_right",
+          "jump_right",
+          "walk_right",
+          "walk_right",
+          "jump_left",
+          "walk_right",
+          "walk_left",
+          "walk_left",
+          "walk_left",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "jump_up",
+          "walk_right",
+          "walk_right",
+          "wait",
+          "jump_right",
+          "walk_right"
+        ],
+        [
+          "jump_right",
+          "walk_right",
+          "walk_right",
+          "wait",
+          "wait",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "wait",
+          "walk_right",
+          "walk_right",
+          "jump_left",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "jump_left",
+          "walk_right",
+          "walk_right",
+          "jump_right",
+          "walk_right",
+          "walk_left",
+          "walk_left",
+          "walk_right",
+          "jump_up",
+          "wait",
+          "walk_right",
+          "jump_left",
+          "walk_left",
+          "jump_right",
+          "walk_right",
+          "walk_left",
+          "walk_right",
+          "jump_right",
+          "walk_right"
+        ]
+      ],
+      "profiles": [
+        {
+          "walk_right": {
+            "status": "reachable",
+            "witness": [
+              "walk_right",
+              "walk_right",
+              "walk_right",
+              "walk_right"
+            ],
+            "searched_moves": 12
+          },
+          "wait": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 24
+          }
+        },
+        {
+          "walk_right": {
+            "status": "reachable",
+            "witness": [
+              "walk_right",
+              "walk_right",
+              "walk_right",
+              "walk_right"
+            ],
+            "searched_moves": 12
+          },
+          "wait": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 24
+          }
+        }
+      ],
+      "different_moves": [],
+      "conflicting_first_moves": false,
+      "common_proven_moves": [
+        "walk_right"
+      ]
+    },
+    {
+      "source_row": 23,
+      "cavern": 15,
+      "prefixes": [
+        [
+          "jump_right",
+          "walk_right",
+          "walk_right",
+          "wait",
+          "wait",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "wait",
+          "walk_right",
+          "walk_right",
+          "walk_left",
+          "jump_left",
+          "walk_right",
+          "jump_right",
+          "walk_right",
+          "walk_right",
+          "jump_left",
+          "walk_right",
+          "walk_left",
+          "walk_left",
+          "walk_left",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "jump_up",
+          "walk_right",
+          "walk_right",
+          "wait",
+          "jump_right",
+          "walk_right",
+          "walk_right",
+          "jump_right",
+          "walk_left",
+          "walk_left",
+          "walk_left",
+          "walk_left",
+          "walk_left",
+          "walk_right",
+          "walk_right",
+          "jump_right",
+          "jump_right",
+          "walk_left",
+          "walk_right",
+          "jump_up",
+          "jump_up",
+          "jump_up",
+          "jump_up",
+          "jump_up"
+        ],
+        [
+          "jump_right",
+          "walk_right",
+          "walk_right",
+          "wait",
+          "wait",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "wait",
+          "walk_right",
+          "walk_right",
+          "jump_left",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "jump_left",
+          "walk_right",
+          "walk_right",
+          "jump_right",
+          "walk_right",
+          "walk_left",
+          "walk_left",
+          "walk_right",
+          "jump_up",
+          "wait",
+          "walk_right",
+          "jump_left",
+          "walk_left",
+          "jump_right",
+          "walk_right",
+          "walk_left",
+          "walk_right",
+          "jump_right",
+          "walk_right",
+          "walk_right",
+          "jump_right",
+          "walk_left",
+          "walk_left",
+          "walk_left",
+          "walk_left",
+          "walk_left",
+          "walk_right",
+          "walk_right",
+          "jump_right",
+          "jump_right",
+          "walk_left",
+          "walk_right",
+          "jump_up",
+          "jump_up",
+          "jump_up",
+          "jump_up",
+          "jump_up"
+        ]
+      ],
+      "profiles": [
+        {
+          "walk_left": {
+            "status": "reachable",
+            "witness": [
+              "walk_left",
+              "walk_left",
+              "walk_left",
+              "walk_left"
+            ],
+            "searched_moves": 3
+          },
+          "walk_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 258
+          },
+          "jump_left": {
+            "status": "reachable",
+            "witness": [
+              "jump_left",
+              "walk_left",
+              "walk_left",
+              "walk_left"
+            ],
+            "searched_moves": 3
+          },
+          "jump_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 258
+          },
+          "jump_up": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 258
+          },
+          "wait": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 258
+          }
+        },
+        {
+          "walk_left": {
+            "status": "reachable",
+            "witness": [
+              "walk_left",
+              "walk_left",
+              "walk_left",
+              "walk_left"
+            ],
+            "searched_moves": 3
+          },
+          "walk_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 258
+          },
+          "jump_left": {
+            "status": "reachable",
+            "witness": [
+              "jump_left",
+              "walk_left",
+              "walk_left",
+              "walk_left"
+            ],
+            "searched_moves": 3
+          },
+          "jump_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 258
+          },
+          "jump_up": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 258
+          },
+          "wait": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 258
+          }
+        }
+      ],
+      "different_moves": [],
+      "conflicting_first_moves": false,
+      "common_proven_moves": [
+        "jump_left",
+        "walk_left"
+      ]
+    },
+    {
+      "source_row": 24,
+      "cavern": 18,
+      "prefixes": [
+        [
+          "jump_left",
+          "jump_left",
+          "walk_right",
+          "jump_left",
+          "walk_left",
+          "jump_right",
+          "jump_right",
+          "walk_left",
+          "jump_left",
+          "jump_left",
+          "walk_left",
+          "jump_left",
+          "jump_left",
+          "jump_left",
+          "walk_right",
+          "jump_up",
+          "jump_right",
+          "jump_right",
+          "jump_right",
+          "walk_left",
+          "walk_left",
+          "jump_right",
+          "jump_right",
+          "jump_right",
+          "jump_right",
+          "jump_left",
+          "walk_right",
+          "walk_left",
+          "jump_right",
+          "walk_left",
+          "jump_up",
+          "jump_left",
+          "walk_left",
+          "wait",
+          "wait",
+          "walk_left",
+          "walk_right",
+          "jump_left",
+          "walk_right",
+          "walk_right",
+          "wait",
+          "jump_left",
+          "walk_right",
+          "walk_right",
+          "wait",
+          "walk_right",
+          "walk_right",
+          "jump_up",
+          "walk_left",
+          "walk_left",
+          "jump_left",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "walk_left",
+          "jump_left",
+          "walk_right",
+          "jump_left",
+          "jump_left",
+          "walk_right",
+          "jump_up",
+          "jump_right",
+          "jump_right"
+        ],
+        [
+          "jump_left",
+          "jump_left",
+          "walk_right",
+          "jump_left",
+          "walk_left",
+          "jump_right",
+          "jump_right",
+          "walk_left",
+          "jump_left",
+          "jump_left",
+          "walk_left",
+          "jump_left",
+          "jump_left",
+          "jump_left",
+          "walk_right",
+          "jump_up",
+          "jump_right",
+          "jump_right",
+          "jump_right",
+          "walk_left",
+          "walk_left",
+          "jump_right",
+          "jump_right",
+          "jump_right",
+          "jump_right",
+          "jump_left",
+          "walk_right",
+          "walk_left",
+          "wait",
+          "jump_right",
+          "walk_left",
+          "jump_up",
+          "jump_left",
+          "walk_left",
+          "wait",
+          "walk_left",
+          "walk_right",
+          "jump_left",
+          "walk_right",
+          "walk_right",
+          "wait",
+          "jump_left",
+          "walk_right",
+          "walk_right",
+          "wait",
+          "walk_right",
+          "walk_right",
+          "jump_up",
+          "walk_left",
+          "walk_left",
+          "jump_left",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "walk_left",
+          "jump_left",
+          "walk_right",
+          "jump_left",
+          "jump_left",
+          "walk_right",
+          "jump_up",
+          "jump_right",
+          "jump_right"
+        ]
+      ],
+      "profiles": [
+        {
+          "walk_right": {
+            "status": "reachable",
+            "witness": [
+              "walk_right",
+              "jump_right"
+            ],
+            "searched_moves": 40
+          },
+          "jump_left": {
+            "status": "reachable",
+            "witness": [
+              "jump_left",
+              "jump_up",
+              "jump_right",
+              "jump_right"
+            ],
+            "searched_moves": 25
+          },
+          "jump_right": {
+            "status": "reachable",
+            "witness": [
+              "jump_right"
+            ],
+            "searched_moves": 0
+          }
+        },
+        {
+          "walk_right": {
+            "status": "reachable",
+            "witness": [
+              "walk_right",
+              "jump_right"
+            ],
+            "searched_moves": 40
+          },
+          "jump_left": {
+            "status": "reachable",
+            "witness": [
+              "jump_left",
+              "jump_up",
+              "jump_right",
+              "jump_right"
+            ],
+            "searched_moves": 25
+          },
+          "jump_right": {
+            "status": "reachable",
+            "witness": [
+              "jump_right"
+            ],
+            "searched_moves": 0
+          }
+        }
+      ],
+      "different_moves": [],
+      "conflicting_first_moves": false,
+      "common_proven_moves": [
+        "jump_left",
+        "jump_right",
+        "walk_right"
+      ]
+    },
+    {
+      "source_row": 25,
+      "cavern": 18,
+      "prefixes": [
+        [
+          "jump_left",
+          "jump_left",
+          "walk_right",
+          "jump_left",
+          "walk_left",
+          "jump_right",
+          "jump_right",
+          "walk_left",
+          "jump_left",
+          "jump_left",
+          "walk_left",
+          "jump_left",
+          "jump_left",
+          "jump_left",
+          "walk_right",
+          "jump_up",
+          "jump_right",
+          "jump_right",
+          "jump_right",
+          "walk_left",
+          "walk_left",
+          "jump_right",
+          "jump_right",
+          "jump_right",
+          "jump_right",
+          "jump_left",
+          "walk_right",
+          "walk_left",
+          "jump_right",
+          "walk_left",
+          "jump_up",
+          "jump_left",
+          "walk_left",
+          "wait",
+          "wait",
+          "walk_left",
+          "walk_right",
+          "jump_left",
+          "walk_right",
+          "walk_right",
+          "wait",
+          "jump_left",
+          "walk_right",
+          "walk_right",
+          "wait",
+          "walk_right",
+          "walk_right",
+          "jump_up",
+          "walk_left",
+          "walk_left",
+          "jump_left",
+          "walk_right",
+          "walk_right",
+          "walk_right",
+          "walk_left",
+          "jump_left",
+          "walk_right",
+          "jump_left",
+          "jump_left",
+          "walk_right",
+          "jump_up",
+          "jump_right"
+        ],
+        [
+          "jump_left",
+          "jump_left",
+          "walk_right",
+          "jump_left",
+          "walk_left",
+          "jump_right",
+          "jump_right",
+          "walk_left",
+          "jump_left",
+          "jump_left",
+          "walk_left",
+          "jump_left",
+          "jump_left",
+          "jump_left",
+          "walk_right",
+          "jump_up",
+          "jump_right",
+          "jump_right",
+          "jump_right",
+          "walk_left",
+          "walk_left",
+          "jump_right",
+          "jump_right",
+          "jump_right",
+          "jump_right",
+          "jump_left",
+          "walk_right",
+          "walk_left",
+          "wait",
+          "jump_right",
+          "walk_left",
+          "jump_up",
+          "jump_left",
+          "walk_left",
+          "wait",
+          "walk_left",
+          "walk_right",
+          "jump_left",
+          "walk_right",
+          "walk_right",
+          "jump_up",
+          "walk_left",
+          "walk_left",
+          "walk_left",
+          "walk_right",
+          "wait",
+          "walk_right",
+          "walk_right",
+          "wait",
+          "wait",
+          "walk_left",
+          "walk_left",
+          "walk_left",
+          "walk_left",
+          "walk_right",
+          "jump_left",
+          "walk_right",
+          "walk_right",
+          "jump_left",
+          "walk_right",
+          "jump_left",
+          "jump_left",
+          "walk_right",
+          "jump_up",
+          "jump_right"
+        ]
+      ],
+      "profiles": [
+        {
+          "walk_right": {
+            "status": "reachable",
+            "witness": [
+              "walk_right",
+              "jump_right",
+              "walk_right",
+              "jump_right"
+            ],
+            "searched_moves": 112
+          },
+          "jump_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 198
+          },
+          "jump_right": {
+            "status": "reachable",
+            "witness": [
+              "jump_right",
+              "walk_right",
+              "jump_right"
+            ],
+            "searched_moves": 12
+          },
+          "jump_up": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 102
+          },
+          "wait": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 150
+          }
+        },
+        {
+          "walk_right": {
+            "status": "reachable",
+            "witness": [
+              "walk_right",
+              "jump_right",
+              "walk_right",
+              "jump_right"
+            ],
+            "searched_moves": 118
+          },
+          "jump_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 192
+          },
+          "jump_right": {
+            "status": "reachable",
+            "witness": [
+              "jump_right",
+              "walk_right",
+              "jump_right"
+            ],
+            "searched_moves": 12
+          },
+          "jump_up": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 102
+          },
+          "wait": {
+            "status": "reachable",
+            "witness": [
+              "wait",
+              "jump_right",
+              "jump_right"
+            ],
+            "searched_moves": 92
+          }
+        }
+      ],
+      "different_moves": [
+        "wait"
+      ],
+      "conflicting_first_moves": false,
+      "common_proven_moves": [
+        "jump_right",
+        "walk_right"
+      ]
+    },
+    {
+      "source_row": 26,
+      "cavern": 18,
+      "prefixes": [
+        [
+          "jump_left",
+          "jump_left",
+          "walk_right",
+          "jump_left",
+          "walk_left",
+          "jump_right",
+          "jump_right",
+          "walk_left",
+          "jump_left",
+          "jump_left",
+          "walk_left",
+          "jump_left",
+          "jump_left",
+          "jump_left",
+          "walk_right",
+          "jump_up",
+          "jump_right",
+          "jump_right",
+          "jump_right",
+          "walk_left",
+          "walk_left",
+          "jump_right",
+          "jump_right",
+          "jump_right",
+          "jump_right",
+          "jump_left",
+          "walk_right",
+          "walk_left",
+          "wait",
+          "jump_right",
+          "walk_left",
+          "jump_up",
+          "jump_left",
+          "walk_left",
+          "wait",
+          "walk_left",
+          "walk_right",
+          "jump_left",
+          "walk_right",
+          "walk_right",
+          "jump_up",
+          "walk_left",
+          "walk_left",
+          "walk_left",
+          "walk_right",
+          "wait",
+          "walk_right",
+          "walk_right",
+          "wait",
+          "wait",
+          "walk_left",
+          "walk_left",
+          "walk_left",
+          "walk_left",
+          "walk_right",
+          "jump_left",
+          "walk_right",
+          "walk_right",
+          "jump_left",
+          "walk_right",
+          "jump_left",
+          "jump_left",
+          "walk_right"
+        ],
+        [
+          "jump_left",
+          "jump_left",
+          "walk_right",
+          "jump_left",
+          "walk_left",
+          "jump_right",
+          "jump_right",
+          "walk_left",
+          "jump_left",
+          "jump_left",
+          "walk_left",
+          "jump_left",
+          "jump_left",
+          "jump_left",
+          "walk_right",
+          "jump_up",
+          "jump_right",
+          "jump_right",
+          "jump_right",
+          "walk_left",
+          "walk_left",
+          "jump_right",
+          "jump_right",
+          "jump_right",
+          "jump_right",
+          "jump_left",
+          "walk_right",
+          "walk_left",
+          "wait",
+          "jump_right",
+          "walk_left",
+          "jump_up",
+          "jump_left",
+          "walk_left",
+          "wait",
+          "walk_left",
+          "wait",
+          "walk_right",
+          "jump_left",
+          "jump_right",
+          "jump_left",
+          "walk_right",
+          "wait",
+          "walk_right",
+          "wait",
+          "jump_up",
+          "walk_left",
+          "walk_left",
+          "jump_left",
+          "walk_right",
+          "jump_left",
+          "walk_right",
+          "jump_left",
+          "jump_left",
+          "walk_right"
+        ]
+      ],
+      "profiles": [
+        {
+          "walk_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 204
+          },
+          "walk_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 258
+          },
+          "jump_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 258
+          },
+          "jump_up": {
+            "status": "reachable",
+            "witness": [
+              "jump_up",
+              "jump_right",
+              "jump_right",
+              "jump_right"
+            ],
+            "searched_moves": 150
+          },
+          "wait": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 204
+          }
+        },
+        {
+          "walk_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 210
+          },
+          "walk_right": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 258
+          },
+          "jump_left": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 258
+          },
+          "jump_up": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 210
+          },
+          "wait": {
+            "status": "unreachable",
+            "witness": null,
+            "searched_moves": 204
+          }
+        }
+      ],
+      "different_moves": [
+        "jump_up"
+      ],
+      "conflicting_first_moves": false,
+      "common_proven_moves": []
+    }
+  ]
+}

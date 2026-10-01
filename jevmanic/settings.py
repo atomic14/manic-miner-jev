@@ -36,3 +36,12 @@ class Settings:
     ladder_fix: bool = False
     # False: the move decision's state has no `progress` and no `progress_measures`.
     progress_facts: bool = True
+    # True: the route facts come from the movement graph (graph.py). `progress`
+    # counts the moves on the shortest way to the target, and the target has
+    # no `way_up` and no `way_down`.
+    graph_facts: bool = False
+    # True: two more moves, a half step to the left and a half step to the right.
+    half_steps: bool = False
+    # True (needs graph_facts): the harness does not offer a move, or a key,
+    # after which a key or the portal is out of reach.
+    no_way_back: bool = False

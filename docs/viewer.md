@@ -70,7 +70,7 @@ timeline are below the game screen. The data that jev got is on the right.
 - Keyboard shortcuts: Space pauses or resumes. The right arrow runs one move.
   The left arrow goes back one decision (a replay only). F sets full screen.
 - **possible moves**: during a pause, the game screen shows the path of Willy
-  for each of the 6 moves. Each path is a line of faded figures of Willy in
+  for each of the 6 moves (8 moves in a run with `--half-steps`). Each path is a line of faded figures of Willy in
   the colour of the move, one figure for each 2 game ticks. The selected
   move is the brightest, and it has the mark ▶. A red cross marks a move
   that kills Willy or goes into a dead end. Each label goes to a free place near the end of its path.

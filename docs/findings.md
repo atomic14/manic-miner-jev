@@ -15,10 +15,11 @@ check out that tag. These parts exist only in the tag:
 - the scripts `experiments/probe_gap.py`, `probe_key_order.py`, and
   `probe_target.py`.
 
-On `main`, `experiments/results/` has only the summaries behind the README
+On `main`, `experiments/results/` has the summaries behind the README
 tables, behind "What jev needs: tests in Central Cavern", and behind the
-last two sections before "Open work". The summaries
-for the other measurements in this document are in the tag.
+sections from "The present map, a deeper dead-end check, and the ladder" to
+the end. The summaries for the other measurements in this document are in
+the tag.
 
 ## How to read the numbers
 
@@ -363,6 +364,11 @@ map across four floors. That task has more than one step, and the jev
 documentation says that jev is weak at such tasks. With D as the target, the
 route along the top floor is different, and 2 or 3 of 10 runs then fail
 after the keys.
+
+An offline count on 1 October 2026 (no jev requests) shows how stable this
+choice is. Jev made the key decision after E in 977 recorded runs of Central
+Cavern, from 19 to 30 September. It selected D in each of them. The median
+probability was 0.80 for D and 0.04 for A.
 
 ### The Cold Room needs a plan of the route
 
@@ -1101,8 +1107,377 @@ decision", but not jev as a whole. This agrees with the check of 8 moves in
 "The present map, a deeper dead-end check, and the ladder". The default
 stays at 4 moves.
 
+## Identical inputs can hide different futures
+
+Offline test on 30 September 2026, using the 200 runs in `runs/depth-4`
+from 29 September. No Jev requests. The game and its questions were unchanged.
+
+`experiments/probe_identical_inputs.py` groups non-forced Jev move requests
+by their exact state, question, option order, and model version. It preserves
+JSON field order. Groups are restricted to the same cavern. Repeated copies
+of the same move history count once when finding distinct histories.
+
+Of 16,925 requests, there were 9,280 distinct inputs within caverns. There
+were 1,283 groups with identical inputs reached through different histories.
+Different histories alone do not establish different game states.
+
+The probe sampled up to three groups per cavern, with seed 1: 54 pairs from
+19 caverns. Within each group it selected the earliest and latest game times.
+It replayed both histories and verified that the current state builder
+reproduced each recorded input, including memory. It then tested:
+
+- Each offered first move, followed by an existential survival search, for
+  eight moves in total. Each search had a budget of 600 further moves.
+- Each example's recorded continuation, up to 12 moves, played from both
+  situations without changing the sequence in response to new observations.
+
+| Result | Pairs of 54 |
+| --- | --- |
+| The same continuation survives in one situation and dies in the other | 7 |
+| An offered first move permits eight-move survival in only one situation | 0 |
+| The situations require disjoint sets of first moves for eight-move survival | 0 |
+
+No survival search returned unknown. The sample is exploratory: groups have
+equal sampling opportunity within each cavern, and times are deliberately
+spread apart. These counts do not estimate a rate over all decisions.
+
+The clearest example is The Menagerie, before decision 48 in two runs.
+Willy's pixel position, the Python snapshots, and the complete Jev inputs
+are identical. The horizontal guardians' animation frames differ in game
+memory, while their recorded cells and directions match. The game times
+are 532 and 533 ticks.
+
+Play `walk_right` three times, then `walk_left`. Willy dies after the fourth
+move in the second situation. In the first, he survives all 12 moves of
+the recorded continuation. The first move already produces different
+guardian facts, so Jev could distinguish the situations at its next request.
+This example does not prove that the first decision needs different inputs.
+
+Other witnesses occur in Central Cavern, The Vat, Skylab Landing Bay, and
+The Bank. Snapshot differences include crumbling floors, vertical guardians,
+air, and Willy's pixel position. These differences are observations, not
+isolated causal explanations.
+
+The result confirms that the representation loses information about future
+outcomes. It does not establish an unavoidable decision error, or explain
+the completion plateau. A stronger test would find identical inputs with
+conflicting first moves needed to collect a key or complete the cavern.
+The section "Identical inputs and the way to a key" describes that test.
+
+Run the probe with:
+
+```sh
+uv run python -m experiments.probe_identical_inputs runs/depth-4
+```
+
+The output is `experiments/results/identical-inputs.json`, including the
+input, both move histories, survival results, and continuation witnesses.
+`tests/fixtures/identical_inputs.json` preserves The Menagerie example
+without depending on local run files. `tests/test_identical_inputs.py`
+verifies its matching inputs, different guardian bytes, and different deaths.
+
+## Identical inputs and the way to a key
+
+Offline test on 30 September 2026, with the same 200 runs in `runs/depth-4`.
+It makes no jev requests.
+
+The question: can two situations with identical inputs need different first
+moves to collect a key? If they can, no answer from jev is right in both.
+
+`experiments/probe_key_reachability.py` takes pairs of situations with
+identical inputs. For each valid move, it tries all sequences of moves up to
+a limit. A move is "good" if some sequence that starts with it collects a
+key, or completes the cavern, while Willy is alive. The search restores the
+full emulator state for each sequence, so it sees the guardians' timing.
+The probe replays each sequence that it finds, to check it.
+
+A pair "conflicts" if each situation has a good move, and no move is good
+in both. A move "differs" if it is good in one situation only.
+
+We ran the probe on three samples:
+
+| Sample | Limit | Pairs | Pairs with a good move | Pairs with a move that differs | Pairs that conflict |
+| --- | --- | --- | --- | --- | --- |
+| The 54 pairs of "Identical inputs can hide different futures" | 4 moves | 49 | 3 | 0 | 0 |
+| Pairs near a recorded key collection | 4 moves | 27 | 27 | 2 | 0 |
+| Pairs 5 or 6 moves before a recorded key collection | 6 moves | 11 | 11 | 3 | 0 |
+
+In the first sample, 5 of the 54 pairs had no key left, so the probe skipped
+them. Most of the other pairs were too far from a key for a limit of 4
+moves. The other two samples take only groups where one recorded run
+collected a key within the limit. There were 101 such groups for 4 moves (in
+9 caverns) and 139 for 6 moves. The probe takes up to 3 groups for each
+cavern, spread over the distances to the key. The third sample keeps the
+pairs with a distance of 5 or 6 moves: 11 pairs in 11 caverns. No search ran
+out of its budget of 10,000 moves, so each "not good" is a proof within the
+limit.
+
+No pair conflicts. The five pairs with a move that differs:
+
+| Cavern | Limit | Game times | Good in one situation only | Good in both |
+| --- | --- | --- | --- | --- |
+| 3, The Menagerie | 6 | 489 and 488 | `jump_up` | `walk_left`, `walk_right`, `jump_left`, `wait` |
+| 8, Miner Willy meets the Kong Beast | 6 | 505 and 504 | `jump_up`, `wait` | none |
+| 14, Skylab Landing Bay | 6 | 1265 and 1276 | `walk_left`, `wait` | `jump_right` |
+| 18, Amoebatrons' Revenge | 4 | 738 and 737 | `wait` | `walk_right`, `jump_right` |
+| 18, Amoebatrons' Revenge | 4 | 703 and 701 | `jump_up` | none |
+
+In caverns 3 and 14, and in the first pair of cavern 18, a move is good in
+both situations. An answer that is right in both exists.
+
+In cavern 8 and in the second pair of cavern 18, one situation has good
+moves and the other has none within the limit. So the same input gives "a
+key in 5 moves" at one game time, and "no key in 6 moves" one tick later.
+This is not a conflict by our definition, because the second situation has
+no good move to contradict the first. A longer limit could still show one.
+
+What this shows:
+
+- The inputs hide the guardians' timing, and this changes which moves lead
+  to a key. We found this in 5 of 38 pairs near a key.
+- We did not find a pair where jev cannot give one answer that is right in
+  both situations. So this test gives no proof that the hidden timing forces
+  a wrong decision.
+- The samples are small and we selected them near keys. The counts are not a
+  rate for all decisions. The limit of 6 moves is short, and a test with
+  "complete the cavern" as the goal is not possible at this limit.
+
+Run the three samples with:
+
+```sh
+uv run python -m experiments.probe_key_reachability
+uv run python -m experiments.probe_key_reachability --near-keys runs/depth-4 \
+    --output experiments/results/key-reachability-near-4.json
+uv run python -m experiments.probe_key_reachability --near-keys runs/depth-4 \
+    --horizon 6 --min-distance 5 \
+    --output experiments/results/key-reachability-near-6.json
+```
+
+The first command reads `experiments/results/identical-inputs.json`. The
+output files in `experiments/results/` are `key-reachability-4.json`,
+`key-reachability-near-4.json`, and `key-reachability-near-6.json`. Each
+holds the result of every first move and the sequence that the probe found.
+The two `-source.json` files hold the selected pairs.
+`tests/test_key_reachability.py` checks the search rules on a small game
+that we know completely.
+
+## How the failed runs end
+
+Offline analysis on 30 September 2026 of the 200 runs in `runs/depth-4`
+(the defaults, 29 September). No jev requests.
+
+`experiments/failure_ends.py` looks at the last 30 decisions of each failed
+run, and puts the run in one class:
+
+| Class | Meaning | Failed runs of 166 |
+| --- | --- | --- |
+| loop of "nearer" moves | jev took a "nearer" move in at least a third of the decisions, and Willy still went nowhere | 62 |
+| no "nearer" move | a "nearer" move was valid in at most a third of the decisions | 60 |
+| died | | 43 |
+| ignored "nearer" | a "nearer" move was valid, but jev mostly took a different move | 1 |
+
+In 122 of the 166 failed runs, the route facts led nowhere: no move was
+"nearer", or the "nearer" moves went round a loop. Three examples:
+
+- Abandoned Uranium Workings: key A hangs above a single floor tile at column
+  1. Willy stands on a single tile at column 17, and the key is on "the same
+  level". But gaps of 5 and 9 cells lie between the tiles. No move is
+  "nearer", so jev waits.
+- Eugene's Lair: key E is "2 cells" to the right of Willy, behind a wall.
+  Willy jumps to the left and back for 30 decisions.
+- Eugene's Lair: key C is "lower", because the first floor below it is the
+  bottom row. In fact it hangs at the right end of the conveyor. The way
+  down leads into a dead end, so Willy walks between two cells.
+
+The facts come from rules about the tile map, which we wrote for caverns 1
+to 3. `progress` measures a straight distance, past walls, gaps, and one-way
+drops between Willy and the target.
+
+## Some caverns need a half step
+
+Offline searches on 30 September 2026, with the guardians switched off. No
+jev requests.
+
+A walk always ends on the cell grid, and a jump moves Willy 4.5 cells. So
+the six moves reach only some pixel positions, and some jumps must start
+between two cells. `experiments/solvable.py` follows a short way to each key
+in turn with the emulator, and then into the portal. It tries the optimum
+key order first, and then up to 23 other orders. A found route proves that
+the moves can complete the cavern without guardians. If no order works, the
+moves probably cannot complete it, but that is no proof.
+
+| Cavern | The six moves | The six moves and the two half steps |
+| --- | --- | --- |
+| 6 Processing Plant | no route: the portal is out of reach after all keys | a route in 49 moves |
+| 12 Return of the Alien Kong Beast | no route: key B or key D is out of reach | a route in 41 moves |
+| 19 Solar Power Generator | no route: after the first key, the other keys or the portal are out of reach | a route in 52 moves |
+| the other 17 caverns | a route | a route |
+
+The recorded runs agree: in the 1,349 runs of these three caverns before
+30 September, no decision maker completed one (`experiments/all_runs.py
+--before 2026-09-30`). A search over single game ticks with any joystick
+input (`experiments/tick_search.py`) enters the portal of Processing Plant,
+so the game itself allows a way in.
+
+The half steps (`--half-steps`) are `step_left` and `step_right`. Each one
+moves Willy 4 pixels, and it turns him first if he faces the other way.
+
+Two notes:
+
+- A movement graph keeps only the first game that it finds at each place.
+  So a key can seem out of reach in one graph when it is not. In the graph
+  from the start of Eugene's Lair, key C is out of reach with the six moves.
+  But the route of `solvable.py` collects keys A and B first, and then key C.
+- In Solar Power Generator, the search with the half steps found no way into
+  the portal after the optimum key order (C, A, B). The order A, B, C works.
+  The optimum order is only a reference order.
+
+## Route facts from a movement graph
+
+Settings: the key decision with the map, a dead-end check of 4 moves, 10 runs
+of each cavern. Measured on 30 September 2026, with the same code in all
+arms. "Graph" means `--graph --half-steps --no-way-back` (see "Route facts
+from the movement graph" in [design.md](design.md)). With its own key choice,
+the rule `nearer` uses the key rule `nearest`, among the key options that the
+harness offers. The text is promptD, unless the arm says promptD-graph.
+
+| Arm | Key choice | Complete runs of 200 | Mean keys | Deaths | Cost of 200 runs |
+| --- | --- | --- | --- | --- | --- |
+| jev, present facts | jev | 28 | 1.46 | 44 | $1.04 |
+| rule `nearer`, present facts | key rule `nearest` | 20 | 1.16 | 40 | $0 |
+| jev, graph | jev | 89 | 2.69 | 68 | $1.06 |
+| jev, graph, promptD-graph | jev | 71 | 2.71 | 66 | $0.95 |
+| rule `nearer`, graph | key rule `nearest` | 114 | 3.23 | 53 | $0 |
+| jev, graph | the optimum order | 86 | 2.50 | 83 | $0.98 |
+| rule `nearer`, graph | the optimum order | 125 | 3.13 | 59 | $0 |
+
+Complete runs of 10 in each cavern:
+
+| Cavern | jev, present | rule, present | jev, graph | jev, graph, promptD-graph | rule, graph | jev, graph, optimum | rule, graph, optimum |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| 1 Central Cavern | 10 | 8 | 4 | 10 | 10 | 4 | 10 |
+| 2 The Cold Room | 0 | 6 | 10 | 10 | 10 | 10 | 8 |
+| 3 The Menagerie | 1 | 4 | 3 | 4 | 9 | 1 | 6 |
+| 4 Abandoned Uranium Workings | 1 | 0 | 10 | 0 | 10 | 10 | 10 |
+| 5 Eugene's Lair | 0 | 0 | 0 | 0 | 0 | 0 | 4 |
+| 6 Processing Plant | 0 | 0 | 10 | 10 | 8 | 9 | 9 |
+| 7 The Vat | 0 | 0 | 1 | 0 | 9 | 4 | 3 |
+| 8 Miner Willy meets the Kong Beast | 0 | 0 | 2 | 2 | 6 | 7 | 8 |
+| 9 Wacky Amoebatrons | 8 | 2 | 10 | 6 | 7 | 8 | 8 |
+| 10 The Endorian Forest | 0 | 0 | 4 | 0 | 3 | 0 | 9 |
+| 11 Attack of the Mutant Telephones | 0 | 0 | 8 | 6 | 7 | 1 | 8 |
+| 12 Return of the Alien Kong Beast | 0 | 0 | 0 | 0 | 0 | 10 | 5 |
+| 13 Ore Refinery | 0 | 0 | 2 | 8 | 5 | 4 | 9 |
+| 14 Skylab Landing Bay | 0 | 0 | 10 | 8 | 9 | 10 | 9 |
+| 15 The Bank | 0 | 0 | 0 | 0 | 9 | 0 | 10 |
+| 16 The Sixteenth Cavern | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| 17 The Warehouse | 0 | 0 | 2 | 0 | 4 | 0 | 0 |
+| 18 Amoebatrons' Revenge | 8 | 0 | 9 | 7 | 5 | 6 | 8 |
+| 19 Solar Power Generator | 0 | 0 | 0 | 0 | 1 | 0 | 0 |
+| 20 The Final Barrier | 0 | 0 | 4 | 0 | 2 | 2 | 1 |
+
+What this shows:
+
+- The graph gives both decision makers far more complete runs: jev 89
+  against 28, the rule 114 against 20 (Fisher p < 10^-10 for each). 19 of
+  the 20 caverns have complete runs in some arm with the graph. 8 of the 9
+  caverns that no decision maker had completed in the 11,019 runs before now
+  have complete runs. Only The Sixteenth Cavern has none.
+- With the graph, the rule completes more runs than jev. With their own key
+  choices, it completes 114 against 89 (Fisher p = 0.016). With the optimum
+  order, it completes 125 against 86 (p = 0.0001). With the same key order,
+  the difference is in the move decisions.
+- The key order makes no difference to jev in total: 89 with its own key
+  decisions, 86 with the optimum order (p = 0.84). It changes single
+  caverns. With its own key decisions, jev selects key E and then key D in
+  The Menagerie, and 7 runs end with a death on the top floor. In The Vat,
+  it selects key D and then key A, and 9 runs end with a death. With the
+  optimum order, jev completes Return of the Alien Kong Beast in 10 of 10
+  runs, the first complete runs of that cavern.
+- Jev takes a "nearer" move in 90 % of the decisions that have one, the rule
+  in 100 %. Jev's other choices cost runs. In The Bank, jev waits on the
+  bottom floor where a vertical guardian comes down (9 deaths with the
+  optimum order; the rule completes 10). In The Endorian Forest, jev
+  collects all keys, and then it goes round a loop on the way to the portal
+  (10 runs stuck; the rule completes 9). In Central Cavern, jev goes round a
+  loop beside the crumbling floor that leads down to the portal. 6 of its 10
+  runs end there.
+- Jev's lead in Wacky Amoebatrons and Amoebatrons' Revenge is smaller. With
+  the graph, the rule does not get trapped there. With their own key
+  choices, jev completes 10 and 9 runs of 10, the rule 7 and 5. With the
+  optimum order, jev completes 8 and 6, the rule 8 and 8.
+- Two caverns are worse with the graph. The graph has no guardians, so its
+  shortest way can lead through a guardian's patrol. In The Sixteenth
+  Cavern, each of the 50 runs with the graph ended within 21 decisions, with
+  no key. Guardians trapped Willy at the left end of the bottom floor. With
+  the present facts, jev collected 1.7 keys in a run, and the rule 0.6. In
+  Solar Power Generator with the optimum order, no run collected a key, and
+  a guardian killed Willy in 15 of the 20 runs.
+- The failures are now mostly deaths (`experiments/failure_ends.py`). With
+  the optimum order, jev's 114 failed runs are 83 deaths, 18 loops of
+  "nearer" moves, 12 runs with no "nearer" move, and 1 run that ignored
+  "nearer". The rule's 75 failed runs are 59 deaths, 12 runs with no
+  "nearer" move, and 4 loops.
+- A request with the graph uses 8 % more tokens (1620 against 1501). The
+  graph takes most of the time of a run. A jev run takes a median of 57
+  seconds, and up to 20 minutes in The Warehouse, with 16 runs at the same
+  time.
+
+The harness removed a move with no way back in 3 % of jev's decisions. The
+target was out of reach in the graph in 3.5 % of them. Jev played a half
+step in 7 % of its decisions, the rule in 20 %. Eugene is not a guardian, so
+the graph keeps him. His slow patrol makes many ways in Eugene's Lair look
+closed. In each run of jev there, the target was then out of reach in the
+graph, so no move was "nearer". The conveyor then carried Willy into a fall.
+
+One log file of the jev arm (graph, promptD, own key decisions) holds two
+runs of Central Cavern. Two processes gave their runs the same file name. The
+summary counts both runs. The code now creates each file only if it does not
+exist.
+
+### The sentence about loops, with the graph
+
+`experiments/probe_graph_text.py` takes 60 decisions of the jev arm (graph,
+promptD) where a "nearer" move was valid, but jev selected a different move.
+It asks jev each one again in four forms (cost $0.02):
+
+| Form | Jev selects a "nearer" move | Mean probability of the "nearer" moves |
+| --- | --- | --- |
+| the recorded request | 10 of 60 | 0.24 |
+| promptD-graph: promptD without the sentence about loops | 24 of 60 | 0.33 |
+| the recorded state, with the tile map's `way_up` or `way_down` | 10 of 60 | 0.26 |
+| both changes | 21 of 60 | 0.37 |
+
+So the sentence about loops takes jev away from "nearer" in single
+decisions, and the old way facts do not help. But in whole runs, the
+sentence helps more than it hurts (see the table above). Without it, jev
+completes Central Cavern and Ore Refinery more often. But it gets stuck in
+Abandoned Uranium Workings, The Endorian Forest, and The Final Barrier. In
+total, promptD-graph gives 71 complete runs against 89 (Fisher p = 0.08).
+
+In Central Cavern, jev takes a "nearer" move in 95 % of the decisions that
+have one with promptD-graph, and in 78 % with promptD. In Abandoned Uranium
+Workings, the "nearer" move is a half step to the right, and jev gives it a
+probability of 0.15. It jumps to the right instead, and Willy goes round a
+loop of three places. With the sentence, jev leaves such a loop. promptD
+stays the text for the graph.
+
 ## Open work
 
+- The route facts from the movement graph (see "Route facts from a movement
+  graph"). With them, the rule completes more runs than jev. Questions that
+  are open:
+  - Should they be the defaults? They make the harness do more of the work.
+  - Where can jev add value with true route facts? Most failures are now
+    deaths near guardians, where the rule's random choice does better than
+    jev's fixed choice.
+  - The key decision gets no facts from the graph, for example the number of
+    moves to each key.
+  - Jev rarely takes a half step, even when it is the only "nearer" move
+    (Abandoned Uranium Workings with promptD-graph).
+  - Eugene stays in the graph, so many ways in Eugene's Lair look closed.
+  - A graph takes up to 30 seconds. A faster search, or a cache of graphs
+    across runs, would make measurements quicker.
 - The defaults are worse in some caverns. With the defaults (the key
   decision with the map, a dead-end check of 4 moves, 10 runs), cavern 4
   collects 0.0 keys, cavern 9 completes 4 of 10 runs, cavern 11 collects 0.0
@@ -1116,8 +1491,9 @@ stays at 4 moves.
 - The depth of the dead-end check. Try a different depth, or replace the
   search with experience: a memory of the places where Willy died in other
   runs.
-- Cavern 4. Each run ends in a trap in the top left corner, because the code
-  selects a single tile as "the way up".
+- Cavern 4. With the defaults, each run ends in a trap in the top left
+  corner, because the code selects a single tile as "the way up". With the
+  route facts from the graph, jev completes 10 of 10 runs.
 - Cavern 8. Willy jumps into the small space between two walls where the
   closed portal is. A walk has no effect there. The only way out is a jump
   to the left, onto a guardian's level. The look-ahead removes that jump
